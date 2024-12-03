@@ -34,7 +34,7 @@ const UpdatePassword = () => {
           </h1>
         </div>
 
-        <div className="flex items-center -mt-4 gap-4 w-full">
+        {/* <div className="flex items-center -mt-4 gap-4 w-full">
           <img
             src="https://via.placeholder.com/80" // Replace with actual image source
             alt="Profile"
@@ -44,7 +44,7 @@ const UpdatePassword = () => {
             <h2 className="text-[16px] font-semibold">Alex Deli</h2>
             <p className="text-[16px] text-gray-500">alex.deli@gmail.com</p>
           </div>
-        </div>
+        </div> */}
 
         <div className="w-full h-auto flex flex-col justify-start items-start gap-4">
           <AuthInput
