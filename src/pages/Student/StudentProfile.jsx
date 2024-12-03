@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { IoMdArrowBack } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa"; // for the eye toggle
-import SSNModal from "../../components/Students/SsnModal";
+import SSNModal from "../../components/Students/SSNModal";
 import ReportModal from "../../components/Students/ReportModal";
 
 const StudentProfile = () => {
