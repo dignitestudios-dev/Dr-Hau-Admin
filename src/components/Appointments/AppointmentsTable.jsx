@@ -1,8 +1,6 @@
 import React, { useState } from "react";
-import { IoMdArrowBack, IoMdAdd, IoMdEye } from "react-icons/io"; 
+import { IoMdArrowBack, IoMdAdd, IoMdEye, IoMdTrash } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
-import { IoMdTrash } from "react-icons/io";
-
 import UserListModal from "./UserListModal";
 
 const AppointmentsTable = () => {
@@ -22,6 +20,7 @@ const AppointmentsTable = () => {
 
   const [showModal, setShowModal] = useState(false); // Modal visibility state
   const [selectedUsers, setSelectedUsers] = useState(data); // Users to display in the modal
+  const [filter, setFilter] = useState("All"); // Filter state for status
   const navigate = useNavigate();
 
   const toggleModal = () => {
@@ -33,6 +32,15 @@ const AppointmentsTable = () => {
     setSelectedUsers(updatedUsers);
   };
 
+  const handleFilterChange = (e) => {
+    setFilter(e.target.value);
+  };
+
+  const filteredData =
+    filter === "All"
+      ? data
+      : data.filter((appointment) => appointment.status === filter);
+
   // Navigate to the event details page
   const handleViewDetails = (appointment) => {
     navigate(`/event-details`, { state: { appointment } }); // Pass the appointment data if needed
@@ -43,16 +51,31 @@ const AppointmentsTable = () => {
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center">
           <IoMdArrowBack onClick={() => navigate("/dashboard")} className="text-[24px] text-gray-700 mr-2" />
-          <h3 className="text-[24px] font-bold text-black">Appointment List</h3>
+          <h3 className="text-[24px] font-bold text-black">Recent Appointments</h3>
         </div>
-        {/* Walk In Button */}
-        <button
-          onClick={toggleModal}
-          className="flex items-center bg-black text-white p-2 rounded-md cursor-pointer"
-        >
-          <IoMdAdd size={20} className="mr-2" />
-          Walk In
-        </button>
+        
+        {/* Container for the "Walk In" button and filter dropdown */}
+        <div className="flex gap-4 items-center">
+          {/* Walk In Button */}
+          <button
+            onClick={toggleModal}
+            className="flex items-center bg-black text-white p-2 rounded-md cursor-pointer"
+          >
+            <IoMdAdd size={20} className="mr-2" />
+            Walk In
+          </button>
+
+          {/* Filter Dropdown */}
+          <select
+            value={filter}
+            onChange={handleFilterChange}
+            className="p-2 border text-black border-gray-300 rounded-md"
+          >
+            <option value="All">All Status</option>
+            <option value="Scheduled">Scheduled</option>
+            <option value="Not Confirmed">Not Confirmed</option>
+          </select>
+        </div>
       </div>
 
       <div className="overflow-x-auto">
@@ -68,7 +91,7 @@ const AppointmentsTable = () => {
             </tr>
           </thead>
           <tbody>
-            {data.map((appointment, index) => (
+            {filteredData.map((appointment, index) => (
               <tr key={index} className="text-[14px] text-gray-900 border-b border-gray-200">
                 <td className="py-3 px-4">{appointment.name}</td>
                 <td className="py-3 px-4">{appointment.dob}</td>
