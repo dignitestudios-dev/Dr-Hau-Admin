@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { IoMdArrowBack } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 
 const DashboardEvents = () => {
@@ -73,46 +72,54 @@ const DashboardEvents = () => {
       </div>
 
       <div className="w-full h-auto bg-white p-2 rounded-md">
-        <div className="flex gap-6 text-[14px] border-b mb-4">
-          <button
-            className={`pb-2 ${
-              selectedTab === "All"
-                ? "text-black border-b-2 border-black font-bold"
-                : "text-gray-500"
-            }`}
-            onClick={() => setSelectedTab("All")}
+        <div className="flex justify-between items-center ">
+          <div className="flex gap-6 text-[14px] border-b mb-4">
+            <button
+              className={`pb-2 ${
+                selectedTab === "All"
+                  ? "text-black border-b-2 border-black font-bold"
+                  : "text-gray-500"
+              }`}
+              onClick={() => setSelectedTab("All")}
+            >
+              All
+            </button>
+            <button
+              className={`pb-2 ${
+                selectedTab === "Upcoming"
+                  ? "text-orange-500 border-b-2 border-black font-bold"
+                  : "text-gray-500"
+              }`}
+              onClick={() => setSelectedTab("Upcoming")}
+            >
+              Upcoming
+            </button>
+            <button
+              className={`pb-2 ${
+                selectedTab === "Completed"
+                  ? "text-green-500 border-b-2 border-black font-bold"
+                  : "text-gray-500"
+              }`}
+              onClick={() => setSelectedTab("Completed")}
+            >
+              Completed
+            </button>
+            <button
+              className={`pb-2 ${
+                selectedTab === "Cancelled"
+                  ? "text-red-500 border-b-2 border-black font-bold"
+                  : "text-gray-500"
+              }`}
+              onClick={() => setSelectedTab("Cancelled")}
+            >
+              Cancelled
+            </button>
+          </div>
+          <button 
+            onClick={() => navigate("/events")}
+            className="text-blue-500 hover:underline ml-auto"
           >
-            All
-          </button>
-          <button
-            className={`pb-2 ${
-              selectedTab === "Upcoming"
-                ? "text-orange-500 border-b-2 border-black font-bold"
-                : "text-gray-500"
-            }`}
-            onClick={() => setSelectedTab("Upcoming")}
-          >
-            Upcoming
-          </button>
-          <button
-            className={`pb-2 ${
-              selectedTab === "Completed"
-                ? "text-green-500 border-b-2 border-black font-bold"
-                : "text-gray-500"
-            }`}
-            onClick={() => setSelectedTab("Completed")}
-          >
-            Completed
-          </button>
-          <button
-            className={`pb-2 ${
-              selectedTab === "Cancelled"
-                ? "text-red-500 border-b-2 border-black font-bold"
-                : "text-gray-500"
-            }`}
-            onClick={() => setSelectedTab("Cancelled")}
-          >
-            Cancelled
+            View All
           </button>
         </div>
 
