@@ -42,7 +42,7 @@ const CreateProfile = () => {
         <h3 className="text-[24px]  text-black">Fill the details below to create admin profile</h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 lg:mt-8 md:mt-4">
-            <div className="flex flex-col">
+            <div className="flex flex-col"> 
               <label className="mb-2 font-medium">Username</label>
               <input
                 type="text"
