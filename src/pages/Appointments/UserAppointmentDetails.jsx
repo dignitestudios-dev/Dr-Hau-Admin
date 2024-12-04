@@ -116,12 +116,12 @@ const UserAppointmentDetails = () => {
           >
             Approve
           </button>
-          <button
+          {/* <button
             onClick={() => alert("Appointment Rejected")}
             className="bg-red-500 text-white px-4 py-2 rounded-md text-sm font-semibold shadow-lg"
           >
             Reject
-          </button>
+          </button> */}
           <button
             onClick={() => navigate("/consent-form")}
             className="bg-black text-white px-4 py-2 rounded-md text-sm font-semibold shadow-lg"
