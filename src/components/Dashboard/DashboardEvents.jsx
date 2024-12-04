@@ -69,13 +69,21 @@ const DashboardEvents = () => {
         <div className="flex items-center">
           <h3 className="text-[24px] font-bold text-black">Events</h3>
         </div>
+        {/* View All Button aligned to the right */}
+        <button
+          onClick={() => navigate("/events")}
+          className="text-blue-500 hover:underline"
+        >
+          View All
+        </button>
       </div>
 
       <div className="w-full h-auto bg-white p-2 rounded-md">
-        <div className="flex justify-between items-center ">
-          <div className="flex gap-6 text-[14px] border-b mb-4">
+        {/* Adding border under the entire tab row */}
+        <div className="w-full flex justify-between items-center border-b-2 border-gray-300 mb-4">
+          <div className="flex gap-6 text-[14px]">
             <button
-              className={`pb-2 ${
+              className={`pb-2 w-full text-left ${
                 selectedTab === "All"
                   ? "text-black border-b-2 border-black font-bold"
                   : "text-gray-500"
@@ -85,7 +93,7 @@ const DashboardEvents = () => {
               All
             </button>
             <button
-              className={`pb-2 ${
+              className={`pb-2 w-full text-left ${
                 selectedTab === "Upcoming"
                   ? "text-orange-500 border-b-2 border-black font-bold"
                   : "text-gray-500"
@@ -95,7 +103,7 @@ const DashboardEvents = () => {
               Upcoming
             </button>
             <button
-              className={`pb-2 ${
+              className={`pb-2 w-full text-left ${
                 selectedTab === "Completed"
                   ? "text-green-500 border-b-2 border-black font-bold"
                   : "text-gray-500"
@@ -105,7 +113,7 @@ const DashboardEvents = () => {
               Completed
             </button>
             <button
-              className={`pb-2 ${
+              className={`pb-2 w-full text-left ${
                 selectedTab === "Cancelled"
                   ? "text-red-500 border-b-2 border-black font-bold"
                   : "text-gray-500"
@@ -115,12 +123,6 @@ const DashboardEvents = () => {
               Cancelled
             </button>
           </div>
-          <button 
-            onClick={() => navigate("/events")}
-            className="text-blue-500 hover:underline ml-auto"
-          >
-            View All
-          </button>
         </div>
 
         <div className="overflow-x-auto">
@@ -157,7 +159,7 @@ const DashboardEvents = () => {
                     </span>
                   </td>
                   <td
-                    onClick={() => handleViewDetails(appointment.status)} // Call the function with status as argument
+                    onClick={() => handleViewDetails(appointment.status)}
                     className="py-3 px-4 text-blue-500"
                   >
                     <p className="cursor-pointer">View details</p>
@@ -173,3 +175,4 @@ const DashboardEvents = () => {
 };
 
 export default DashboardEvents;
+ 
