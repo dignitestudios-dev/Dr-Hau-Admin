@@ -16,7 +16,7 @@ const UserAppointmentDetails = () => {
     appointmentDate: "Jun 12, 2024",
     appointmentTime: "09:00 A.M - 02:00 P.M",
   };
-q
+
   return (
     <div className="w-full p-6 bg-gray-100 h-auto overflow-auto mt-1">
       <div className="flex items-center mb-8">
