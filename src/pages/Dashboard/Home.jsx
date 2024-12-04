@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import DashboardStats from "../../components/Dashboard/DashboardStats";
 import DashboardAppointmentsTable from "../../components/Dashboard/DashboardAppointmentsTable";
+import DashboardEvents from "../../components/Dashboard/DashboardEvents";
 
 const Home = () => {
 
@@ -12,8 +13,11 @@ const Home = () => {
           <DashboardStats />
         </div>
 
-        <div className="w-full bg-white p-6 rounded-[18px] shadow-xl ">
+        {/* <div className="w-full bg-white p-6 rounded-[18px] shadow-xl ">
           <DashboardAppointmentsTable />
+        </div> */}
+        <div className="w-full bg-white p-6 rounded-[18px] ">
+          <DashboardEvents />
         </div>
 
         

@@ -31,8 +31,8 @@ const StudentProfile = () => {
   const handleSSNModalToggle = () => setIsSSNModalOpen(!isSSNModalOpen);
   const handleReportModalToggle = () => setIsReportModalOpen(!isReportModalOpen);
 
-  const handleSSNSubmit = () => setShowSSN(true); // Show SSN after password validation
-  const handleReportSubmit = () => setShowReport(true); // Show report after password validation
+  const handleSSNSubmit = () => setShowSSN(true); 
+  const handleReportSubmit = () => setShowReport(true); 
 
   return (
     <div className="w-full p-6 rounded-md shadow-md overflow-auto">
@@ -42,7 +42,6 @@ const StudentProfile = () => {
       </div>
 
       <div className="rounded-lg shadow-customShadow bg-white p-8">
-        {/* Personal Information */}
         <div className="rounded-lg shadow-customShadow bg-gray-50 py-4 px-6 mb-6">
           <div className="grid grid-cols-1 mb-6">
             <p className="font-medium text-[20px] text-black">Personal Information</p>
@@ -77,7 +76,6 @@ const StudentProfile = () => {
               <p className="text-[14px] text-[#787F8C] font-semibold uppercase">Email</p>
               <p className="text-[14px] text-[#181818]">{data?.email}</p>
             </div>
-            {/* Report Details Section beside the Email */}
             <div className="w-[300px]">
               <p className="text-[14px] text-[#787F8C] font-semibold uppercase">Report Details</p>
               <button
@@ -91,27 +89,52 @@ const StudentProfile = () => {
         </div>
 
         {/* Appointments Section */}
-        <div className="rounded-lg shadow-customShadow bg-gray-50 py-4 px-6 mb-8">
-          <div className="grid grid-cols-1 mb-6">
-            <p className="font-semibold text-[20px] text-black">Appointment History</p>
+        {/* Appointments Section */}
+{/* Appointments Section */}
+{/* Appointments Section */}
+<div className="rounded-lg shadow-customShadow bg-gray-50 py-4 px-6 mb-8">
+  <div className="grid grid-cols-1 mb-6">
+    <p className="font-semibold text-[20px] text-black">Appointment History</p>
+  </div>
+  {data.appointmentHistory.map((appointment, index) => (
+    <div
+      key={index}
+      className={`bg-white rounded-lg shadow-md p-6 mb-6 transition-all duration-300 ${
+        index % 2 === 0 ? "bg-gray-100" : "bg-white"
+      } hover:scale-105 hover:shadow-xl`}
+    >
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex flex-col sm:flex-row sm:space-x-4">
+          <div className="mb-2 sm:mb-0">
+            <p className="text-[16px] text-[#181818] font-semibold">{appointment.date}</p>
+            <p className="text-[14px] text-[#787F8C]">{appointment.time}</p>
           </div>
-          {data.appointmentHistory.map((appointment, index) => (
-            <div key={index} className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-6">
-              <div>
-                <p className="text-[14px] text-[#787F8C] font-semibold">Date</p>
-                <p className="text-[14px] text-[#181818]">{appointment.date}</p>
-              </div>
-              <div>
-                <p className="text-[14px] text-[#787F8C] font-semibold">Time</p>
-                <p className="text-[14px] text-[#181818]">{appointment.time}</p>
-              </div>
-              <div>
-                <p className="text-[14px] text-[#787F8C] font-semibold">Details</p>
-                <p className="text-[14px] text-[#181818]">{appointment.details}</p>
-              </div>
-            </div>
-          ))}
         </div>
+        
+        <div className="flex justify-end items-center space-x-4">
+          <p className="text-[14px] text-[#181818] font-semibold">{appointment.details}</p>
+        </div>
+      </div>
+
+      <div className="flex justify-between items-center">
+        <span
+          className={`text-[12px] font-semibold rounded-full py-1 px-3 ${
+            appointment.details.includes("Checkup") ? "bg-green-200 text-green-700" : "bg-yellow-200 text-yellow-700"
+          }`}
+        >
+          {appointment.details.includes("Checkup") ? "Completed" : "Upcoming"}
+        </span>
+
+        <button className="text-blue-500 font-semibold hover:text-blue-600 transition-colors duration-300">
+          View Details
+        </button>
+      </div>
+    </div>
+  ))}
+</div>
+
+
+
       </div>
 
       {/* Modal for SSN */}

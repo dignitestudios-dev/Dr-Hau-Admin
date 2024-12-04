@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { IoMdArrowBack } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 
-const EventsTable = () => {
+const DashboardEvents = () => {
   const data = [
     {
       date: "Jun 12, 2024",
@@ -66,13 +66,13 @@ const EventsTable = () => {
 
   return (
     <>
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-2">
         <div className="flex items-center">
           <h3 className="text-[24px] font-bold text-black">Events</h3>
         </div>
       </div>
 
-      <div className="w-full h-auto bg-white p-6 rounded-md">
+      <div className="w-full h-auto bg-white p-2 rounded-md">
         <div className="flex gap-6 text-[14px] border-b mb-4">
           <button
             className={`pb-2 ${
@@ -165,4 +165,4 @@ const EventsTable = () => {
   );
 };
 
-export default EventsTable;
+export default DashboardEvents;

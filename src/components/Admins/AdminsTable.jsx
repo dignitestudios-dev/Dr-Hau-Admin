@@ -72,6 +72,17 @@ const AdminsTable = () => {
             <option value="MIT">MIT</option>
             <option value="Stanford">Stanford</option>
           </select>
+          {/* Dropdown to filter by campus */}
+          <select
+            value={selectedSchool}
+            onChange={handleSchoolFilter}
+            className="p-2 border rounded-md bg-white text-gray-700"
+          >
+            <option value="">Select Campus</option>
+            <option value="Harvard">Campus 1</option>
+            <option value="MIT">Campus 2</option>
+            <option value="Stanford">Campus 3</option>
+          </select>
         </div>
       </div>
 

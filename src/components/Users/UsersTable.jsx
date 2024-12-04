@@ -5,26 +5,31 @@ import { useNavigate } from "react-router-dom";
 const UsersTable = () => {
   // Sample data with a role field for user roles (student or admin)
   const initialData = [
-    { name: "Olivia Mery", dob: "11-25-1996", address: "House no. 42, Street 7, United States...", program: "Bachelor of Arts", role: "Student", school: "Harvard" },
-    { name: "James Smith", dob: "06-01-1994", address: "House no. 42, Street 7, United States...", program: "Bachelor of Science", role: "Admin", school: "MIT" },
-    { name: "Olivia Mery", dob: "07-19-1996", address: "House no. 42, Street 7, United States...", program: "Bachelor of Science", role: "Student", school: "Harvard" },
-    { name: "Rose Sophia", dob: "08-02-1993", address: "House no. 42, Street 7, United States...", program: "Bachelor of Arts", role: "Admin", school: "Stanford" },
-    { name: "David Laid", dob: "09-01-1995", address: "House no. 42, Street 7, United States...", program: "Bachelor of Business", role: "Student", school: "MIT" },
-    { name: "James Smith", dob: "03-29-1997", address: "House no. 42, Street 7, United States...", program: "Bachelor of Fine Arts", role: "Admin", school: "Harvard" },
-    { name: "Olivia Mery", dob: "08-11-1999", address: "House no. 42, Street 7, United States...", program: "Bachelor of Business", role: "Student", school: "Stanford" },
-    { name: "Rose Sophia", dob: "12-01-1993", address: "House no. 42, Street 7, United States...", program: "Bachelor of Fine Arts", role: "Admin", school: "MIT" },
-    { name: "David Laid", dob: "10-25-1996", address: "House no. 42, Street 7, United States...", program: "Bachelor of Arts", role: "Student", school: "Stanford" },
-    { name: "James Smith", dob: "05-10-1998", address: "House no. 42, Street 7, United States...", program: "Bachelor of Fine Arts", role: "Admin", school: "Harvard" },
-    { name: "Olivia Mery", dob: "01-19-1998", address: "House no. 42, Street 7, United States...", program: "Bachelor of Science", role: "Student", school: "MIT" },
+    { name: "Olivia Mery", dob: "11-25-1996", program: "Bachelor of Arts", role: "Student", school: "Harvard", campus: "North" },
+    { name: "James Smith", dob: "06-01-1994", program: "Bachelor of Science", role: "Admin", school: "MIT", campus: "South" },
+    { name: "Olivia Mery", dob: "07-19-1996", program: "Bachelor of Science", role: "Student", school: "Harvard", campus: "South" },
+    { name: "Rose Sophia", dob: "08-02-1993", program: "Bachelor of Arts", role: "Admin", school: "Stanford", campus: "East" },
+    { name: "David Laid", dob: "09-01-1995", program: "Bachelor of Business", role: "Student", school: "MIT", campus: "North" },
+    { name: "James Smith", dob: "03-29-1997", program: "Bachelor of Fine Arts", role: "Admin", school: "Harvard", campus: "East" },
+    { name: "Olivia Mery", dob: "08-11-1999", program: "Bachelor of Business", role: "Student", school: "Stanford", campus: "North" },
+    { name: "Rose Sophia", dob: "12-01-1993", program: "Bachelor of Fine Arts", role: "Admin", school: "MIT", campus: "West" },
+    { name: "David Laid", dob: "10-25-1996", program: "Bachelor of Arts", role: "Student", school: "Stanford", campus: "East" },
+    { name: "James Smith", dob: "05-10-1998", program: "Bachelor of Fine Arts", role: "Admin", school: "Harvard", campus: "North" },
+    { name: "Olivia Mery", dob: "01-19-1998", program: "Bachelor of Science", role: "Student", school: "MIT", campus: "South" },
   ];
 
   const [Users, setUsers] = useState(initialData);
   const [selectedSchool, setSelectedSchool] = useState("");
+  const [selectedCampus, setSelectedCampus] = useState("");
   const [searchQuery, setSearchQuery] = useState(""); 
   const navigate = useNavigate();
 
   const handleSchoolFilter = (event) => {
     setSelectedSchool(event.target.value);
+  };
+
+  const handleCampusFilter = (event) => {
+    setSelectedCampus(event.target.value);
   };
 
   const handleSearchChange = (event) => {
@@ -40,11 +45,27 @@ const UsersTable = () => {
     navigate(`/student-profile`); 
   };
 
+  // Sorting function that sorts by school and then by campus
+  const sortUsers = (users) => {
+    return users.sort((a, b) => {
+      if (a.school < b.school) return -1;
+      if (a.school > b.school) return 1;
+
+      // If schools are the same, sort by campus
+      if (a.campus < b.campus) return -1;
+      if (a.campus > b.campus) return 1;
+      return 0;
+    });
+  };
+
   const filteredUsers = Users.filter((student) => {
     const matchesSchool = selectedSchool ? student.school === selectedSchool : true;
+    const matchesCampus = selectedCampus ? student.campus === selectedCampus : true;
     const matchesSearch = student.name.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesSchool && matchesSearch;
+    return matchesSchool && matchesCampus && matchesSearch;
   });
+
+  const sortedFilteredUsers = sortUsers(filteredUsers);
 
   return (
     <div className="w-full h-auto bg-white p-6 rounded-md">
@@ -70,6 +91,17 @@ const UsersTable = () => {
             <option value="MIT">MIT</option>
             <option value="Stanford">Stanford</option>
           </select>
+          <select
+            value={selectedCampus}
+            onChange={handleCampusFilter}
+            className="p-2 border rounded-md bg-white text-gray-700"
+          >
+            <option value="">Select Campus</option>
+            <option value="North">North</option>
+            <option value="South">South</option>
+            <option value="East">East</option>
+            <option value="West">West</option>
+          </select>
         </div>
       </div>
 
@@ -79,14 +111,15 @@ const UsersTable = () => {
             <tr className="text-left text-[14px] bg-[#F5F7F7] text-gray-500">
               <th className="py-2 px-4">STUDENT</th>
               <th className="py-2 px-4">DATE OF BIRTH</th>
-              <th className="py-2 px-4">ADDRESS</th>
+              <th className="py-2 px-4">SCHOOL</th>
+              <th className="py-2 px-4">CAMPUS</th>
               <th className="py-2 px-4">PROGRAM</th>
               <th className="py-2 px-4">ROLE</th>
               <th className="py-2 px-4">ACTION</th>
             </tr>
           </thead>
           <tbody>
-            {filteredUsers.map((student, index) => (
+            {sortedFilteredUsers.map((student, index) => (
               <tr key={index} className="text-[14px] text-gray-900 border-b border-gray-200">
                 <td className="py-3 px-4 flex items-center gap-3">
                   <img
@@ -97,7 +130,8 @@ const UsersTable = () => {
                   <span>{student.name}</span>
                 </td>
                 <td className="py-3 px-4">{student.dob}</td>
-                <td className="py-3 px-4">{student.address}</td>
+                <td className="py-3 px-4">{student.school}</td>
+                <td className="py-3 px-4">{student.campus}</td>
                 <td className="py-3 px-4">{student.program}</td>
                 <td className="py-3 px-4">{student.role}</td> 
                 <td className="py-3 px-4 flex items-center gap-3">

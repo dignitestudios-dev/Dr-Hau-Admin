@@ -25,7 +25,7 @@ import MedicalReportForm from "../pages/Appointments/MedicalReportForm";
 import UserMedicalDetails from "../pages/Users/UserMedicalDetail";
 import ConsentForm from "../pages/Appointments/ConsentForm";
 import AdminProfile from "../pages/Admins/AdminProfile";
-
+import CompletedEventDetails from "../pages/Events/CompletedEventDetails";
 
 export const normalRoutes = [
     {
@@ -171,6 +171,12 @@ export const normalRoutes = [
       title: "Admin Profile",
       url: "/admin-profile",
       page: <GlobalLayout page={<AdminProfile />} />,
+
+    },
+    {
+      title: "Admin Profile",
+      url: "/completed-event-details",
+      page: <GlobalLayout page={<CompletedEventDetails />} />,
 
     },
     
