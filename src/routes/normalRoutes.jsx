@@ -26,6 +26,7 @@ import UserMedicalDetails from "../pages/Users/UserMedicalDetail";
 import ConsentForm from "../pages/Appointments/ConsentForm";
 import AdminProfile from "../pages/Admins/AdminProfile";
 import CompletedEventDetails from "../pages/Events/CompletedEventDetails";
+import PhysicalExam from "../components/Appointments/PhysicalExam";
 
 export const normalRoutes = [
     {
@@ -179,6 +180,13 @@ export const normalRoutes = [
       page: <GlobalLayout page={<CompletedEventDetails />} />,
 
     },
+    {
+      title: "physical Exam",
+      url: "/physical-exam",
+      page: <GlobalLayout page={<PhysicalExam />} />,
+
+    },
+
     
 
 ]    
