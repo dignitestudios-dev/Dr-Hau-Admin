@@ -5,17 +5,17 @@ import UserListModal from "./UserListModal";
 
 const AppointmentsTable = () => {
   const data = [
-    { name: "Olivia Mery", dob: "11-25-1996", address: "House no. 42, Street 7, United States...", program: "Bachelor of Arts", status: "Scheduled" },
-    { name: "James Smith", dob: "06-01-1994", address: "House no. 42, Street 7, United States...", program: "Bachelor of Science", status: "Scheduled" },
-    { name: "Olivia Mery", dob: "07-19-1996", address: "House no. 42, Street 7, United States...", program: "Bachelor of Science", status: "Scheduled" },
-    { name: "Rose Sophia", dob: "08-02-1993", address: "House no. 42, Street 7, United States...", program: "Bachelor of Arts", status: "Not Confirmed" },
-    { name: "David Laid", dob: "09-01-1995", address: "House no. 42, Street 7, United States...", program: "Bachelor of Business", status: "Not Confirmed" },
-    { name: "James Smith", dob: "03-29-1997", address: "House no. 42, Street 7, United States...", program: "Bachelor of Fine Arts", status: "Scheduled" },
-    { name: "Olivia Mery", dob: "08-11-1999", address: "House no. 42, Street 7, United States...", program: "Bachelor of Business", status: "Scheduled" },
-    { name: "Rose Sophia", dob: "12-01-1993", address: "House no. 42, Street 7, United States...", program: "Bachelor of Fine Arts", status: "Scheduled" },
-    { name: "David Laid", dob: "10-25-1996", address: "House no. 42, Street 7, United States...", program: "Bachelor of Arts", status: "Scheduled" },
-    { name: "James Smith", dob: "05-10-1998", address: "House no. 42, Street 7, United States...", program: "Bachelor of Fine Arts", status: "Not Confirmed" },
-    { name: "Olivia Mery", dob: "01-19-1998", address: "House no. 42, Street 7, United States...", program: "Bachelor of Science", status: "Scheduled" },
+    { name: "Olivia Mery", dob: "11-25-1996", address: "House no. 42, Street 7, United States...", program: "Bachelor of Arts", status: "Scheduled", profilePic: "https://i.pravatar.cc/?img=1" },
+    { name: "James Smith", dob: "06-01-1994", address: "House no. 42, Street 7, United States...", program: "Bachelor of Science", status: "Scheduled", profilePic: "https://i.pravatar.cc/?img=2" },
+    { name: "Olivia Mery", dob: "07-19-1996", address: "House no. 42, Street 7, United States...", program: "Bachelor of Science", status: "Scheduled", profilePic: "https://i.pravatar.cc/?img=3" },
+    { name: "Rose Sophia", dob: "08-02-1993", address: "House no. 42, Street 7, United States...", program: "Bachelor of Arts", status: "Not Confirmed", profilePic: "https://i.pravatar.cc/?img=4" },
+    { name: "David Laid", dob: "09-01-1995", address: "House no. 42, Street 7, United States...", program: "Bachelor of Business", status: "Not Confirmed", profilePic: "https://i.pravatar.cc/?img=5" },
+    { name: "James Smith", dob: "03-29-1997", address: "House no. 42, Street 7, United States...", program: "Bachelor of Fine Arts", status: "Scheduled", profilePic: "https://i.pravatar.cc/?img=6" },
+    { name: "Olivia Mery", dob: "08-11-1999", address: "House no. 42, Street 7, United States...", program: "Bachelor of Business", status: "Scheduled", profilePic: "https://i.pravatar.cc/?img=7" },
+    { name: "Rose Sophia", dob: "12-01-1993", address: "House no. 42, Street 7, United States...", program: "Bachelor of Fine Arts", status: "Scheduled", profilePic: "https://i.pravatar.cc/?img=8" },
+    { name: "David Laid", dob: "10-25-1996", address: "House no. 42, Street 7, United States...", program: "Bachelor of Arts", status: "Scheduled", profilePic: "https://i.pravatar.cc/?img=9" },
+    { name: "James Smith", dob: "05-10-1998", address: "House no. 42, Street 7, United States...", program: "Bachelor of Fine Arts", status: "Not Confirmed", profilePic: "https://i.pravatar.cc/?img=10" },
+    { name: "Olivia Mery", dob: "01-19-1998", address: "House no. 42, Street 7, United States...", program: "Bachelor of Science", status: "Scheduled", profilePic: "https://i.pravatar.cc/?img=11" },
   ];
 
   const [showModal, setShowModal] = useState(false); // Modal visibility state
@@ -43,7 +43,7 @@ const AppointmentsTable = () => {
 
   // Navigate to the event details page
   const handleViewDetails = (appointment) => {
-    navigate(`/event-details`, { state: { appointment } }); // Pass the appointment data if needed
+    navigate(`/userappointmentdetails`, { state: { appointment } }); // Pass the appointment data if needed
   };
 
   return (
@@ -93,7 +93,14 @@ const AppointmentsTable = () => {
           <tbody>
             {filteredData.map((appointment, index) => (
               <tr key={index} className="text-[14px] text-gray-900 border-b border-gray-200">
-                <td className="py-3 px-4">{appointment.name}</td>
+                <td className="py-3 px-4 flex items-center">
+                  <img
+                    src={appointment.profilePic}
+                    alt="Profile"
+                    className="w-10 h-10 rounded-full object-cover mr-2"
+                  />
+                  {appointment.name}
+                </td>
                 <td className="py-3 px-4">{appointment.dob}</td>
                 <td className="py-3 px-4">{appointment.address}</td>
                 <td className="py-3 px-4">{appointment.program}</td>
