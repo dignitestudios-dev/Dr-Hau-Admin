@@ -69,18 +69,18 @@ const EventsTable = () => {
 
   const filteredData = data.filter((appointment) => {
     // Filter by status
-    const statusFilter = selectedTab === "All" || appointment.status === selectedTab;
+    const statusFilter = selectedTab === "All" || appointment?.status === selectedTab;
     // Filter by school
-    const schoolFilter = selectedSchool === "All" || appointment.school === selectedSchool;
+    const schoolFilter = selectedSchool === "All" || appointment?.school === selectedSchool;
     // Filter by campus
-    const campusFilter = selectedCampus === "All" || appointment.campus === selectedCampus;
+    const campusFilter = selectedCampus === "All" || appointment?.campus === selectedCampus;
     
     return statusFilter && schoolFilter && campusFilter;
   });
 
   // Extract unique schools and campuses from data for dropdown options
-  const schools = [...new Set(data.map((item) => item.school))];
-  const campuses = [...new Set(data.map((item) => item.campus))];
+  const schools = [...new Set(data.map((item) => item?.school))];
+  const campuses = [...new Set(data.map((item) => item?.campus))];
 
   const handleViewDetails = (status) => {
     if (status === "Upcoming" || status === "Cancelled") {
@@ -199,9 +199,9 @@ const EventsTable = () => {
                   key={index}
                   className="text-[14px] text-gray-900 border-b border-[#E5E7EB]"
                 >
-                  <td className="py-3 px-4">{appointment.date}</td>
-                  <td className="py-3 px-4">{appointment.vaccination}</td>
-                  <td className="py-3 px-4">{appointment.time}</td>
+                  <td className="py-3 px-4">{appointment?.date}</td>
+                  <td className="py-3 px-4">{appointment?.vaccination}</td>
+                  <td className="py-3 px-4">{appointment?.time}</td>
                   <td className="py-3 px-4">
                     <span
                       className={`py-1 px-3 rounded-full text-white ${
@@ -212,11 +212,11 @@ const EventsTable = () => {
                           : "bg-red-500"
                       }`}
                     >
-                      {appointment.status}
+                      {appointment?.status}
                     </span>
                   </td>
                   <td
-                    onClick={() => handleViewDetails(appointment.status)} // Call the function with status as argument
+                    onClick={() => handleViewDetails(appointment?.status)} // Call the function with status as argument
                     className="py-3 px-4 text-blue-500"
                   >
                     <p className="cursor-pointer">View details</p>

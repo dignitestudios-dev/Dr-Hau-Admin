@@ -54,9 +54,7 @@ const AppointmentsTable = () => {
           <h3 className="text-[24px] font-bold text-black">Recent Appointments</h3>
         </div>
         
-        {/* Container for the "Walk In" button and filter dropdown */}
         <div className="flex gap-4 items-center">
-          {/* Walk In Button */}
           <button
             onClick={toggleModal}
             className="flex items-center bg-black text-white p-2 rounded-md cursor-pointer"
@@ -108,11 +106,9 @@ const AppointmentsTable = () => {
                   {appointment.status}
                 </td>
                 <td className="py-3 px-4">
-                  {/* Eye icon to view details */}
                   <button onClick={() => handleViewDetails(appointment)} className="text-blue-500 mr-2">
                     <IoMdEye size={20} />
                   </button>
-                  {/* Delete icon */}
                   <button onClick={() => handleDelete(index)} className="text-red-500">
                     <IoMdTrash size={20} />
                   </button>

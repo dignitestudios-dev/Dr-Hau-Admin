@@ -51,7 +51,7 @@ const EditProfile = () => {
               <input
                 type="text"
                 name="schoolName"
-                value={formData.schoolName}
+                value={formData?.schoolName}
                 onChange={handleInputChange}
                 className="border border-black p-3 rounded-md"
                 placeholder="School Name"
@@ -63,7 +63,7 @@ const EditProfile = () => {
               <input
                 type="text"
                 name="adminName"
-                value={formData.adminName}
+                value={formData?.adminName}
                 onChange={handleInputChange}
                 className="border border-black p-3 rounded-md"
                 placeholder="Administrator Name"
@@ -75,7 +75,7 @@ const EditProfile = () => {
               <input
                 type="text"
                 name="programDepartment"
-                value={formData.programDepartment}
+                value={formData?.programDepartment}
                 onChange={handleInputChange}
                 className="border border-black p-3 rounded-md"
                 placeholder="Program Department"
@@ -87,7 +87,7 @@ const EditProfile = () => {
               <input
                 type="text"
                 name="campus"
-                value={formData.campus}
+                value={formData?.campus}
                 onChange={handleInputChange}
                 className="border border-black p-3 rounded-md"
                 placeholder="Campus"

@@ -28,8 +28,8 @@ const PasswordUpdateModal = ({ isOpen, onRequestClose }) => {
           </div>
         </div>
         <h2 className="text-2xl font-bold mb-2 text-[36px]">Congratulations!</h2>
-        <p className=" text-[#858585] lg:text-[16px] text-center">
-        Your profile setup is now complete. You can start taking full advantage of all our platform's features and services.        
+        <p className=" text-[#858585] lg:text-[16px] text-center mt-2">
+      The Profile Setup Is Now Complete.         
         </p>
       </div>
     </Modal>

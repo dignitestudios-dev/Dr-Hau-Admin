@@ -30,25 +30,25 @@ const UserMedicalDetails = () => {
         {/* Medical Problems */}
         <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
           <label className="block text-xl font-medium text-gray-700 mb-2">Significant Medical Problems</label>
-          <p className="text-lg text-gray-600">{formData.medicalProblems}</p>
+          <p className="text-lg text-gray-600">{formData?.medicalProblems}</p>
         </div>
 
         {/* Surgeries */}
         <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
           <label className="block text-xl font-medium text-gray-700 mb-2">Significant Surgeries</label>
-          <p className="text-lg text-gray-600">{formData.surgeries}</p>
+          <p className="text-lg text-gray-600">{formData?.surgeries}</p>
         </div>
 
         {/* Medications */}
         <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
           <label className="block text-xl font-medium text-gray-700 mb-2">Medications</label>
-          <p className="text-lg text-gray-600">{formData.medications}</p>
+          <p className="text-lg text-gray-600">{formData?.medications}</p>
         </div>
 
         {/* Drug Allergies */}
         <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
           <label className="block text-xl font-medium text-gray-700 mb-2">Drug Allergies</label>
-          <p className="text-lg text-gray-600">{formData.drugAllergies}</p>
+          <p className="text-lg text-gray-600">{formData?.drugAllergies}</p>
         </div>
 
         {/* Yes/No Questions */}
@@ -58,9 +58,9 @@ const UserMedicalDetails = () => {
           { label: "Do you exercise regularly?", field: "exerciseRegularly" },
           { label: "Do you eat healthy?", field: "eatHealthy" },
         ].map((item) => (
-          <div className="p-4 bg-gray-50 rounded-lg shadow-sm" key={item.field}>
-            <label className="block text-xl font-medium text-gray-700 mb-2">{item.label}</label>
-            <p className="text-lg text-gray-600">{formData[item.field]}</p>
+          <div className="p-4 bg-gray-50 rounded-lg shadow-sm" key={item?.field}>
+            <label className="block text-xl font-medium text-gray-700 mb-2">{item?.label}</label>
+            <p className="text-lg text-gray-600">{formData[item?.field]}</p>
           </div>
         ))}
 
@@ -71,9 +71,9 @@ const UserMedicalDetails = () => {
             { label: "Tobacco?", field: "tobacco" },
             { label: "Extensive Alcohol?", field: "alcohol" },
           ].map((habit) => (
-            <div className="mb-4" key={habit.field}>
-              <label className="block text-xl font-medium text-gray-700">{habit.label}</label>
-              <p className="text-lg text-gray-600">{formData.habits[habit.field]}</p>
+            <div className="mb-4" key={habit?.field}>
+              <label className="block text-xl font-medium text-gray-700">{habit?.label}</label>
+              <p className="text-lg text-gray-600">{formData?.habits[habit?.field]}</p>
             </div>
           ))}
         </div>
@@ -87,9 +87,9 @@ const UserMedicalDetails = () => {
             { label: "To moving hands/fingers?", field: "movingHands" },
             { label: "Vision or hearing difficulties?", field: "visionOrHearing" },
           ].map((limitation) => (
-            <div className="mb-4" key={limitation.field}>
-              <label className="block text-xl font-medium text-gray-700">{limitation.label}</label>
-              <p className="text-lg text-gray-600">{formData.limitations[limitation.field]}</p>
+            <div className="mb-4" key={limitation?.field}>
+              <label className="block text-xl font-medium text-gray-700">{limitation?.label}</label>
+              <p className="text-lg text-gray-600">{formData?.limitations[limitation?.field]}</p>
             </div>
           ))}
         </div>

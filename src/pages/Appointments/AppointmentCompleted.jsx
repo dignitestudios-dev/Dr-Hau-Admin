@@ -19,6 +19,8 @@ const AppointmentCompleted = () => {
     // You can handle the uploaded file here, like sending it to a server.
   };
 
+  
+
   return (
     <div className="w-full h-auto p-6 bg-gray-100 overflow-auto">
       <div className="flex items-center mb-6">
@@ -67,6 +69,13 @@ const AppointmentCompleted = () => {
               <FaUpload className="mr-2" /> {/* React Icon for Upload */}
               Upload PDF
             </button>
+
+            {/* Physical Exam Button */}
+            <button
+ onClick={() => navigate('/physical-exam')}              className="flex items-center text-white bg-black px-6 py-2 rounded-md border border-black"
+            >
+              {/* <FaUpload className="mr-2" /> */}
+Physical Exam            </button>
           </div>
         </div>
       </div>

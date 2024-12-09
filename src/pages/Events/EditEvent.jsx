@@ -59,19 +59,19 @@ const EditEvent = () => {
           >
             {eventData.status}
           </span>
-          <h4 className="text-xl text-black font-semibold mt-4">{eventData.vaccination}</h4>
-          <p className="text-sm text-gray-500">Date: {eventData.date}</p>
-          <p className="text-sm text-gray-500">Time: {eventData.time}</p>
+          <h4 className="text-xl text-black font-semibold mt-4">{eventData?.vaccination}</h4>
+          <p className="text-sm text-gray-500">Date: {eventData?.date}</p>
+          <p className="text-sm text-gray-500">Time: {eventData?.time}</p>
           
         </div>
 
         <div className="mb-6">
           <h4 className="text-lg text-black font-semibold mb-2">Booking Stats</h4>
           <ul className="text-sm text-gray-700">
-            <li>Total Booked: {eventData.bookingStats.totalBooked}</li>
-            <li>Available Spots: {eventData.bookingStats.availableSpots}</li>
-            <li>Confirmed: {eventData.bookingStats.confirmed}</li>
-            <li>Pending: {eventData.bookingStats.pending}</li>
+            <li>Total Booked: {eventData?.bookingStats?.totalBooked}</li>
+            <li>Available Spots: {eventData?.bookingStats?.availableSpots}</li>
+            <li>Confirmed: {eventData?.bookingStats?.confirmed}</li>
+            <li>Pending: {eventData?.bookingStats?.pending}</li>
           </ul>
         </div>
 
@@ -80,7 +80,7 @@ const EditEvent = () => {
           <ul className="space-y-2">
             {eventData.enrolledUsers.map((user, index) => (
               <li key={index} className="text-sm text-gray-700">
-                {user.name} - <span className={`font-semibold ${user.status === "Confirmed" ? "text-green-500" : "text-yellow-500"}`}>{user.status}</span>
+                {user?.name} - <span className={`font-semibold ${user?.status === "Confirmed" ? "text-green-500" : "text-yellow-500"}`}>{user?.status}</span>
               </li>
             ))}
           </ul>

@@ -88,10 +88,7 @@ const StudentProfile = () => {
           </div>
         </div>
 
-        {/* Appointments Section */}
-        {/* Appointments Section */}
-{/* Appointments Section */}
-{/* Appointments Section */}
+       
 <div className="rounded-lg shadow-customShadow bg-gray-50 py-4 px-6 mb-8">
   <div className="grid grid-cols-1 mb-6">
     <p className="font-semibold text-[20px] text-black">Appointment History</p>
@@ -106,13 +103,13 @@ const StudentProfile = () => {
       <div className="flex justify-between items-center mb-4">
         <div className="flex flex-col sm:flex-row sm:space-x-4">
           <div className="mb-2 sm:mb-0">
-            <p className="text-[16px] text-[#181818] font-semibold">{appointment.date}</p>
-            <p className="text-[14px] text-[#787F8C]">{appointment.time}</p>
+            <p className="text-[16px] text-[#181818] font-semibold">{appointment?.date}</p>
+            <p className="text-[14px] text-[#787F8C]">{appointment?.time}</p>
           </div>
         </div>
         
         <div className="flex justify-end items-center space-x-4">
-          <p className="text-[14px] text-[#181818] font-semibold">{appointment.details}</p>
+          <p className="text-[14px] text-[#181818] font-semibold">{appointment?.details}</p>
         </div>
       </div>
 

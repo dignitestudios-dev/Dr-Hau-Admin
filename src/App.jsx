@@ -4,6 +4,7 @@ import { Route, Routes } from "react-router-dom";
 import { AuthenticationRoutes } from "./routes/AuthenticationRoutes";
 import { normalRoutes } from "./routes/normalRoutes";
 function App() {
+  
   return (
     <Routes>
       {/* <Route path="/" exact element={<Splash />} /> */}

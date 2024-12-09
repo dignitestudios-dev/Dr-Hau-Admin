@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NotificationsModal from "../../components/Notifications/NotificationsModal";
-import SendNotificationModal from "../../components/Notifications/SendNotificationModal"; // Import the SendNotificationModal
+import SendNotificationModal from "../../components/Notifications/SendNotificationModal"; // Import SendNotificationModal
+import axios from "../../axios";
 
 const Notifications = () => {
   const [activeTab, setActiveTab] = useState("send");
   const [isNotificationsModalOpen, setIsNotificationsModalOpen] = useState(false);
   const [isSendNotificationModalOpen, setIsSendNotificationModalOpen] = useState(false); // State for SendNotificationModal
+  const [sentNotifications, setSentNotifications] = useState([]);  // State to hold sent notifications
+  const [receivedNotifications, setReceivedNotifications] = useState([]); // State to hold received notifications
 
   const openNotificationsModal = () => {
     setIsNotificationsModalOpen(true);
@@ -23,53 +26,32 @@ const Notifications = () => {
     setIsSendNotificationModalOpen(false); // Close SendNotificationModal
   };
 
-  const sentNotifications = [
-    {
-      id: 1,
-      heading: "New Notification Heading 1",
-      message:
-        "Lorem ipsum dolor sit amet consectetur. In volutpat et mattis ut tristique viverra blandit. Cras sem egestas praesent enim elementum dolor arcu.",
-      time: "10:30 AM",
-    },
-    {
-      id: 2,
-      heading: "New Notification Heading 2",
-      message:
-        "Lorem ipsum dolor sit amet consectetur. In volutpat et mattis ut tristique viverra blandit. Cras sem egestas praesent enim elementum dolor arcu.",
-      time: "09:15 AM",
-    },
-    {
-      id: 3,
-      heading: "New Notification Heading 3",
-      message:
-        "Lorem ipsum dolor sit amet consectetur. In volutpat et mattis ut tristique viverra blandit. Cras sem egestas praesent enim elementum dolor arcu.",
-      time: "08:45 AM",
-    },
-  ];
-  
-  const receivedNotifications = [
-    {
-      id: 1,
-      heading: "New Notification Heading 4",
-      message:
-        "Lorem ipsum dolor sit amet consectetur. In volutpat et mattis ut tristique viverra blandit. Cras sem egestas praesent enim elementum dolor arcu.",
-      time: "11:00 AM",
-    },
-    {
-      id: 2,
-      heading: "New Notification Heading 5",
-      message:
-        "Lorem ipsum dolor sit amet consectetur. In volutpat et mattis ut tristique viverra blandit. Cras sem egestas praesent enim elementum dolor arcu.",
-      time: "10:00 AM",
-    },
-    {
-      id: 3,
-      heading: "New Notification Heading 6",
-      message:
-        "Lorem ipsum dolor sit amet consectetur. In volutpat et mattis ut tristique viverra blandit. Cras sem egestas praesent enim elementum dolor arcu.",
-      time: "09:30 AM",
-    },
-  ];
+  // Fetch Sent and Received notifications
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        // Fetch Sent Notifications
+        const sentResponse = await axios.get("/admin/notifications");
+        if (sentResponse?.data?.success) {
+          setSentNotifications(sentResponse?.data?.data);
+        } else {
+          console.error("Failed to fetch sent notifications.");
+        }
+
+        // Fetch Received Notifications
+        const receivedResponse = await axios.get("/admin/notifications/admin");
+        if (receivedResponse?.data?.success) {
+          setReceivedNotifications(receivedResponse?.data?.data);
+        } else {
+          console.error("Failed to fetch received notifications.");
+        }
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+      }
+    };
+
+    fetchNotifications();
+  }, []); // Empty dependency array to run this effect only once on mount
 
   return (
     <div className="w-full h-auto p-6 bg-gray-100 overflow-auto">
@@ -108,16 +90,17 @@ const Notifications = () => {
         </div>
 
         <div>
+          {/* Display Sent Notifications */}
           {(activeTab === "send" ? sentNotifications : receivedNotifications).map((notification) => (
-            <div key={notification.id} className="mb-4 pb-4 flex justify-between items-start">
+            <div key={notification._id} className="mb-4 pb-4 flex justify-between items-start">
               <div className="flex-grow border-b border-[#E4E4E4] max-w-[90%]">
                 <div className="flex justify-between">
-                  <strong className="text-black">{notification.heading}</strong>
-                  <span className="text-gray-500 text-sm">{notification.time}</span>
+                  <strong className="text-black">{notification?.title}</strong>
+                  <span className="text-gray-500 text-sm">
+                    {new Date(notification?.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
                 </div>
-                <p className="list-disc text-[14px] text-[#858585] mb-2">
-                  {notification.message}
-                </p>
+                <p className="list-disc text-[14px] text-[#858585] mb-2">{notification?.message}</p>
               </div>
             </div>
           ))}
