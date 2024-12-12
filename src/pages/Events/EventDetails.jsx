@@ -116,7 +116,9 @@ const EventDetail = () => {
         {activeTab === 'details' ? (
           <div>
             <h4 className="text-[20px] font-bold text-black mb-4">
-              <p className="text-[18px] text-black font-bold mb-4">{event.description}</p>
+            <p className="text-[18px] text-black font-bold mb-4">{event.title}</p>
+
+              <p className="text-[14px] text-gray-500  mb-4">{event.description}</p>
 
               {/* Status Badge */}
               <span className={`px-3 py-2 text-[12px] rounded-full ${getStatusColor(event.status)}`}>

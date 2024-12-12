@@ -12,7 +12,6 @@ const StudentProfile = () => {
   const { userId } = useParams();
   const [userData, setUserData] = useState(null);
   const [showSSN, setShowSSN] = useState(false);
-  const [showReport, setShowReport] = useState(false);
   const [isSSNModalOpen, setIsSSNModalOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false); // Password modal state
@@ -57,12 +56,17 @@ const StudentProfile = () => {
 
   const handleReportSubmit = () => setShowReport(true);
 
+  // Navigate to the Medical History page when clicked
+  const viewMedicalHistory = () => {
+    navigate(`/usermedicaldetails/${userId}`);
+  };
+
   if (!userData) {
     return <div className="text-black p-4">Loading...</div>;
   }
 
   return (
-    <div className="w-full p-6 rounded-md  overflow-auto">
+    <div className="w-full p-6 rounded-md overflow-auto">
       <div className="flex items-center mb-4">
         <IoMdArrowBack onClick={() => navigate("/dashboard")} className="cursor-pointer text-[24px] text-gray-700 mr-2" />
         <h3 className="text-[24px] font-bold text-black">Student Profile</h3>
@@ -73,15 +77,14 @@ const StudentProfile = () => {
           <div className="grid grid-cols-1 mb-6">
             <p className="font-medium text-[20px] text-black">Personal Information</p>
           </div>
-                    {/* Profile Picture and Name */}
-                    <div className="flex items-center mb-6">
-            {/* User Profile Picture */}
+          
+          {/* Profile Picture and Name */}
+          <div className="flex items-center mb-6">
             <img
-              src={userData.profilePicture || "/path/to/default-avatar.png"} // Provide a fallback if no profile picture
+              src={userData.profilePicture || "/path/to/default-avatar.png"}
               alt="Profile"
               className="w-12 h-12 rounded-full mr-4"
             />
-            {/* User Name */}
             <p className="text-[14px] text-[#181818] font-semibold">
               {userData.firstName} {userData.lastName}
             </p>
@@ -118,70 +121,21 @@ const StudentProfile = () => {
               <p className="text-[14px] text-[#181818]">{userData.email}</p>
             </div>
             <div className="w-[300px]">
-              <p className="text-[14px] text-[#787F8C] font-semibold uppercase">Report Details</p>
+              <p className="text-[14px] text-[#787F8C] font-semibold uppercase">Medical Details</p>
               <button
-                onClick={handleReportModalToggle}
+                onClick={viewMedicalHistory}
                 className="text-blue-500 underline"
               >
-                Click to view report
+                Click to view medical details
               </button>
             </div>
           </div>
         </div>
-
-        {/* Appointment History Section */}
-        {/* <div className="rounded-lg shadow-customShadow bg-gray-50 py-4 px-6 mb-8">
-          <div className="grid grid-cols-1 mb-6">
-            <p className="font-semibold text-[20px] text-black">Appointment History</p>
-          </div>
-          {userData.appointmentHistory?.map((appointment, index) => (
-            <div
-              key={index}
-              className={`bg-white rounded-lg shadow-md p-6 mb-6 transition-all duration-300 ${index % 2 === 0 ? "bg-gray-100" : "bg-white"} hover:scale-105 hover:shadow-xl`}
-            >
-              <div className="flex justify-between items-center mb-4">
-                <div className="flex flex-col sm:flex-row sm:space-x-4">
-                  <div className="mb-2 sm:mb-0">
-                    <p className="text-[16px] text-[#181818] font-semibold">{appointment.date}</p>
-                    <p className="text-[14px] text-[#787F8C]">{appointment.time}</p>
-                  </div>
-                </div>
-                <div className="flex justify-end items-center space-x-4">
-                  <p className="text-[14px] text-[#181818] font-semibold">{appointment.details}</p>
-                </div>
-              </div>
-
-              <div className="flex justify-between items-center">
-                <span
-                  className={`text-[12px] font-semibold rounded-full py-1 px-3 ${appointment.details.includes("Checkup") ? "bg-green-200 text-green-700" : "bg-yellow-200 text-yellow-700"}`}
-                >
-                  {appointment.details.includes("Checkup") ? "Completed" : "Upcoming"}
-                </span>
-
-                <button className="text-blue-500 font-semibold hover:text-blue-600 transition-colors duration-300">
-                  View Details
-                </button>
-              </div>
-            </div>
-          ))}
-        </div> */}
       </div>
 
-      {/* Modal for SSN */}
-      <SSNModal
-        isOpen={isSSNModalOpen}
-        onClose={handleSSNModalToggle}
-        onSubmit={handlePasswordSubmit}
-      />
-
-      {/* Modal for Report */}
-      <ReportModal
-        isOpen={isReportModalOpen}
-        onClose={handleReportModalToggle}
-        onSubmit={handleReportSubmit}
-      />
-
-      {/* Password Modal */}
+      {/* Modals */}
+      <SSNModal isOpen={isSSNModalOpen} onClose={handleSSNModalToggle} onSubmit={handlePasswordSubmit} />
+      <ReportModal isOpen={isReportModalOpen} onClose={handleReportModalToggle} onSubmit={handleReportSubmit} />
       <PasswordModal
         isOpen={isPasswordModalOpen}
         onClose={() => setIsPasswordModalOpen(false)}

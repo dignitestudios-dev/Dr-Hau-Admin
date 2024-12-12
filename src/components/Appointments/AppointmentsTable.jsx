@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { IoMdArrowBack, IoMdAdd, IoMdEye, IoMdTrash } from "react-icons/io";
+import { IoMdArrowBack, IoMdAdd } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import UserListModal from "./UserListModal";
 import axios from '../../axios'; // Assuming axios is set up as provided
@@ -11,6 +11,7 @@ const AppointmentsTable = () => {
   const [loading, setLoading] = useState(true); // Loading state to show loading indicator
   const [showModal, setShowModal] = useState(false); // Modal visibility state
   const [filter, setFilter] = useState("All"); // Filter state for status
+  const [lotNumberFilter, setLotNumberFilter] = useState(""); // State for lot number filter
 
   const toggleModal = () => setShowModal(!showModal);
 
@@ -22,6 +23,8 @@ const AppointmentsTable = () => {
 
   const handleFilterChange = (e) => setFilter(e.target.value);
 
+  const handleLotNumberFilterChange = (e) => setLotNumberFilter(e.target.value); // Handle lot number filter change
+
   const handleViewDetails = (appointment) => {
     navigate(`/userappointmentdetails`, { state: { appointment } });
   };
@@ -30,8 +33,6 @@ const AppointmentsTable = () => {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        // const currentDate = "2024-12-12T10:00:00Z"; 
-
         const currentDate = new Date().toISOString(); // Get current date in ISO format
         const response = await axios.post("/admin/appointments/today", { currentDate });
 
@@ -48,10 +49,19 @@ const AppointmentsTable = () => {
     fetchAppointments();
   }, []); // Empty dependency array ensures this runs once on component mount
 
-  const filteredAppointments =
-    filter === "All"
-      ? appointments
-      : appointments.filter((appointment) => appointment.status === filter);
+  // Filter appointments based on lot number and status
+  const filteredAppointments = appointments
+    .filter((appointment) => {
+      // Filter by status if filter is not "All"
+      if (filter !== "All" && appointment.status !== filter) {
+        return false;
+      }
+      // Filter by lot number if it's provided
+      if (lotNumberFilter && !appointment.event.lotNumber.includes(lotNumberFilter)) {
+        return false;
+      }
+      return true;
+    });
 
   return (
     <div className="w-full h-auto bg-white p-6 rounded-md">
@@ -73,7 +83,7 @@ const AppointmentsTable = () => {
             Walk In
           </button>
 
-          {/* Filter Dropdown */}
+          {/* Filter by Status Dropdown */}
           <select
             value={filter}
             onChange={handleFilterChange}
@@ -83,6 +93,15 @@ const AppointmentsTable = () => {
             <option value="Scheduled">Scheduled</option>
             <option value="Not Confirmed">Not Confirmed</option>
           </select>
+
+          {/* Filter by Lot Number */}
+          <input
+            type="text"
+            value={lotNumberFilter}
+            onChange={handleLotNumberFilterChange}
+            placeholder="Filter by Lot Number"
+            className="p-2 border text-black border-gray-300 rounded-md"
+          />
         </div>
       </div>
 
@@ -126,9 +145,6 @@ const AppointmentsTable = () => {
                     <button onClick={() => handleViewDetails(appointment)} className="text-blue-500 mr-2">
                       View Details
                     </button>
-                    {/* <button onClick={() => handleDelete(index)} className="text-red-500">
-                      <IoMdTrash size={20} />
-                    </button> */}
                   </td>
                 </tr>
               ))

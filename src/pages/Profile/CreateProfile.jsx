@@ -21,6 +21,9 @@ const CreateProfile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Log formData to verify
+    console.log('Form Data:', formData);
+
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
       return;
@@ -33,6 +36,7 @@ const CreateProfile = () => {
       const response = await axios.post("/admin/school", {
         email: formData.email,
         password: formData.password,
+        confirmPassword: formData.confirmPassword, // Send confirmPassword explicitly
       });
 
       setIsLoading(false); // Reset loading state

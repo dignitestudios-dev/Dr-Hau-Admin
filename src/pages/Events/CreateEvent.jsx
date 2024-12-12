@@ -27,15 +27,15 @@ const CreateEvent = () => {
     "Unitek": ["Bakersfield", "Concord", "Fremont", "Hayward", "Reno", "Sacramento", "San Jose", "South San Francisco"]
   };
 
-  const [eventName, setEventName] = useState("");
-  const [eventDate, setEventDate] = useState("");
-  const [eventStartTime, setEventStartTime] = useState("");
-  const [eventEndTime, setEventEndTime] = useState("");
-  const [eventDescription, setEventDescription] = useState("");
+  const [eventName, setEventName] = useState("");  // Event name state
+  const [eventDate, setEventDate] = useState("");  // Event date state
+  const [eventStartTime, setEventStartTime] = useState("");  // Event start time state
+  const [eventEndTime, setEventEndTime] = useState("");  // Event end time state
+  const [eventDescription, setEventDescription] = useState("");  // Event description state
   const [selectedSchool, setSelectedSchool] = useState("");  // School dropdown selection
   const [selectedCampus, setSelectedCampus] = useState("");  // Campus dropdown selection
-  const [selectedVaccinations, setSelectedVaccinations] = useState([]); // Store selected vaccinations
-  const [error, setError] = useState(""); // For handling form errors
+  const [selectedVaccinations, setSelectedVaccinations] = useState([]);  // Store selected vaccinations
+  const [error, setError] = useState("");  // For handling form errors
 
   const vaccinationsList = [
     { id: "TDAP", name: "Tdap" },
@@ -71,6 +71,7 @@ const CreateEvent = () => {
 
     // Create the event data with school and campus
     const eventData = {
+      title: eventName,  // Change this from eventName to title
       schoolName: selectedSchool,  // Use the school name directly from dropdown
       schoolCampus: selectedCampus,  // Use the campus name directly from dropdown
       description: eventDescription,
@@ -245,18 +246,6 @@ const CreateEvent = () => {
               ))}
             </div>
           </div>
-
-          {/* Display Selected Vaccinations */}
-          {/* {selectedVaccinations.length > 0 && (
-            <div className="mt-4">
-              <h4 className="text-sm font-medium text-black">Selected Vaccinations:</h4>
-              <ul className="list-disc pl-5 text-black">
-                {selectedVaccinations.map((vaccination) => (
-                  <li key={vaccination}>{vaccination}</li>
-                ))}
-              </ul>
-            </div>
-          )} */}
 
           {/* Submit Button */}
           <div className="flex justify-end mt-6">

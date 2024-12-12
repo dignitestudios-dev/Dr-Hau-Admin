@@ -158,7 +158,7 @@ export const normalRoutes = [
     },
     {
       title: "usermedicaldetails",
-      url: "/usermedicaldetails",
+      url: "/usermedicaldetails/:userId",
       page: <GlobalLayout page={<UserMedicalDetails />} />,
 
     },
