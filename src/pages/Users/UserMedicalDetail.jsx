@@ -26,7 +26,7 @@ const UserMedicalDetails = () => {
   }, [userId]);
 
   if (!userData) {
-    return <div>Loading user data...</div>;
+    return <div className="text-black p-4">Loading user data...</div>;
   }
 
   const { medicalHistory, profilePicture, email, firstName, lastName, dob, lastSSN, schoolName, programAttended, campus, gender, isProfileComplete } = userData;

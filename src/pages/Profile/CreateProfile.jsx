@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import ProfileCompleteModal from "../../components/onboarding/ProfileCompleteModal";
 import axios from "../../axios";
+import { FiEye, FiEyeOff } from "react-icons/fi";  // Importing eye icons from react-icons
 
 const CreateProfile = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +13,9 @@ const CreateProfile = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);  // Loading state for API call
+
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // State for confirm password
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -73,7 +77,6 @@ const CreateProfile = () => {
             Fill the details below to create admin profile
           </h3>
 
-          {/* Email Field */}
           <div className="flex flex-col mb-4">
             <label className="mb-2 font-medium">Campus Email</label>
             <input
@@ -87,11 +90,11 @@ const CreateProfile = () => {
             />
           </div>
 
-          {/* Password Field */}
-          <div className="flex flex-col mb-4">
+          {/* Password Input */}
+          <div className="flex flex-col mb-4 relative">
             <label className="mb-2 font-medium">Password</label>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               name="password"
               value={formData.password}
               onChange={handleInputChange}
@@ -99,13 +102,20 @@ const CreateProfile = () => {
               placeholder="Password"
               required
             />
+            {/* Eye Icon to toggle password visibility */}
+            <span
+              className="absolute right-3 top-14 transform -translate-y-1/2 cursor-pointer"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+            </span>
           </div>
 
-          {/* Confirm Password Field */}
-          <div className="flex flex-col mb-6">
+          {/* Confirm Password Input */}
+          <div className="flex flex-col mb-6 relative">
             <label className="mb-2 font-medium">Confirm Password</label>
             <input
-              type="password"
+              type={showConfirmPassword ? "text" : "password"}
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleInputChange}
@@ -113,25 +123,29 @@ const CreateProfile = () => {
               placeholder="Confirm Password"
               required
             />
+            {/* Eye Icon to toggle confirm password visibility */}
+            <span
+              className="absolute right-3 top-14 transform -translate-y-1/2 cursor-pointer"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            >
+              {showConfirmPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+            </span>
           </div>
 
-          {/* Error Message */}
           {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
-          {/* Submit Button */}
           <div className="mt-6 flex justify-center sm:justify-start mb-2">
             <button
               type="submit"
               className="bg-black text-white py-2 px-6 rounded-lg w-full sm:w-[200px] transition-all"
-              disabled={isLoading}  // Disable button while loading
+              disabled={isLoading}  
             >
-              {isLoading ? "Creating..." : "Save Profile"}
+              {isLoading ? "Creating..." : "Send to Email"}
             </button>
           </div>
         </form>
       </div>
 
-      {/* Modal Component */}
       <ProfileCompleteModal
         isOpen={isModalOpen}
         onRequestClose={closeModal}

@@ -17,6 +17,7 @@ const StudentProfile = () => {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false); // Password modal state
   const [password, setPassword] = useState(""); // Password input
   const [passwordError, setPasswordError] = useState(""); // Error message for incorrect password
+  const [isAuthorizedToViewMedical, setIsAuthorizedToViewMedical] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -46,6 +47,7 @@ const StudentProfile = () => {
       if (response.data.success) {
         setShowSSN(true); // Show SSN if password is correct
         setIsPasswordModalOpen(false); // Close password modal
+        setIsAuthorizedToViewMedical(true); // Allow access to medical history
       } else {
         setPasswordError("Incorrect password. Please try again.");
       }
@@ -58,7 +60,11 @@ const StudentProfile = () => {
 
   // Navigate to the Medical History page when clicked
   const viewMedicalHistory = () => {
-    navigate(`/usermedicaldetails/${userId}`);
+    if (isAuthorizedToViewMedical) {
+      navigate(`/usermedicaldetails/${userId}`);
+    } else {
+      setIsPasswordModalOpen(true);
+    }
   };
 
   if (!userData) {
@@ -126,7 +132,7 @@ const StudentProfile = () => {
                 onClick={viewMedicalHistory}
                 className="text-blue-500 underline"
               >
-                Click to view medical details
+                {isAuthorizedToViewMedical ? "Click to view medical details" : "Password required to view"}
               </button>
             </div>
           </div>
