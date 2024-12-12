@@ -1,27 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { IoMdArrowBack, IoMdEye, IoMdTrash } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
+import axios from "../../axios"; // Import axios instance for API calls
 
 const AdminsTable = () => {
-  // Sample data with updated fields: admin name, program attended, campus, email, and school name
-  const initialData = [
-    { name: "Olivia Mery", program: "Bachelor of Arts", campus: "Harvard Yard", email: "olivia.mery@harvard.edu", school: "Harvard" },
-    { name: "James Smith", program: "Bachelor of Science", campus: "Main Campus", email: "james.smith@mit.edu", school: "MIT" },
-    { name: "Olivia Mery", program: "Bachelor of Science", campus: "Harvard Yard", email: "olivia.mery@harvard.edu", school: "Harvard" },
-    { name: "Rose Sophia", program: "Bachelor of Arts", campus: "Main Quad", email: "rose.sophia@stanford.edu", school: "Stanford" },
-    { name: "David Laid", program: "Bachelor of Business", campus: "Main Campus", email: "david.laid@mit.edu", school: "MIT" },
-    { name: "James Smith", program: "Bachelor of Fine Arts", campus: "Harvard Yard", email: "james.smith@harvard.edu", school: "Harvard" },
-    { name: "Olivia Mery", program: "Bachelor of Business", campus: "Main Quad", email: "olivia.mery@stanford.edu", school: "Stanford" },
-    { name: "Rose Sophia", program: "Bachelor of Fine Arts", campus: "Main Campus", email: "rose.sophia@mit.edu", school: "MIT" },
-    { name: "David Laid", program: "Bachelor of Arts", campus: "Main Quad", email: "david.laid@stanford.edu", school: "Stanford" },
-    { name: "James Smith", program: "Bachelor of Fine Arts", campus: "Harvard Yard", email: "james.smith@harvard.edu", school: "Harvard" },
-    { name: "Olivia Mery", program: "Bachelor of Science", campus: "Main Campus", email: "olivia.mery@mit.edu", school: "MIT" },
-  ];
-
-  const [Admins, setAdmins] = useState(initialData); // Admin data state
+  const [Admins, setAdmins] = useState([]); // Admin data state
   const [selectedSchool, setSelectedSchool] = useState(""); // Selected school for filter
   const [searchQuery, setSearchQuery] = useState(""); // Search query state
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState(""); // Error state
   const navigate = useNavigate();
+
+  // Fetch admins from the API
+  useEffect(() => {
+    const fetchAdmins = async () => {
+      setLoading(true); // Set loading to true before making the request
+      try {
+        const response = await axios.get("/admin/school"); // Make the API call
+        if (response.data.success) {
+          setAdmins(response.data.data); // Update admins data with the API response
+        } else {
+          setError("Failed to fetch admin data.");
+        }
+      } catch (error) {
+        setError("Error fetching data from the API.");
+      } finally {
+        setLoading(false); // Set loading to false after the request is complete
+      }
+    };
+
+    fetchAdmins(); // Call the function to fetch admins data
+  }, []); // Empty dependency array ensures this runs only once when the component mounts
 
   const handleSchoolFilter = (event) => {
     setSelectedSchool(event.target.value);
@@ -31,18 +40,19 @@ const AdminsTable = () => {
     setSearchQuery(event.target.value);
   };
 
-  const handleDelete = (index) => {
-    const updatedAdmins = Admins.filter((_, i) => i !== index);
+  const handleDelete = (id) => {
+    const updatedAdmins = Admins.filter((admin) => admin.id !== id);
     setAdmins(updatedAdmins);
   };
 
   const handleViewProfile = (admin) => {
-    navigate(`/admin-profile`);
+    navigate(`/admin-profile/${admin.id}`); // Pass the admin ID in the route
   };
+  
 
   const filteredAdmins = Admins.filter((admin) => {
-    const matchesSchool = selectedSchool ? admin.school === selectedSchool : true;
-    const matchesSearch = admin.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSchool = selectedSchool ? admin.schoolName === selectedSchool : true;
+    const matchesSearch = admin.adminName.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesSchool && matchesSearch;
   });
 
@@ -68,23 +78,19 @@ const AdminsTable = () => {
             className="p-2 border rounded-md bg-white text-gray-700"
           >
             <option value="">Select School</option>
-            <option value="Harvard">Harvard</option>
-            <option value="MIT">MIT</option>
-            <option value="Stanford">Stanford</option>
-          </select>
-          {/* Dropdown to filter by campus */}
-          <select
-            value={selectedSchool}
-            onChange={handleSchoolFilter}
-            className="p-2 border rounded-md bg-white text-gray-700"
-          >
-            <option value="">Select Campus</option>
-            <option value="Harvard">Campus 1</option>
-            <option value="MIT">Campus 2</option>
-            <option value="Stanford">Campus 3</option>
+            {/* Dynamically populate school options based on the admins data */}
+            {Admins.map((admin, index) => (
+              <option key={index} value={admin.schoolName}>
+                {admin.schoolName}
+              </option>
+            ))}
           </select>
         </div>
       </div>
+
+      {/* Display loading message or error */}
+      {loading && <p className="text-black">Loading admins...</p>}
+      {error && <p className="text-red-500">{error}</p>}
 
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white shadow-md rounded-lg">
@@ -103,31 +109,31 @@ const AdminsTable = () => {
               <tr key={index} className="text-[14px] text-gray-900 border-b border-gray-200">
                 <td className="py-3 px-4 flex items-center gap-3">
                   <img
-                    src={`https://i.pravatar.cc/40?img=${index + 1}`}
-                    alt={admin.name}
+                    src={admin.profilePicture || "https://i.pravatar.cc/40?img=1"} // Use profile picture if available
+                    alt={admin.adminName}
                     className="w-8 h-8 rounded-full"
                   />
-                  <span>{admin.name}</span>
+                  <span>{admin.adminName}</span>
                 </td>
                 <td className="py-3 px-4">{admin.email}</td>
-                <td className="py-3 px-4">{admin.program}</td>
+                <td className="py-3 px-4">{admin.programDep}</td>
                 <td className="py-3 px-4">{admin.campus}</td>
-                <td className="py-3 px-4">{admin.school}</td>
+                <td className="py-3 px-4">{admin.schoolName}</td>
                 <td className="py-3 px-4 flex items-center gap-3">
                   <button
                     onClick={() => handleViewProfile(admin)}
                     className="text-blue-500 hover:text-blue-700"
                     title="View Profile"
                   >
-                    <IoMdEye size={20} />
+                   View Details
                   </button>
-                  <button
-                    onClick={() => handleDelete(index)}
+                  {/* <button
+                    onClick={() => handleDelete(admin.id)}
                     className="text-red-500 hover:text-red-700"
                     title="Delete Admin"
                   >
                     <IoMdTrash size={20} />
-                  </button>
+                  </button> */}
                 </td>
               </tr>
             ))}

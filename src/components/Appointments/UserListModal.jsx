@@ -1,189 +1,154 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "../../axios"; // Assuming axios is set up
 
-// UserListModal Component to display form where admin can select user, event, and vaccination
-const UserListModal = ({ isVisible, onClose, users = [], events = [], vaccinations = [], onSubmit }) => {
+const UserListModal = ({ isVisible, onClose }) => {
   if (!isVisible) return null;
 
-  // State to track selected values
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [selectedEvent, setSelectedEvent] = useState("");
-  const [selectedVaccination, setSelectedVaccination] = useState("");
+  const [lotNumber, setLotNumber] = useState(""); // For lot number input
+  const [userEmail, setUserEmail] = useState(""); // For user email input
+  const [selectedVaccinations, setSelectedVaccinations] = useState([]); // Store selected vaccinations
+  const [errorMessage, setErrorMessage] = useState(""); // Error message state
+  const [loading, setLoading] = useState(false); // Loading state
+  const [currentDate, setCurrentDate] = useState(""); // Store current date in ISO format
 
-  // State for search terms
-  const [userSearchTerm, setUserSearchTerm] = useState("");
-  const [eventSearchTerm, setEventSearchTerm] = useState("");
-  const [vaccinationSearchTerm, setVaccinationSearchTerm] = useState("");
+  // Predefined vaccinations list (could be extended or fetched from an API)
+  const vaccinationsList = [
+    { id: "FLU", name: "FLU" },
+    { id: "TDAP", name: "TDAP" },
+    { id: "MMR", name: "MMR" },
+    { id: "Rabies", name: "Rabies" },
+    { id: "Hepatitis B", name: "Hepatitis B" },
+    { id: "Polio", name: "Polio" },
+  ];
 
-  // State to handle dropdown visibility
-  const [showUserDropdown, setShowUserDropdown] = useState(false);
-  const [showEventDropdown, setShowEventDropdown] = useState(false);
-  const [showVaccinationDropdown, setShowVaccinationDropdown] = useState(false);
+  // Initialize the current date when the component mounts
+  useEffect(() => {
+    const today = new Date().toISOString();
+    setCurrentDate(today); // Set the current date as the initial value
+  }, []); // Empty dependency array ensures this only runs once when the component mounts
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedUser || !selectedEvent || !selectedVaccination) {
-      alert("Please select a user, event, and vaccination");
+
+    if (!userEmail || selectedVaccinations.length === 0 || !lotNumber) {
+      setErrorMessage("Please provide user email, lot number, and vaccination(s).");
       return;
     }
-    onSubmit(selectedUser, selectedEvent, selectedVaccination);
-    onClose();
+
+    setErrorMessage("");
+    setLoading(true);
+
+    const requestBody = {
+      vaccinations: selectedVaccinations,
+      currentDate: currentDate, 
+      lotNumber: lotNumber,
+      userEmail: userEmail,
+    };
+
+    try {
+      const response = await axios.post("/admin/appointment/walkin", requestBody);
+
+      if (response.data.success) {
+        alert("Walk-in appointment created successfully");
+        onClose(); 
+      } else {
+        setErrorMessage(response.data.message || "An unexpected error occurred. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error submitting walk-in appointment:", error);
+
+      if (error.response && error.response.data) {
+        setErrorMessage(error.response.data.message || "An error occurred. Please try again.");
+      } else {
+        setErrorMessage("An unexpected error occurred. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Filtered users, events, and vaccinations based on search term
-  const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(userSearchTerm.toLowerCase())
-  );
-
-  const filteredEvents = events.filter((event) =>
-    event.name.toLowerCase().includes(eventSearchTerm.toLowerCase())
-  );
-
-  const filteredVaccinations = vaccinations.filter((vaccination) =>
-    vaccination.name.toLowerCase().includes(vaccinationSearchTerm.toLowerCase())
-  );
-
-  // Handle user selection from the dropdown
-  const handleUserSelect = (userId, userName) => {
-    setSelectedUser(userId);
-    setUserSearchTerm(userName);
-    setShowUserDropdown(false);
-  };
-
-  // Handle event selection from the dropdown
-  const handleEventSelect = (eventId, eventName) => {
-    setSelectedEvent(eventId);
-    setEventSearchTerm(eventName);
-    setShowEventDropdown(false);
-  };
-
-  // Handle vaccination selection from the dropdown
-  const handleVaccinationSelect = (vaccinationId, vaccinationName) => {
-    setSelectedVaccination(vaccinationId);
-    setVaccinationSearchTerm(vaccinationName);
-    setShowVaccinationDropdown(false);
+  const handleVaccinationChange = (e) => {
+    const selectedOptions = Array.from(e.target.selectedOptions, (option) => option.value);
+    setSelectedVaccinations(selectedOptions);
   };
 
   return (
     <div className="fixed inset-0 bg-gray-800 bg-opacity-60 flex justify-center items-center z-50">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h3 className="text-2xl font-semibold text-gray-900 mb-6 text-center">Select User, Event, and Vaccination</h3>
+        <h3 className="text-2xl font-semibold text-gray-900 mb-6 text-center">
+          Create Walk-In Appointment
+        </h3>
+
+        {errorMessage && (
+          <div className="mb-4 p-4 bg-red-100 text-red-700 border border-red-300 rounded-md">
+            <strong>Error:</strong> {errorMessage}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
-          {/* User selection */}
-          <div className="mb-5 relative">
-            <label htmlFor="user" className="block text-sm font-medium text-gray-700">Select User</label>
-            {/* Search input for users */}
+          <div className="mb-5">
+            <label htmlFor="lotNumber" className="block text-sm font-medium text-gray-700">
+              Lot Number
+            </label>
             <input
+              id="lotNumber"
               type="text"
-              placeholder="Search User"
-              className="mt-2 block w-full px-4 py-3 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150 ease-in-out"
-              value={userSearchTerm}
-              onChange={(e) => {
-                setUserSearchTerm(e.target.value);
-                setShowUserDropdown(true); // Show the dropdown when typing
-              }}
-              onFocus={() => setShowUserDropdown(true)} // Show dropdown on focus
+              placeholder="Enter Lot Number"
+              className="mt-2 block w-full px-4 py-3 border text-black border-gray-300 rounded-md shadow-sm"
+              value={lotNumber}
+              onChange={(e) => setLotNumber(e.target.value)}
+              disabled={loading}
             />
-            {/* User dropdown */}
-            {showUserDropdown && userSearchTerm && (
-              <ul className="absolute mt-1 w-full max-h-48 overflow-y-auto bg-white shadow-lg border border-gray-300 rounded-md z-10">
-                {filteredUsers.map((user) => (
-                  <li
-                    key={user.id}
-                    onClick={() => handleUserSelect(user.id, user.name)}
-                    className="cursor-pointer hover:bg-gray-100 px-4 py-2 text-black"
-                  >
-                    {user.name}
-                  </li>
-                ))}
-                {filteredUsers.length === 0 && (
-                  <li className="px-4 py-2 text-gray-500">No results found</li>
-                )}
-              </ul>
-            )}
           </div>
 
-          {/* Event selection */}
-          <div className="mb-5 relative">
-            <label htmlFor="event" className="block text-sm font-medium text-gray-700">Select Event</label>
-            {/* Search input for events */}
+          <div className="mb-5">
+            <label htmlFor="userEmail" className="block text-sm font-medium text-gray-700">
+              User Email
+            </label>
             <input
-              type="text"
-              placeholder="Search Event"
-              className="mt-2 block w-full px-4 py-3 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150 ease-in-out"
-              value={eventSearchTerm}
-              onChange={(e) => {
-                setEventSearchTerm(e.target.value);
-                setShowEventDropdown(true);
-              }}
-              onFocus={() => setShowEventDropdown(true)}
+              id="userEmail"
+              type="email"
+              placeholder="Enter User Email"
+              className="mt-2 block w-full px-4 py-3 border text-black border-gray-300 rounded-md shadow-sm"
+              value={userEmail}
+              onChange={(e) => setUserEmail(e.target.value)}
+              disabled={loading}
             />
-            {/* Event dropdown */}
-            {showEventDropdown && eventSearchTerm && (
-              <ul className="absolute mt-1 w-full max-h-48 overflow-y-auto bg-white shadow-lg border border-gray-300 rounded-md z-10">
-                {filteredEvents.map((event) => (
-                  <li
-                    key={event.id}
-                    onClick={() => handleEventSelect(event.id, event.name)}
-                    className="cursor-pointer hover:bg-gray-100 px-4 py-2 text-black"
-                  >
-                    {event.name}
-                  </li>
-                ))}
-                {filteredEvents.length === 0 && (
-                  <li className="px-4 py-2 text-gray-500">No results found</li>
-                )}
-              </ul>
-            )}
           </div>
 
-          {/* Vaccination selection */}
-          <div className="mb-5 relative">
-            <label htmlFor="vaccination" className="block text-sm font-medium text-gray-700">Select Vaccination</label>
-            {/* Search input for vaccinations */}
-            <input
-              type="text"
-              placeholder="Search Vaccination"
-              className="mt-2 block w-full px-4 py-3 text-black border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150 ease-in-out"
-              value={vaccinationSearchTerm}
-              onChange={(e) => {
-                setVaccinationSearchTerm(e.target.value);
-                setShowVaccinationDropdown(true);
-              }}
-              onFocus={() => setShowVaccinationDropdown(true)}
-            />
-            {/* Vaccination dropdown */}
-            {showVaccinationDropdown && vaccinationSearchTerm && (
-              <ul className="absolute mt-1 w-full max-h-48 overflow-y-auto bg-white shadow-lg border border-gray-300 rounded-md z-10">
-                {filteredVaccinations.map((vaccination) => (
-                  <li
-                    key={vaccination.id}
-                    onClick={() => handleVaccinationSelect(vaccination.id, vaccination.name)}
-                    className="cursor-pointer hover:bg-gray-100 px-4 py-2 text-black"
-                  >
-                    {vaccination.name}
-                  </li>
-                ))}
-                {filteredVaccinations.length === 0 && (
-                  <li className="px-4 py-2 text-gray-500">No results found</li>
-                )}
-              </ul>
-            )}
+          <div className="mb-5">
+            <label htmlFor="vaccinations" className="block text-sm font-medium text-gray-700">
+              Select Vaccination(s)
+            </label>
+            <select
+              id="vaccinations"
+              multiple
+              className="mt-2 block w-full px-4 py-3 text-black border border-gray-300 rounded-md shadow-sm"
+              value={selectedVaccinations}
+              onChange={handleVaccinationChange}
+              disabled={loading}
+            >
+              {vaccinationsList.map((vaccination) => (
+                <option key={vaccination.id} value={vaccination.id}>
+                  {vaccination.name}
+                </option>
+              ))}
+            </select>
           </div>
 
-          {/* Submit button */}
           <div className="mt-8 flex justify-end space-x-4">
             <button
               type="submit"
-              className="text-white bg-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 py-2 px-6 rounded-md transition duration-300"
+              className={`text-white py-2 px-6 rounded-md transition duration-300 ${loading ? "bg-gray-500" : "bg-black"}`}
+              disabled={loading}
             >
-              Submit
+              {loading ? "Submitting..." : "Submit"}
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="text-gray-700 bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50 py-2 px-6 rounded-md transition duration-300"
+              className="text-gray-700 bg-gray-200 hover:bg-gray-300 py-2 px-6 rounded-md transition duration-300"
             >
               Close
             </button>

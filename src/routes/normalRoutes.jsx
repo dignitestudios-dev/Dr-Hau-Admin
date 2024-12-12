@@ -46,12 +46,12 @@ export const normalRoutes = [
     },
     {
       title: "Student Profile",
-      url: "/student-profile",
+      url: "/student-profile/:userId",
       page: <GlobalLayout page={<StudentProfile />} />,
     },
     {
       title: "Events Details",
-      url: "/event-details",
+      url: "/event-details/:eventId",
       page: <GlobalLayout page={<EventDetails />} />,
     },
     {
@@ -146,7 +146,7 @@ export const normalRoutes = [
     },
     {
       title: "Appointment Completed",
-      url: "/appointment-completed",
+      url: "/appointment-completed/:id",
       page: <GlobalLayout page={<AppointmentCompleted />} />,
 
     },
@@ -170,7 +170,7 @@ export const normalRoutes = [
     },
     {
       title: "Admin Profile",
-      url: "/admin-profile",
+      url: "/admin-profile/:adminId",
       page: <GlobalLayout page={<AdminProfile />} />,
 
     },

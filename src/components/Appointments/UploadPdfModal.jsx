@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FaFileUpload } from "react-icons/fa"; // Icon for file upload
+import { FaFileUpload } from "react-icons/fa"; 
 
 const UploadPdfModal = ({ isOpen, onClose }) => {
   const [selectedPdf, setSelectedPdf] = useState(null);
@@ -10,8 +10,6 @@ const UploadPdfModal = ({ isOpen, onClose }) => {
   };
 
   const handleUpload = () => {
-    // Logic to upload the file
-    console.log("Uploading file:", selectedPdf);
     onClose();
   };
 
@@ -20,17 +18,14 @@ const UploadPdfModal = ({ isOpen, onClose }) => {
       {isOpen && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg w-96 md:w-1/3 max-w-lg shadow-lg">
-            {/* Icon above the heading */}
             <div className="flex justify-center mb-4">
               <FaFileUpload size={40} className="text-black" />
             </div>
           
             
-            {/* Custom File Choose Button */}
             <div className="flex flex-col items-center mb-6">
               <label className=" text-gray-700 mb-4">Upload a PDF file:</label>
               <div className="relative">
-                {/* Hidden file input */}
                 <input
                   type="file"
                   accept="application/pdf"
@@ -38,7 +33,6 @@ const UploadPdfModal = ({ isOpen, onClose }) => {
                   id="file-upload"
                   className="absolute inset-0 opacity-0 cursor-pointer"
                 />
-                {/* Custom "Choose File" button */}
                 <label
                   htmlFor="file-upload"
                   className="px-6 py-2 bg-black text-white rounded-md w-full text-center cursor-pointer hover:bg-gray-800 transition duration-300 mt-4"
@@ -53,7 +47,6 @@ const UploadPdfModal = ({ isOpen, onClose }) => {
               )}
             </div>
 
-            {/* Action buttons */}
             <div className="flex justify-between gap-4">
               <button
                 onClick={onClose}

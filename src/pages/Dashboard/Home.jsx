@@ -16,7 +16,7 @@ const Home = () => {
         {/* <div className="w-full bg-white p-6 rounded-[18px] shadow-xl ">
           <DashboardAppointmentsTable />
         </div> */}
-        <div className="w-full bg-white p-6 rounded-[18px] ">
+        <div className="w-full bg-white  rounded-[18px] ">
           <DashboardEvents />
         </div>
 

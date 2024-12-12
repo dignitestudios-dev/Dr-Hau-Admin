@@ -1,59 +1,69 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { IoMdArrowBack, IoMdAdd, IoMdEye, IoMdTrash } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import UserListModal from "./UserListModal";
+import axios from '../../axios'; // Assuming axios is set up as provided
 
 const AppointmentsTable = () => {
-  const data = [
-    { name: "Olivia Mery", dob: "11-25-1996", address: "House no. 42, Street 7, United States...", program: "Bachelor of Arts", status: "Scheduled", profilePic: "https://i.pravatar.cc/?img=1" },
-    { name: "James Smith", dob: "06-01-1994", address: "House no. 42, Street 7, United States...", program: "Bachelor of Science", status: "Scheduled", profilePic: "https://i.pravatar.cc/?img=2" },
-    { name: "Olivia Mery", dob: "07-19-1996", address: "House no. 42, Street 7, United States...", program: "Bachelor of Science", status: "Scheduled", profilePic: "https://i.pravatar.cc/?img=3" },
-    { name: "Rose Sophia", dob: "08-02-1993", address: "House no. 42, Street 7, United States...", program: "Bachelor of Arts", status: "Not Confirmed", profilePic: "https://i.pravatar.cc/?img=4" },
-    { name: "David Laid", dob: "09-01-1995", address: "House no. 42, Street 7, United States...", program: "Bachelor of Business", status: "Not Confirmed", profilePic: "https://i.pravatar.cc/?img=5" },
-    { name: "James Smith", dob: "03-29-1997", address: "House no. 42, Street 7, United States...", program: "Bachelor of Fine Arts", status: "Scheduled", profilePic: "https://i.pravatar.cc/?img=6" },
-    { name: "Olivia Mery", dob: "08-11-1999", address: "House no. 42, Street 7, United States...", program: "Bachelor of Business", status: "Scheduled", profilePic: "https://i.pravatar.cc/?img=7" },
-    { name: "Rose Sophia", dob: "12-01-1993", address: "House no. 42, Street 7, United States...", program: "Bachelor of Fine Arts", status: "Scheduled", profilePic: "https://i.pravatar.cc/?img=8" },
-    { name: "David Laid", dob: "10-25-1996", address: "House no. 42, Street 7, United States...", program: "Bachelor of Arts", status: "Scheduled", profilePic: "https://i.pravatar.cc/?img=9" },
-    { name: "James Smith", dob: "05-10-1998", address: "House no. 42, Street 7, United States...", program: "Bachelor of Fine Arts", status: "Not Confirmed", profilePic: "https://i.pravatar.cc/?img=10" },
-    { name: "Olivia Mery", dob: "01-19-1998", address: "House no. 42, Street 7, United States...", program: "Bachelor of Science", status: "Scheduled", profilePic: "https://i.pravatar.cc/?img=11" },
-  ];
-
-  const [showModal, setShowModal] = useState(false); // Modal visibility state
-  const [selectedUsers, setSelectedUsers] = useState(data); // Users to display in the modal
-  const [filter, setFilter] = useState("All"); // Filter state for status
   const navigate = useNavigate();
+  
+  const [appointments, setAppointments] = useState([]); // State for holding appointments data
+  const [loading, setLoading] = useState(true); // Loading state to show loading indicator
+  const [showModal, setShowModal] = useState(false); // Modal visibility state
+  const [filter, setFilter] = useState("All"); // Filter state for status
 
-  const toggleModal = () => {
-    setShowModal(!showModal); // Toggle modal visibility
-  };
+  const toggleModal = () => setShowModal(!showModal);
 
   const handleDelete = (index) => {
-    const updatedUsers = selectedUsers.filter((_, i) => i !== index);
-    setSelectedUsers(updatedUsers);
+    // Assuming there is a delete functionality here if needed
+    const updatedAppointments = appointments.filter((_, i) => i !== index);
+    setAppointments(updatedAppointments);
   };
 
-  const handleFilterChange = (e) => {
-    setFilter(e.target.value);
-  };
+  const handleFilterChange = (e) => setFilter(e.target.value);
 
-  const filteredData =
-    filter === "All"
-      ? data
-      : data.filter((appointment) => appointment.status === filter);
-
-  // Navigate to the event details page
   const handleViewDetails = (appointment) => {
-    navigate(`/userappointmentdetails`, { state: { appointment } }); // Pass the appointment data if needed
+    navigate(`/userappointmentdetails`, { state: { appointment } });
   };
+
+  // Fetch appointments from the API
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        // const currentDate = "2024-12-12T10:00:00Z"; 
+
+        const currentDate = new Date().toISOString(); // Get current date in ISO format
+        const response = await axios.post("/admin/appointments/today", { currentDate });
+
+        if (response.data.success) {
+          setAppointments(response.data.data); // Set the fetched appointments in state
+        }
+      } catch (error) {
+        console.error("Error fetching appointments:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAppointments();
+  }, []); // Empty dependency array ensures this runs once on component mount
+
+  const filteredAppointments =
+    filter === "All"
+      ? appointments
+      : appointments.filter((appointment) => appointment.status === filter);
 
   return (
     <div className="w-full h-auto bg-white p-6 rounded-md">
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center">
-          <IoMdArrowBack onClick={() => navigate("/dashboard")} className="text-[24px] text-gray-700 mr-2" />
+          <IoMdArrowBack
+            onClick={() => navigate("/dashboard")}
+            className="text-[24px] text-gray-700 mr-2"
+          />
           <h3 className="text-[24px] font-bold text-black">Recent Appointments</h3>
         </div>
-        
+
         <div className="flex gap-4 items-center">
           <button
             onClick={toggleModal}
@@ -89,41 +99,47 @@ const AppointmentsTable = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredData.map((appointment, index) => (
-              <tr key={index} className="text-[14px] text-gray-900 border-b border-gray-200">
-                <td className="py-3 px-4 flex items-center">
-                  <img
-                    src={appointment.profilePic}
-                    alt="Profile"
-                    className="w-10 h-10 rounded-full object-cover mr-2"
-                  />
-                  {appointment.name}
-                </td>
-                <td className="py-3 px-4">{appointment.dob}</td>
-                <td className="py-3 px-4">{appointment.address}</td>
-                <td className="py-3 px-4">{appointment.program}</td>
-                <td className={`py-3 px-4 ${appointment.status === "Scheduled" ? "text-blue-500" : "text-red-500"}`}>
-                  {appointment.status}
-                </td>
-                <td className="py-3 px-4">
-                  <button onClick={() => handleViewDetails(appointment)} className="text-blue-500 mr-2">
-                    <IoMdEye size={20} />
-                  </button>
-                  <button onClick={() => handleDelete(index)} className="text-red-500">
-                    <IoMdTrash size={20} />
-                  </button>
+            {loading ? (
+              <tr>
+                <td colSpan="6" className="py-4 text-center">
+                  <span className="text-gray-500">Loading...</span>
                 </td>
               </tr>
-            ))}
+            ) : (
+              filteredAppointments.map((appointment, index) => (
+                <tr key={index} className="text-[14px] text-gray-900 border-b border-gray-200">
+                  <td className="py-3 px-4 flex items-center">
+                    <img
+                      src={appointment?.user?.profilePicture}
+                      alt="Profile"
+                      className="w-10 h-10 rounded-full object-cover mr-2"
+                    />
+                    {appointment?.user?.firstName} {appointment?.user?.lastName}
+                  </td>
+                  <td className="py-3 px-4">{new Date(appointment?.user?.dob).toLocaleDateString()}</td>
+                  <td className="py-3 px-4">{appointment?.user?.address}</td>
+                  <td className="py-3 px-4">{appointment?.user?.programAttended}</td>
+                  <td className={`py-3 px-4 ${appointment?.status === "Scheduled" ? "text-blue-500" : "text-red-500"}`}>
+                    {appointment?.status}
+                  </td>
+                  <td className="py-3 px-4">
+                    <button onClick={() => handleViewDetails(appointment)} className="text-blue-500 mr-2">
+                      View Details
+                    </button>
+                    {/* <button onClick={() => handleDelete(index)} className="text-red-500">
+                      <IoMdTrash size={20} />
+                    </button> */}
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
 
-      {/* Modal component */}
       <UserListModal
         isVisible={showModal}
         onClose={toggleModal}
-        users={selectedUsers}
         onDelete={handleDelete}
       />
     </div>

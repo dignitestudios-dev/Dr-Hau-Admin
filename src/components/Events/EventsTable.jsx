@@ -1,92 +1,84 @@
-import React, { useState } from "react";
-import { IoMdArrowBack } from "react-icons/io";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "../../axios";
 
 const EventsTable = () => {
-  const data = [
-    {
-      date: "Jun 12, 2024",
-      vaccination: "Hepatitis B vaccination",
-      time: "08:00 A.M - 02:00 P.M",
-      status: "Upcoming",
-      school: "Harvard University",
-      campus: "Cambridge",
-    },
-    {
-      date: "Jul 15, 2024",
-      vaccination: "Rabies vaccination",
-      time: "09:00 A.M - 12:00 P.M",
-      status: "Upcoming",
-      school: "Stanford University",
-      campus: "Stanford",
-    },
-    {
-      date: "Jul 30, 2024",
-      vaccination: "MMR vaccination",
-      time: "02:00 P.M - 05:30 P.M",
-      status: "Upcoming",
-      school: "Harvard University",
-      campus: "Cambridge",
-    },
-    {
-      date: "May 28, 2024",
-      vaccination: "Hepatitis B vaccination",
-      time: "09:00 A.M - 11:30 A.M",
-      status: "Completed",
-      school: "Stanford University",
-      campus: "Stanford",
-    },
-    {
-      date: "May 01, 2024",
-      vaccination: "Flu vaccination",
-      time: "03:00 P.M - 06:00 P.M",
-      status: "Completed",
-      school: "Harvard University",
-      campus: "Cambridge",
-    },
-    {
-      date: "Apr 18, 2024",
-      vaccination: "Hepatitis B vaccination",
-      time: "09:00 A.M - 12:00 P.M",
-      status: "Completed",
-      school: "Stanford University",
-      campus: "Stanford",
-    },
-    {
-      date: "Apr 01, 2024",
-      vaccination: "Flu vaccination",
-      time: "03:00 P.M - 06:00 P.M",
-      status: "Cancelled",
-      school: "Harvard University",
-      campus: "Cambridge",
-    },
-  ];
-
-  const [selectedTab, setSelectedTab] = useState("All");
+  const [events, setEvents] = useState([]); // To store the events data
+  const [loading, setLoading] = useState(true); // To handle loading state
+  const [error, setError] = useState(null); // To handle errors
+  const [selectedTab, setSelectedTab] = useState("All"); // Default to "All"
   const [selectedSchool, setSelectedSchool] = useState("All");
   const [selectedCampus, setSelectedCampus] = useState("All");
+  const [selectedDate, setSelectedDate] = useState(getCurrentDate()); // Set default to current date
   const navigate = useNavigate();
 
-  const filteredData = data.filter((appointment) => {
-    // Filter by status
-    const statusFilter = selectedTab === "All" || appointment?.status === selectedTab;
-    // Filter by school
-    const schoolFilter = selectedSchool === "All" || appointment?.school === selectedSchool;
-    // Filter by campus
-    const campusFilter = selectedCampus === "All" || appointment?.campus === selectedCampus;
-    
+  // Function to get current date in the proper format (e.g., 2024-10-03)
+  function getCurrentDate() {
+    const date = new Date();
+    return date.toISOString().split("T")[0]; // Get the date in YYYY-MM-DD format
+  }
+
+  // Fetch events data from the API whenever the selected date or any filter changes
+  useEffect(() => {
+    const fetchEvents = async () => {
+      setLoading(true); // Set loading to true before making the request
+      try {
+        const response = await axios.post('/admin/events', {
+          currentDate: selectedDate, // Include the selected date in the request body
+        });
+
+        if (response.data.success) {
+          setEvents(response.data.data); // Store events data in state
+        } else {
+          setError("No events found for the selected date.");
+        }
+      } catch (error) {
+        setError("Error fetching events. Please try again later.");
+      } finally {
+        setLoading(false); // Set loading to false once the request is finished
+      }
+    };
+
+    fetchEvents();
+  }, [selectedDate]); // Re-fetch events whenever selectedDate changes
+
+  // Filter events based on status, school, and campus
+  const filteredEvents = events.filter((event) => {
+    const statusFilter = selectedTab === "All" || event.status.toLowerCase() === selectedTab.toLowerCase();
+    const schoolFilter = selectedSchool === "All" || event.school === selectedSchool;
+    const campusFilter = selectedCampus === "All" || event.campus === selectedCampus;
+
     return statusFilter && schoolFilter && campusFilter;
   });
 
-  // Extract unique schools and campuses from data for dropdown options
-  const schools = [...new Set(data.map((item) => item?.school))];
-  const campuses = [...new Set(data.map((item) => item?.campus))];
+  // Extract unique schools and campuses for dropdown options
+  const schools = [...new Set(events.map((event) => event.school))];
+  const campuses = [...new Set(events.map((event) => event.campus))];
 
-  const handleViewDetails = (status) => {
-    if (status === "Upcoming" || status === "Cancelled") {
-      navigate("/event-details"); // Redirect to event details page for Upcoming or Cancelled
-    } else {
-      navigate("/completed-event-details"); // Redirect to appointment completed page for other statuses
+  // const handleViewDetails = (status) => {
+  //   if (status === "Upcoming" || status === "Cancelled") {
+  //     navigate("/event-details"); // Redirect for Upcoming or Cancelled
+  //   } else {
+  //     navigate("/completed-event-details"); // Redirect for Completed
+  //   }
+  // };
+
+
+  const handleViewDetails = (eventId, status) => {
+    console.log("is-- ",status)
+    navigate(`/event-details/${eventId}`, { state: { status: status } }); 
+  };
+  
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "upcoming":
+        return "bg-yellow-300"; 
+      case "cancelled":
+        return "bg-red-500"; 
+      case "completed":
+        return "bg-green-500"; 
+      default:
+        return "bg-gray-200";
     }
   };
 
@@ -98,47 +90,52 @@ const EventsTable = () => {
         </div>
       </div>
 
-      {/* Tabs and Filters Section */}
+      {/* Date Picker */}
       <div className="w-full h-auto bg-white p-6 rounded-md">
+        {/* <div className="flex justify-between items-center mb-4">
+          <div className="flex gap-6">
+            <label htmlFor="event-date" className="text-gray-700 font-medium">Select Date</label>
+            <input
+              type="date"
+              id="event-date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)} // Update the date when the user selects a new one
+              className="p-2 border rounded-md text-black"
+            />
+          </div>
+        </div> */}
+
+        {/* Display the selected date in the header */}
+        {/* <div className="mb-4">
+          <p className="text-lg font-medium text-gray-700">
+            Showing events for: <span className="font-bold">{new Date(selectedDate).toLocaleDateString()}</span>
+          </p>
+        </div> */}
+
+        {/* Tabs and Filters Section */}
         <div className="flex justify-between items-center mb-2">
           {/* Event Status Tabs */}
           <div className="flex gap-6 text-[14px] border-b">
             <button
-              className={`pb-2 ${
-                selectedTab === "All"
-                  ? "text-black border-b-2 border-black font-bold"
-                  : "text-gray-500"
-              }`}
+              className={`pb-2 ${selectedTab === "All" ? "text-black border-b-2 border-black font-bold" : "text-gray-500"}`}
               onClick={() => setSelectedTab("All")}
             >
               All
             </button>
             <button
-              className={`pb-2 ${
-                selectedTab === "Upcoming"
-                  ? "text-orange-500 border-b-2 border-black font-bold"
-                  : "text-gray-500"
-              }`}
+              className={`pb-2 ${selectedTab === "Upcoming" ? "text-yellow-500 border-b-2 border-black font-bold" : "text-gray-500"}`}
               onClick={() => setSelectedTab("Upcoming")}
             >
               Upcoming
             </button>
             <button
-              className={`pb-2 ${
-                selectedTab === "Completed"
-                  ? "text-green-500 border-b-2 border-black font-bold"
-                  : "text-gray-500"
-              }`}
+              className={`pb-2 ${selectedTab === "Completed" ? "text-green-500 border-b-2 border-black font-bold" : "text-gray-500"}`}
               onClick={() => setSelectedTab("Completed")}
             >
               Completed
             </button>
             <button
-              className={`pb-2 ${
-                selectedTab === "Cancelled"
-                  ? "text-red-500 border-b-2 border-black font-bold"
-                  : "text-gray-500"
-              }`}
+              className={`pb-2 ${selectedTab === "Cancelled" ? "text-red-500 border-b-2 border-black font-bold" : "text-gray-500"}`}
               onClick={() => setSelectedTab("Cancelled")}
             >
               Cancelled
@@ -146,9 +143,20 @@ const EventsTable = () => {
           </div>
 
           {/* Filters - Positioned to the right */}
+       
+          
           <div className="flex gap-6">
+          <div className="flex items-center gap-4">
+            {/* <label htmlFor="event-date" className="text-gray-700 font-medium">Select Date</label> */}
+            <input
+              type="date"
+              id="event-date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)} 
+              className="p-2 border rounded-md text-black"
+            />
+          </div>
             <div className="flex flex-col">
-              {/* <label className="font-medium text-sm text-black">School</label> */}
               <select
                 value={selectedSchool}
                 onChange={(e) => setSelectedSchool(e.target.value)}
@@ -164,7 +172,6 @@ const EventsTable = () => {
             </div>
 
             <div className="flex flex-col">
-              {/* <label className="font-medium text-sm text-black">Campus</label> */}
               <select
                 value={selectedCampus}
                 onChange={(e) => setSelectedCampus(e.target.value)}
@@ -181,6 +188,10 @@ const EventsTable = () => {
           </div>
         </div>
 
+        {/* Display loading message or error */}
+        {loading && <p className="text-black">Loading...</p>}
+        {error && <p className="text-red-500">{error}</p>}
+
         {/* Table for events */}
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white border-collapse">
@@ -194,32 +205,29 @@ const EventsTable = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredData.map((appointment, index) => (
+              {filteredEvents.map((event, index) => (
                 <tr
                   key={index}
                   className="text-[14px] text-gray-900 border-b border-[#E5E7EB]"
                 >
-                  <td className="py-3 px-4">{appointment?.date}</td>
-                  <td className="py-3 px-4">{appointment?.vaccination}</td>
-                  <td className="py-3 px-4">{appointment?.time}</td>
+                  <td className="py-3 px-4">{new Date(selectedDate).toLocaleDateString()}</td>
+                  <td className="py-3 px-4">{event.description}</td>
+                  <td className="py-3 px-4">
+                    {new Date(event.timeFrom).toLocaleTimeString()} -{" "}
+                    {new Date(event.timeTo).toLocaleTimeString()}
+                  </td>
                   <td className="py-3 px-4">
                     <span
-                      className={`py-1 px-3 rounded-full text-white ${
-                        appointment.status === "Upcoming"
-                          ? "bg-orange-500"
-                          : appointment.status === "Completed"
-                          ? "bg-green-500"
-                          : "bg-red-500"
-                      }`}
+                      className={`py-1 px-3 rounded-full text-white ${getStatusClass(event.status)}`}
                     >
-                      {appointment?.status}
+                      {event.status}
                     </span>
                   </td>
                   <td
-                    onClick={() => handleViewDetails(appointment?.status)} // Call the function with status as argument
-                    className="py-3 px-4 text-blue-500"
+onClick={() => handleViewDetails(event._id, event.status)}
+className="py-3 px-4 text-blue-500 cursor-pointer"
                   >
-                    <p className="cursor-pointer">View details</p>
+                    View details
                   </td>
                 </tr>
               ))}

@@ -62,11 +62,11 @@ export const sidebarArr = [
         url: "/users",
         icon: <FiUsers />,
       },
-      {
-        title: "Students",
-        url: "/students",
-        icon: <FiUsers />,
-      },
+      // {
+      //   title: "Students",
+      //   url: "/students",
+      //   icon: <FiUsers />,
+      // },
       // {
       //   title: "Appointments",
       //   url: "/appointments",

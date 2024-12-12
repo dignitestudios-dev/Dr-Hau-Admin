@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { FaFileAlt, FaUpload } from 'react-icons/fa'; // Importing React Icons
 import PdfUploadModal from '../../components/Appointments/UploadPdfModal';
 
 const AppointmentCompleted = () => {
   const navigate = useNavigate();
+  const location = useLocation(); // To access the passed state
+  const { appointment } = location.state || {};
+  console.log(appointment)
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state for PDF upload
 
   // Open the modal
@@ -50,8 +53,8 @@ const AppointmentCompleted = () => {
             </ul>
           </div>
 
-          {/* Buttons Container (Flexbox for side-by-side layout) */}
-          <div className="flex space-x-4">
+          {appointment?.status === "Not Confirmed" && (
+            <div className="flex space-x-4">
             {/* View Report Button */}
             <button
               onClick={() => navigate("/medicalreportform")}
@@ -77,6 +80,8 @@ const AppointmentCompleted = () => {
               {/* <FaUpload className="mr-2" /> */}
 Physical Exam            </button>
           </div>
+          )}
+
         </div>
       </div>
 
