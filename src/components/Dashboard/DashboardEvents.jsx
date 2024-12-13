@@ -12,13 +12,11 @@ const DashboardEvents = () => {
   const [selectedDate, setSelectedDate] = useState(getCurrentDate()); // Set default to current date
   const navigate = useNavigate();
 
-  // Function to get current date in the proper format (e.g., 2024-10-03)
   function getCurrentDate() {
     const date = new Date();
     return date.toISOString().split("T")[0]; // Get the date in YYYY-MM-DD format
   }
 
-  // Fetch events data from the API whenever the selected date or any filter changes
   useEffect(() => {
     const fetchEvents = async () => {
       setLoading(true); // Set loading to true before making the request
@@ -43,17 +41,17 @@ const DashboardEvents = () => {
   }, [selectedDate]); // Re-fetch events whenever selectedDate changes
 
   // Filter events based on status, school, and campus
-  const filteredEvents = events.filter((event) => {
-    const statusFilter = selectedTab === "All" || event.status.toLowerCase() === selectedTab.toLowerCase();
-    const schoolFilter = selectedSchool === "All" || event.school === selectedSchool;
-    const campusFilter = selectedCampus === "All" || event.campus === selectedCampus;
+  const filteredEvents = events?.filter((event) => {
+    const statusFilter = selectedTab === "All" || event?.status?.toLowerCase() === selectedTab.toLowerCase();
+    const schoolFilter = selectedSchool === "All" || event?.school === selectedSchool;
+    const campusFilter = selectedCampus === "All" || event?.campus === selectedCampus;
 
     return statusFilter && schoolFilter && campusFilter;
   });
 
   // Extract unique schools and campuses for dropdown options
-  const schools = [...new Set(events.map((event) => event.school))];
-  const campuses = [...new Set(events.map((event) => event.campus))];
+  const schools = [...new Set(events.map((event) => event?.school))];
+  const campuses = [...new Set(events.map((event) => event?.campus))];
 
   // const handleViewDetails = (status) => {
   //   if (status === "Upcoming" || status === "Cancelled") {

@@ -78,7 +78,7 @@ const EditEvent = () => {
         <div className="mb-6">
           <h4 className="text-lg text-black font-semibold mb-2">Enrolled Users</h4>
           <ul className="space-y-2">
-            {eventData.enrolledUsers.map((user, index) => (
+            {eventData.enrolledUsers?.map((user, index) => (
               <li key={index} className="text-sm text-gray-700">
                 {user?.name} - <span className={`font-semibold ${user?.status === "Confirmed" ? "text-green-500" : "text-yellow-500"}`}>{user?.status}</span>
               </li>

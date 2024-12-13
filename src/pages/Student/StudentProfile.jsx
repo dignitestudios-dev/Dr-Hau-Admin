@@ -92,7 +92,7 @@ const StudentProfile = () => {
               className="w-12 h-12 rounded-full mr-4"
             />
             <p className="text-[14px] text-[#181818] font-semibold">
-              {userData.firstName} {userData.lastName}
+              {userData?.firstName} {userData?.lastName}
             </p>
           </div>
 
@@ -103,11 +103,11 @@ const StudentProfile = () => {
             </div>
             <div className="w-[300px]">
               <p className="text-[14px] text-[#787F8C] font-semibold uppercase">Date of Birth</p>
-              <p className="text-[14px] text-[#181818]">{new Date(userData.dob).toLocaleDateString()}</p>
+              <p className="text-[14px] text-[#181818]">{new Date(userData?.dob).toLocaleDateString()}</p>
             </div>
             <div className="w-[300px]">
               <p className="text-[14px] text-[#787F8C] font-semibold uppercase">Program Attended</p>
-              <p className="text-[14px] text-[#181818]">{userData.programAttended}</p>
+              <p className="text-[14px] text-[#181818]">{userData?.programAttended}</p>
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mb-6">
@@ -124,7 +124,7 @@ const StudentProfile = () => {
             </div>
             <div className="w-[300px]">
               <p className="text-[14px] text-[#787F8C] font-semibold uppercase">Email</p>
-              <p className="text-[14px] text-[#181818]">{userData.email}</p>
+              <p className="text-[14px] text-[#181818]">{userData?.email}</p>
             </div>
             <div className="w-[300px]">
               <p className="text-[14px] text-[#787F8C] font-semibold uppercase">Medical Details</p>

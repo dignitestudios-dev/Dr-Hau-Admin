@@ -19,8 +19,8 @@ const UpdatePassword = () => {
   const [isUpdated, setIsUpdated] = useState(false); 
   const [resetToken, setResetToken] = useState(null); 
 
-  const email = localStorage.getItem("email"); 
-  const storedResetToken = localStorage.getItem("resetToken"); 
+  const email = localStorage?.getItem("email"); 
+  const storedResetToken = localStorage?.getItem("resetToken"); 
 
   useEffect(() => {
     if (!storedResetToken) {
@@ -54,7 +54,7 @@ const UpdatePassword = () => {
     setSuccessMessage(null);
 
     try {
-      const response = await axios.post("/auth/updatePassOTP", {
+      const response = await axios?.post("/auth/updatePassOTP", {
         email,
         password,
         confirmPassword,
@@ -65,7 +65,7 @@ const UpdatePassword = () => {
         setSuccessMessage("Password updated successfully.");
         setIsUpdated(true); 
         // Clear reset token from localStorage after successful update
-        localStorage.removeItem("resetToken");
+        localStorage?.removeItem("resetToken");
 
         setTimeout(() => {
           navigate("/login"); 

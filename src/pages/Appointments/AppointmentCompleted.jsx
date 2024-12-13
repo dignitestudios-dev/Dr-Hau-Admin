@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { FaFileAlt, FaUpload } from 'react-icons/fa'; // Importing React Icons
 import PdfUploadModal from '../../components/Appointments/UploadPdfModal';
 
 const AppointmentCompleted = () => {
   const navigate = useNavigate();
+  const {id} = useParams()
   const location = useLocation(); // To access the passed state
   const { appointment } = location.state || {};
   console.log(appointment)
@@ -53,11 +54,11 @@ const AppointmentCompleted = () => {
             </ul>
           </div>
 
-          {appointment?.status === "Not Confirmed" && (
+          {appointment?.appointment?.adminStatus === "completed" && (
             <div className="flex space-x-4">
             {/* View Report Button */}
             <button
-              onClick={() => navigate("/medicalreportform")}
+              onClick={() => navigate(`/medicalreportform/${appointment?.appointment?.id}`)}
               className="flex items-center text-white bg-black px-6 py-2 rounded-md border border-black"
             >
               <FaFileAlt className="mr-2" /> {/* React Icon for Document */}

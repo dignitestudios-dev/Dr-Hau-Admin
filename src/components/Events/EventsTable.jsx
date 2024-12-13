@@ -23,7 +23,7 @@ const EventsTable = () => {
     const fetchEvents = async () => {
       setLoading(true); // Set loading to true before making the request
       try {
-        const response = await axios.post('/admin/events', {
+        const response = await axios.post('/admin/events?page=1&limit=50', {
           currentDate: selectedDate, // Include the selected date in the request body
         });
 
@@ -65,7 +65,7 @@ const EventsTable = () => {
 
 
   const handleViewDetails = (eventId, status) => {
-    console.log("is-- ",status)
+    
     navigate(`/event-details/${eventId}`, { state: { status: status } }); 
   };
   
@@ -178,7 +178,7 @@ const EventsTable = () => {
                 className="p-2 border rounded-md text-black"
               >
                 <option value="All">All Campuses</option>
-                {campuses.map((campus, index) => (
+                {campuses?.map((campus, index) => (
                   <option key={index} value={campus}>
                     {campus}
                   </option>
@@ -198,33 +198,33 @@ const EventsTable = () => {
             <thead>
               <tr className="text-left text-[14px] bg-[#F5F7F7] text-gray-500">
                 <th className="py-2 px-4">DATE</th>
-                <th className="py-2 px-4">VACCINATION</th>
+                <th className="py-2 px-4">TITLE</th>
                 <th className="py-2 px-4">TIME</th>
                 <th className="py-2 px-4">STATUS</th>
                 <th className="py-2 px-4"></th>
               </tr>
             </thead>
             <tbody>
-              {filteredEvents.map((event, index) => (
+              {filteredEvents?.map((event, index) => (
                 <tr
                   key={index}
                   className="text-[14px] text-gray-900 border-b border-[#E5E7EB]"
                 >
                   <td className="py-3 px-4">{new Date(selectedDate).toLocaleDateString()}</td>
-                  <td className="py-3 px-4">{event.description}</td>
+                  <td className="py-3 px-4">{event?.title}</td>
                   <td className="py-3 px-4">
-                    {new Date(event.timeFrom).toLocaleTimeString()} -{" "}
-                    {new Date(event.timeTo).toLocaleTimeString()}
+                    {new Date(event?.timeFrom).toLocaleTimeString()} -{" "}
+                    {new Date(event?.timeTo).toLocaleTimeString()}
                   </td>
                   <td className="py-3 px-4">
                     <span
-                      className={`py-1 px-3 rounded-full text-white ${getStatusClass(event.status)}`}
+                      className={`py-1 px-3 rounded-full text-white ${getStatusClass(event?.status)}`}
                     >
-                      {event.status}
+                      {event?.status}
                     </span>
                   </td>
                   <td
-onClick={() => handleViewDetails(event._id, event.status)}
+onClick={() => handleViewDetails(event._id, event?.status)}
 className="py-3 px-4 text-blue-500 cursor-pointer"
                   >
                     View details

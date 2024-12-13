@@ -27,6 +27,7 @@ import ConsentForm from "../pages/Appointments/ConsentForm";
 import AdminProfile from "../pages/Admins/AdminProfile";
 import CompletedEventDetails from "../pages/Events/CompletedEventDetails";
 import PhysicalExam from "../components/Appointments/PhysicalExam";
+import ChangePassword from "../pages/Settings/ChangePassword";
 
 export const normalRoutes = [
     {
@@ -152,7 +153,7 @@ export const normalRoutes = [
     },
     {
       title: "Medical Report Form",
-      url: "/medicalreportform",
+      url: "/medicalreportform/:id",
       page: <GlobalLayout page={<MedicalReportForm />} />,
 
     },
@@ -184,6 +185,12 @@ export const normalRoutes = [
       title: "physical Exam",
       url: "/physical-exam",
       page: <GlobalLayout page={<PhysicalExam />} />,
+
+    },
+    {
+      title: "Update Password",
+      url: "/change-password",
+      page: <GlobalLayout page={<ChangePassword />} />,
 
     },
 

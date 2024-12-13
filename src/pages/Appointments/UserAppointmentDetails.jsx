@@ -4,6 +4,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import axios from '../../axios'; // Ensure axios instance is imported
 import ApproveModal from "../../components/Appointments/ApproveModal";
 import RejectModal from "../../components/Appointments/RejectModal";
+import MarkAsCompletedModal from "../../components/Appointments/MarkAsCompletedModal";
+import { ErrorToast, SuccessToast } from "../../components/Global/Toaster";
 
 const UserAppointmentDetails = () => {
   const navigate = useNavigate();
@@ -15,7 +17,8 @@ const UserAppointmentDetails = () => {
   const [error, setError] = useState(null);
   const [approvalStatus, setApprovalStatus] = useState(null);
   const [showApproveModal, setShowApproveModal] = useState(false);  // Track visibility of Approve Modal
-  const [showRejectModal, setShowRejectModal] = useState(false);    // Track visibility of Reject Modal
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [ showCompleteModal, setShowCompleteModal] = useState(false);
 
   useEffect(() => {
     if (appointmentId) {
@@ -51,15 +54,36 @@ const UserAppointmentDetails = () => {
       const response = await axios.post('/admin/appointment/approvalStatus', requestBody);
       if (response.data.success) {
         setApprovalStatus(approval);
-        alert(response.data.message);
-      } else {
-        alert("Failed to update approval status.");
+        SuccessToast(response.data.message);
       }
     } catch (err) {
-      alert("Error occurred while updating approval status.");
+      console.error(err);
+      ErrorToast(err.response.data.message)
+    }
+  };
+
+  const handleComplete = async (approval) => {
+    const currentDate = new Date().toISOString();
+    
+    const requestBody = {
+      date: currentDate,
+      appointmentId: appointmentId,
+      status: true
+    };
+
+    try {
+      const response = await axios.post('/admin/appointment/status', requestBody);
+      if (response.data.success) {
+        SuccessToast(response.data.message);
+        setShowCompleteModal(false)
+      }
+    } catch (err) {
+      ErrorToast(err.response.data.message)
       console.error(err);
     }
   };
+
+  
 
   // Loading or error handling UI
   if (loading) {
@@ -96,6 +120,9 @@ const UserAppointmentDetails = () => {
 
   const data = appointmentData && appointmentData.user ? appointmentData.user : {};
   const event = appointmentData?.event;
+
+  // Check if vaccinations array is empty
+  const vaccinations = appointmentData?.vaccinations || [];
 
   return (
     <div className="w-full p-6 bg-gray-100 h-auto overflow-auto mt-1">
@@ -145,49 +172,76 @@ const UserAppointmentDetails = () => {
         <div className="bg-white rounded-lg p-6 mt-8 space-y-4">
           <h4 className="text-xl font-semibold text-gray-800">Vaccinations</h4>
           <ul className="list-disc pl-5">
-            {appointmentData?.vaccinations?.map((vaccination, index) => (
-              <li key={index} className="text-sm text-gray-700">{vaccination}</li>
-            ))}
+            {vaccinations.length > 0 ? (
+              vaccinations.map((vaccination, index) => (
+                <li key={index} className="text-sm text-gray-700">{vaccination}</li>
+              ))
+            ) : (
+              <p className="text-sm text-gray-500">No vaccinations recorded.</p>
+            )}
           </ul>
         </div>
 
-        <div className="flex justify-end space-x-4 mt-8">
-          {/* Approve Button */}
-          {approvalStatus === 'approved' ? (
-            <button
-              disabled
-              className="bg-green-500 text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform hover:scale-105"
-            >
-              Approved
-            </button>
-          ) : (
-            <button
-              onClick={() => setShowApproveModal(true)}  // Open Approve Modal
-              disabled={approvalStatus === 'approved'}
-              className="bg-green-500 text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform hover:scale-105"
-            >
-              Approve
-            </button>
-          )}
+        {
+          appointmentData?.status === "completed" ? (
+            <></>
+          ) :(
+            <>
+            {vaccinations.length > 0 && (
+              <div className="flex justify-end space-x-4 mt-8">
+    
+    <button
+                    onClick={() => setShowCompleteModal(true)}
+                    // disabled={approvalStatus === 'rejected'}
+                    className="bg-green-500 text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform hover:scale-105"
+                  >
+                    Mark as Completed
+                  </button>
+                {/* Approve Button */}
+                {approvalStatus === 'approved' ? (
+                  <button
+                    disabled
+                    className="bg-green-500 text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform hover:scale-105"
+                  >
+                    Approved
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setShowApproveModal(true)}  // Open Approve Modal
+                    disabled={approvalStatus === 'approved'}
+                    className="bg-green-500 text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform hover:scale-105"
+                  >
+                    Approve
+                  </button>
+                )}
+    
+                {/* Reject Button */}
+                {approvalStatus === 'rejected' ? (
+                  <button
+                    disabled
+                    className="bg-red-500 text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform hover:scale-105"
+                  >
+                    Rejected
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setShowRejectModal(true)}  // Open Reject Modal
+                    disabled={approvalStatus === 'rejected'}
+                    className="bg-red-500 text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform hover:scale-105"
+                  >
+                    Reject
+                  </button>
+                )}
+    
+    
+              </div>
+            )}
+            </>
+          )
+        }
 
-          {/* Reject Button */}
-          {approvalStatus === 'rejected' ? (
-            <button
-              disabled
-              className="bg-red-500 text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform hover:scale-105"
-            >
-              Rejected
-            </button>
-          ) : (
-            <button
-              onClick={() => setShowRejectModal(true)}  // Open Reject Modal
-              disabled={approvalStatus === 'rejected'}
-              className="bg-red-500 text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform hover:scale-105"
-            >
-              Reject
-            </button>
-          )}
-        </div>
+        {/* Conditional Rendering for Approve and Reject Buttons */}
+        
       </div>
 
       {/* Approve Modal */}
@@ -203,6 +257,10 @@ const UserAppointmentDetails = () => {
         onConfirm={() => { handleApproval(false); setShowRejectModal(false); }}  // Confirm rejection
         onCancel={() => setShowRejectModal(false)}  // Cancel rejection
       />
+
+      <MarkAsCompletedModal show={showCompleteModal}
+        onConfirm={() => { handleComplete(false); setShowCompleteModal(false); }}  // Confirm rejection
+        onCancel={() => setShowCompleteModal(false)}/>
     </div>
   );
 };

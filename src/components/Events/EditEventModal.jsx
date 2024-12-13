@@ -53,7 +53,7 @@ const EditEventModal = ({ isOpen, onRequestClose, eventData, onUpdateEvent }) =>
     try {
       const response = await axios.post(`/admin/event/${eventData._id}`, updatedEvent);
       if (response.data.success) {
-        onUpdateEvent(response.data.data); 
+        onUpdateEvent(); 
         onRequestClose(); 
       } else {
         setError('Failed to update event. Please try again later.');

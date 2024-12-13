@@ -5,7 +5,7 @@ import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 
 const EventAppointmentsTable = ({ eventId }) => {
   const [appointments, setAppointments] = useState([]);
-  console.log("zppointment~~", appointments)
+  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -14,12 +14,13 @@ const EventAppointmentsTable = ({ eventId }) => {
 
   // Fetch appointments when component is mounted or eventId changes
   useEffect(() => {
-    const fetchAppointments = async (page) => {
+    const fetchAppointments = async () => {
       try {
         setLoading(true)
-        const response = await axios.get(`/admin/events/${eventId}?page=${page}&limit=10`);
+        const response = await axios.get(`/admin/events/${eventId}?page=${currentPage}&limit=60`);
         if (response.data.success) {
           setAppointments(response.data.data); 
+          setTotalPages(response.data.totalPages)
         } else {
           setError("No appointments found");
         }
@@ -30,6 +31,7 @@ const EventAppointmentsTable = ({ eventId }) => {
       }
     };
 
+    
     fetchAppointments();
   }, [eventId,currentPage]);
 
@@ -89,10 +91,10 @@ const EventAppointmentsTable = ({ eventId }) => {
                 <td className="py-3 px-4">{appointment.user.programAttended}</td>
                 <td
                   className={`py-3 px-4 ${
-                    appointment.status === "Scheduled" ? "text-blue-500" : "text-red-500"
+                    appointment?.appointment?.adminStatus === "completed" ? "text-blue-500" : "text-red-500"
                   }`}
                 >
-                  {appointment.status}
+                  {appointment?.appointment?.adminStatus}
                 </td>
               </tr>
             ))}

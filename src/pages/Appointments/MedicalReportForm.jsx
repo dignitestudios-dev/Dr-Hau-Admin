@@ -1,53 +1,81 @@
+import axios from "../../axios";
 import React, { useState } from "react";
 import { CiPen } from "react-icons/ci";
+import { useParams } from "react-router-dom";
 
 
 const MedicalReportForm = () => {
+    const {id} = useParams()
+    const currentDate = new Date().toISOString(); // Current date in ISO format
+
   const [isEditing, setIsEditing] = useState(false); // Track edit mode
+  // const [formData, setFormData] = useState({
+  //   lastName: "",
+  //   firstName: "",
+  //   dob: "",
+  //   reportDate: "",
+  //   mumpsTiter: "Immune",
+  //   rubellaTiter: "Immune",
+  //   rubeolaTiter: "Nonimmune",
+  //   varicellaTiter: "Nonimmune",
+  //   hepatitisTiter: "Nonimmune",
+  //   physicalExam: "",
+  //   tspotTest1: "Negative for Tuberculosis",
+  //   tspotTest2: "Not Performed",
+  //   hepatitisB1: "Pending",
+  //   hepatitisB2: "Pending",
+  //   hepatitisB3: "Pending",
+  //   mmrVaccination1: "Not Performed",
+  //   mmrVaccination2: "Not Performed",
+  //   varicellaVaccination1: "Not Performed",
+  //   varicellaVaccination2: "Not Performed",
+  //   tdapVaccination: "Not Performed",
+  //   influenzaVaccination: "Not Performed",
+  //   benzodiazepine: "Negative",
+  //   barbiturates: "Negative",
+  //   cocaine: "Negative",
+  //   marijuana: "Negative",
+  //   opiates: "Negative",
+  //   amphetamines: "Negative",
+  //   methamphetamines: "Negative",
+  //   pcp: "Negative",
+  //   methadone: "Negative",
+  //   mdma: "Negative",
+  //   propoxyphene: "Negative",
+  //   oxycodone: "Negative",
+  // });
+
   const [formData, setFormData] = useState({
-    lastName: "",
-    firstName: "",
-    dob: "",
-    reportDate: "",
-    mumpsTiter: "Immune",
-    rubellaTiter: "Immune",
-    rubeolaTiter: "Nonimmune",
-    varicellaTiter: "Nonimmune",
-    hepatitisTiter: "Nonimmune",
-    physicalExam: "",
-    tspotTest1: "Negative for Tuberculosis",
-    tspotTest2: "Not Performed",
-    hepatitisB1: "Pending",
-    hepatitisB2: "Pending",
-    hepatitisB3: "Pending",
-    mmrVaccination1: "Not Performed",
-    mmrVaccination2: "Not Performed",
-    varicellaVaccination1: "Not Performed",
-    varicellaVaccination2: "Not Performed",
-    tdapVaccination: "Not Performed",
-    influenzaVaccination: "Not Performed",
-    benzodiazepine: "Negative",
-    barbiturates: "Negative",
-    cocaine: "Negative",
-    marijuana: "Negative",
-    opiates: "Negative",
-    amphetamines: "Negative",
-    methamphetamines: "Negative",
-    pcp: "Negative",
-    methadone: "Negative",
-    mdma: "Negative",
-    propoxyphene: "Negative",
-    oxycodone: "Negative",
+    mumpsImmunity: false,
+    rubellaImmunity: false,
+    rubeolaImmunity: false,
+    varicellaImmunity: false,
+    hepatitisImmunity: false,
   });
 
+  console.log("formData99 ", formData )
   const handleChange = (field, value) => {
-    setFormData({ ...formData, [field]: value });
+    setFormData({ ...formData, [field]: value === 'true' });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    console.log("Submitted Data:", formData);
-    // Add API call or data handling logic here
+    const data = new FormData();
+    data.append('appointment', id); 
+
+    data.append('currentDate', currentDate);
+    for (const field in formData) {
+      data.append(field, formData[field]);
+    }
+
+    try {
+      
+      const response = await axios.post('/admin/report', data);
+      console.log('Response:', response.data);
+    } catch (error) {
+      console.log('Error:', error);
+    }
+
   };
 
   return (
@@ -69,8 +97,8 @@ const MedicalReportForm = () => {
       </div>
 
       <form onSubmit={handleSubmit} className="bg-white shadow-md rounded p-6">
-        <div className="grid grid-cols-2 gap-6 mb-4">
-          <div>
+        {/* <div className="grid grid-cols-2 gap-6 mb-4"> */}
+          {/* <div>
             <label className="block text-sm font-medium text-black">First Name</label>
             <input
               type="text"
@@ -91,8 +119,8 @@ const MedicalReportForm = () => {
               required
               disabled={!isEditing}
             />
-          </div>
-          <div>
+          </div> */}
+          {/* <div>
             <label className="block text-sm font-medium text-black">Date of Birth</label>
             <input
               type="date"
@@ -114,16 +142,16 @@ const MedicalReportForm = () => {
               disabled={!isEditing}
             />
           </div>
-        </div>
+        </div> */}
 
         <h3 className="font-semibold text-lg mb-4 text-black">Blood Tests</h3>
         <div className="grid grid-cols-2 gap-6 mb-4">
           {[
-            { label: "Mumps IgG Titer", field: "mumpsTiter" },
-            { label: "Rubella IgG Titer", field: "rubellaTiter" },
-            { label: "Rubeola IgG Titer", field: "rubeolaTiter" },
-            { label: "Varicella IgG Titer", field: "varicellaTiter" },
-            { label: "Hepatitis B Sab Titer", field: "hepatitisTiter" },
+            { label: "Mumps IgG Titer", field: "mumpsImmunity" },
+            { label: "Rubella IgG Titer", field: "rubellaImmunity" },
+            { label: "Rubeola IgG Titer", field: "rubeolaImmunity" },
+            { label: "Varicella IgG Titer", field: "varicellaImmunity" },
+            { label: "Hepatitis B Sab Titer", field: "hepatitisImmunity" },
           ].map((test) => (
             <div key={test.field}>
               <label className="block text-sm font-medium text-black">{test.label}</label>
@@ -133,14 +161,14 @@ const MedicalReportForm = () => {
                 className="w-full border rounded p-2 text-black"
                 disabled={!isEditing}
               >
-                <option value="Immune">Immune</option>
-                <option value="Nonimmune">Nonimmune</option>
+                <option value={true}>Immune</option>
+                <option value={false}>Nonimmune</option>
               </select>
             </div>
           ))}
         </div>
 
-        <h3 className="font-semibold text-lg mb-4 text-black">Procedures</h3>
+        {/* <h3 className="font-semibold text-lg mb-4 text-black">Procedures</h3>
         <div className="grid grid-cols-2 gap-6 mb-4">
           <div>
             <label className="block text-sm font-medium text-black">Physical Exam</label>
@@ -199,9 +227,9 @@ const MedicalReportForm = () => {
               </select>
             </div>
           ))}
-        </div>
+        </div> */}
 
-        <h3 className="font-semibold text-lg mb-4 text-black">Drug Test Results</h3>
+        {/* <h3 className="font-semibold text-lg mb-4 text-black">Drug Test Results</h3>
         <div className="grid grid-cols-2 gap-6 mb-4">
           {[
             { label: "Benzodiazepine", field: "benzodiazepine" },
@@ -230,7 +258,7 @@ const MedicalReportForm = () => {
               </select>
             </div>
           ))}
-        </div>
+        </div> */}
 
         <button
           type="submit"

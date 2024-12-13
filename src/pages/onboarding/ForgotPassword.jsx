@@ -37,7 +37,7 @@ const ForgotPassword = () => {
 
       if (response.data.success) {
         // Save email to localStorage
-        localStorage.setItem("email", email);
+        localStorage?.setItem("email", email);
 
         setSuccessMessage(
           "Password OTP has been sent again, please check your email."

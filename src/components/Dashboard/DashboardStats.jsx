@@ -24,9 +24,9 @@ const DashboardStats = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await axios.get('/admin/stats');
-        if (response.data.success) {
-          setStats(response.data.data);
+        const response = await axios?.get('/admin/stats');
+        if (response?.data?.success) {
+          setStats(response?.data?.data);
         } else {
           setError('Failed to fetch statistics');
         }
@@ -59,25 +59,25 @@ const DashboardStats = () => {
     <div className="w-full lg:w-[70%] grid grid-cols-2 lg:grid-cols-5 justify-start items-start gap-2 lg:gap-[280px]">
       <StatCard 
         title="Total Users" 
-        value={stats.users} 
+        value={stats?.users} 
         icon={<FiUsers />} 
         onClick={() => navigate("/users")}
       />
       <StatCard 
         title="Upcoming Events" 
-        value={stats.upcomingEvents} 
+        value={stats?.upcomingEvents} 
         icon={<CgFileDocument />} 
         onClick={() => navigate("/events")}
       />
       <StatCard 
         title="Appointments" 
-        value={stats.appointments} 
+        value={stats?.appointments} 
         icon={<IoDocumentOutline />} 
         onClick={() => navigate("/appointments")}
       />
       <StatCard 
         title="Admins" 
-        value={stats.admins} 
+        value={stats?.admins} 
         icon={<RiAdminLine />} 
         onClick={() => navigate("/admins")}
       />

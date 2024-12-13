@@ -111,7 +111,7 @@ const AppointmentsTable = () => {
             <tr className="text-left text-[14px] bg-[#F5F7F7] text-gray-500">
               <th className="py-2 px-4">STUDENT</th>
               <th className="py-2 px-4">DATE OF BIRTH</th>
-              <th className="py-2 px-4">ADDRESS</th>
+              <th className="py-2 px-4">CONSENT</th>
               <th className="py-2 px-4">PROGRAM</th>
               <th className="py-2 px-4">STATUS</th>
               <th className="py-2 px-4">ACTION</th>
@@ -136,11 +136,15 @@ const AppointmentsTable = () => {
                     {appointment?.user?.firstName} {appointment?.user?.lastName}
                   </td>
                   <td className="py-3 px-4">{new Date(appointment?.user?.dob).toLocaleDateString()}</td>
-                  <td className="py-3 px-4">{appointment?.user?.address}</td>
+                  <td className={`py-3 px-4 ${appointment?.status === "Scheduled" ? "text-blue-500" : "text-red-500"}`}>
+                    {appointment?.approval}
+                  </td>
+                  {/* <td className="py-3 px-4">{appointment?.user?.address}</td> */}
                   <td className="py-3 px-4">{appointment?.user?.programAttended}</td>
                   <td className={`py-3 px-4 ${appointment?.status === "Scheduled" ? "text-blue-500" : "text-red-500"}`}>
-                    {appointment?.status}
+                    {appointment?.adminStatus}
                   </td>
+                  
                   <td className="py-3 px-4">
                     <button onClick={() => handleViewDetails(appointment)} className="text-blue-500 mr-2">
                       View Details

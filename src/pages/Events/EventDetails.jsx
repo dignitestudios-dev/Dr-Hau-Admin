@@ -19,21 +19,21 @@ const EventDetail = () => {
   const navigate = useNavigate();
 
   // Fetch event details by ID
-  useEffect(() => {
-    const fetchEventDetails = async () => {
-      try {
-        const response = await axios.post(`/admin/event/get/${eventId}`);  
-        if (response.data.success) {
-          setEvent(response.data.data);
-        } else {
-          setError('Event not found');
-        }
-      } catch (err) {
-        setError('Error fetching event details');
-      } finally {
-        setLoading(false);
+  const fetchEventDetails = async () => {
+    try {
+      const response = await axios?.post(`/admin/event/get/${eventId}`);  
+      if (response?.data?.success) {
+        setEvent(response?.data?.data);
+      } else {
+        setError('Event not found');
       }
-    };
+    } catch (err) {
+      setError('Error fetching event details');
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
 
     fetchEventDetails();
   }, [eventId]);
@@ -75,7 +75,7 @@ const EventDetail = () => {
   // Determine the color for the event status
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Cancelled':
+      case 'cancelled':
         return 'bg-red-500 text-white'; // Red
       case 'completed':
         return 'bg-green-500 text-white'; // Green
@@ -116,33 +116,36 @@ const EventDetail = () => {
         {activeTab === 'details' ? (
           <div>
             <h4 className="text-[20px] font-bold text-black mb-4">
-            <p className="text-[18px] text-black font-bold mb-4">{event.title}</p>
-
-              <p className="text-[14px] text-gray-500  mb-4">{event.description}</p>
-
-              {/* Status Badge */}
-              <span className={`px-3 py-2 text-[12px] rounded-full ${getStatusColor(event.status)}`}>
-                {event.status}
+            <p className="text-[18px] text-black font-bold mb-4 ">{event?.title}
+               {/* Status Badge */}
+               <span className={`px-3 py-2 ml-2 text-[12px] rounded-full ${getStatusColor(event?.status)}`}>
+                {event?.status}
               </span>
+            </p>
+
+              <p className="text-[14px] text-gray-500  mb-4">{event?.description}</p>
+
+             
             </h4>
 
             <div className="flex items-center text-[14px] text-gray-700 mb-2">
-              <span className="mr-3">🕒</span> {new Date(event.timeFrom).toLocaleTimeString()} - {new Date(event.timeTo).toLocaleTimeString()}
+              <span className="mr-3">🕒</span> {new Date(event?.timeFrom).toLocaleTimeString()} - {new Date(event?.timeTo).toLocaleTimeString()}
             </div>
             <div className="flex items-center text-[14px] text-gray-700 mb-4">
-              <span className="mr-3">📅</span> {new Date(event.date).toLocaleDateString()}
+              <span className="mr-3">📅</span> {new Date(event?.date).toLocaleDateString()}
             </div>
 
             <div className="mb-4">
               <strong className="text-black">Vaccinations:</strong>
               <ul className="list-disc ml-5 text-[14px] text-[#858585]">
-                {event.vaccinations.map((vaccination, index) => (
+                {event?.vaccinations.map((vaccination, index) => (
                   <li key={index}>{vaccination}</li>
                 ))}
               </ul>
             </div>
-
-            {/* Edit Event Button */}
+            {event?.status === "upcoming" ? (
+              <>
+              {/* Edit Event Button */}
             <button 
               onClick={openEditModal} 
               className="bg-black text-white px-4 py-2 rounded-md mr-4"
@@ -154,10 +157,14 @@ const EventDetail = () => {
             <button 
               onClick={openCancelModal} 
               className="bg-red-500 text-white px-4 py-2 rounded-md"
-              disabled={event.status === 'Cancelled'} // Disable if the event is already cancelled
+              disabled={event?.status === 'Cancelled'} // Disable if the event is already cancelled
             >
               {event.status === 'Cancelled' ? 'Event Cancelled' : 'Cancel Event'}
             </button>
+              </>
+            ):(
+              <></>
+            )}
           </div>
         ) : (
           <EventAppointmentsTable eventId={eventId} />
@@ -169,7 +176,7 @@ const EventDetail = () => {
         isOpen={isEditModalOpen}
         onRequestClose={closeEditModal}
         eventData={event}
-        onUpdateEvent={updateEventData}
+        onUpdateEvent={fetchEventDetails}
       />
 
       {/* Cancel Event Modal */}

@@ -83,7 +83,7 @@ const UsersTable = () => {
             className="p-2 border rounded-md bg-white text-gray-700"
           >
             <option value="">Select School</option>
-            {Array.from(new Set(users.map((user) => user?.schoolName))).map((school, index) => (
+            {Array?.from(new Set(users?.map((user) => user?.schoolName)))?.map((school, index) => (
               <option key={index} value={school}>
                 {school}
               </option>

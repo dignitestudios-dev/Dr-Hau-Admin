@@ -80,8 +80,8 @@ const AdminsTable = () => {
             <option value="">Select School</option>
             {/* Dynamically populate school options based on the admins data */}
             {Admins.map((admin, index) => (
-              <option key={index} value={admin.schoolName}>
-                {admin.schoolName}
+              <option key={index} value={admin?.schoolName}>
+                {admin?.schoolName}
               </option>
             ))}
           </select>
@@ -105,24 +105,24 @@ const AdminsTable = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredAdmins.map((admin, index) => (
+            {filteredAdmins?.map((admin, index) => (
               <tr key={index} className="text-[14px] text-gray-900 border-b border-gray-200">
                 <td className="py-3 px-4 flex items-center gap-3">
                   <img
-                    src={admin.profilePicture || "https://i.pravatar.cc/40?img=1"} // Use profile picture if available
-                    alt={admin.adminName}
-                    className="w-8 h-8 rounded-full"
+                    src={admin?.profilePicture || "https://i.pravatar.cc/40?img=1"} // Use profile picture if available
+                    alt={admin?.adminName}
+                    className="w-8 h-8 mt-3 rounded-full"
                   />
-                  <span>{admin.adminName}</span>
+                  <span className="mt-4">{admin?.adminName}</span>
                 </td>
-                <td className="py-3 px-4">{admin.email}</td>
-                <td className="py-3 px-4">{admin.programDep}</td>
-                <td className="py-3 px-4">{admin.campus}</td>
-                <td className="py-3 px-4">{admin.schoolName}</td>
+                <td className="py-3 px-4">{admin?.email}</td>
+                <td className="py-3 px-4">{admin?.programDep}</td>
+                <td className="py-3 px-4">{admin?.campus}</td>
+                <td className="py-3 px-4">{admin?.schoolName}</td>
                 <td className="py-3 px-4 flex items-center gap-3">
                   <button
                     onClick={() => handleViewProfile(admin)}
-                    className="text-blue-500 hover:text-blue-700"
+                    className="text-blue-500 mb-3 hover:text-blue-700"
                     title="View Profile"
                   >
                    View Details
