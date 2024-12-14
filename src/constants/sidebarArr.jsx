@@ -9,6 +9,8 @@ import { HiOutlineShieldExclamation } from "react-icons/hi2";
 import { FiUsers } from "react-icons/fi";
 import { IoDocumentOutline } from "react-icons/io5";
 import { BsFiletypePdf } from "react-icons/bs";
+import { IoSettingsOutline } from "react-icons/io5";
+
 
 
 
@@ -46,7 +48,7 @@ export const sidebarArr = [
   },
 
   {
-    title: "Appointments ",
+    title: "Todays Appointments ",
     url: "/appointments",
     icon: <IoDocumentOutline />,
   },
@@ -88,12 +90,17 @@ export const sidebarArr = [
     url: "/notifications",
     icon: <RiNotificationLine />,
   },
+  
   {
     title: "CDC Sheets",
     url: "/cdc-sheets",
     icon: <BsFiletypePdf />,
   },
- 
+  {
+    title: "Settings",
+    url: "/change-password",
+    icon: <IoSettingsOutline />,
+  },
   {
     title: "Terms Of Services",
     url: "/termsofservice",

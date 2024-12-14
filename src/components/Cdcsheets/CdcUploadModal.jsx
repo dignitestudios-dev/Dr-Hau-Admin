@@ -1,18 +1,54 @@
 import React, { useState } from "react";
 import { FaFileUpload } from "react-icons/fa"; // Icon for file upload
+import axios from "../../axios"; // Import the axios instance
 
 const CdcUploadModal = ({ isOpen, onClose }) => {
-  const [selectedPdf, setSelectedPdf] = useState(null);
+  const [selectedPdf, setSelectedPdf] = useState(null); // Store selected PDF
+  const [fileName, setFileName] = useState(""); // Store name of the PDF
+  const [isUploading, setIsUploading] = useState(false); // Track upload status
+  const [error, setError] = useState(""); // Error state
 
+  // Handle file selection
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setSelectedPdf(file);
+    setFileName(file.name); // Set the name of the selected file
   };
 
-  const handleUpload = () => {
-    // Logic to upload the file
-    console.log("Uploading file:", selectedPdf);
-    onClose();
+  // Handle upload action
+  const handleUpload = async () => {
+    if (!selectedPdf) {
+      alert("Please select a PDF file.");
+      return;
+    }
+
+    setIsUploading(true); // Set uploading to true
+    setError(""); // Reset error
+
+    // Create FormData to send the file and name
+    const formData = new FormData();
+    formData.append("document", selectedPdf); // Add the file to the form data
+    formData.append("name", fileName.split(".")[0]); // Add name (excluding the file extension)
+
+    try {
+      const response = await axios.post("/cdc/", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.data.success) {
+        console.log("Upload successful:", response.data);
+        onClose(); // Close the modal upon successful upload
+      } else {
+        setError("Failed to upload the file. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      setError("Error uploading file. Please try again.");
+    } finally {
+      setIsUploading(false); // Reset uploading state after the request
+    }
   };
 
   return (
@@ -24,11 +60,10 @@ const CdcUploadModal = ({ isOpen, onClose }) => {
             <div className="flex justify-center mb-4">
               <FaFileUpload size={40} className="text-black" />
             </div>
-          
-            
+
             {/* Custom File Choose Button */}
             <div className="flex flex-col items-center mb-6">
-              <label className=" text-gray-700 mb-4">Upload a PDF file:</label>
+              <label className="text-gray-700 mb-4">Upload a PDF file:</label>
               <div className="relative">
                 {/* Hidden file input */}
                 <input
@@ -53,6 +88,9 @@ const CdcUploadModal = ({ isOpen, onClose }) => {
               )}
             </div>
 
+            {/* Error message */}
+            {error && <p className="text-red-600 text-center mb-4">{error}</p>}
+
             {/* Action buttons */}
             <div className="flex justify-between gap-4">
               <button
@@ -63,9 +101,10 @@ const CdcUploadModal = ({ isOpen, onClose }) => {
               </button>
               <button
                 onClick={handleUpload}
+                disabled={isUploading}
                 className="px-6 py-2 bg-black text-white rounded-md w-full hover:bg-gray-800 transition duration-300"
               >
-                 Upload
+                {isUploading ? "Uploading..." : "Upload"}
               </button>
             </div>
           </div>

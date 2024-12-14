@@ -122,9 +122,9 @@ const Notifications = () => {
 
         {/* Show loading state or the notifications */}
         {isLoading ? (
-          <div className="flex justify-center items-center">
-            <div className="spinner-border animate-spin border-4 border-t-4 border-gray-200 rounded-full w-8 h-8"></div> {/* Add a loading spinner */}
-          </div>
+          <div className="flex justify-center items-center py-6">
+          <div className="w-12 h-12 border-4 border-t-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
+        </div>
         ) : (
           <div>
             {/* Display Sent Notifications */}

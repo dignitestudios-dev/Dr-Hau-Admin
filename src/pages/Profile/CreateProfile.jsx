@@ -107,7 +107,7 @@ const CreateProfile = () => {
               className="absolute right-3 top-14 transform -translate-y-1/2 cursor-pointer"
               onClick={() => setShowPassword(!showPassword)}
             >
-              {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+              {showPassword ? <FiEye size={20} /> : <FiEyeOff size={20} />}
             </span>
           </div>
 
@@ -128,7 +128,7 @@ const CreateProfile = () => {
               className="absolute right-3 top-14 transform -translate-y-1/2 cursor-pointer"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
             >
-              {showConfirmPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+              {showConfirmPassword ? <FiEye size={20} /> : <FiEyeOff size={20} />}
             </span>
           </div>
 

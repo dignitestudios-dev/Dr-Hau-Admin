@@ -8,10 +8,12 @@ const UsersTable = () => {
   const [selectedSchool, setSelectedSchool] = useState(""); 
   const [selectedCampus, setSelectedCampus] = useState(""); 
   const [searchQuery, setSearchQuery] = useState(""); 
+  const [loading, setLoading] = useState(true); // Track loading state
   const navigate = useNavigate();
 
   const fetchUsers = async () => {
     try {
+      setLoading(true); // Set loading to true when fetching data
       const response = await axios?.get("/admin/users/all"); 
       if (response?.data?.success) {
         setUsers(response?.data?.data); 
@@ -25,13 +27,15 @@ const UsersTable = () => {
       } else {
         console.error("Unknown error:", error?.message);
       }
+    } finally {
+      setLoading(false); // Set loading to false when data is loaded
     }
   };
-  useEffect(() => {
 
+  useEffect(() => {
     fetchUsers();
   }, []); 
-  
+
   const handleSchoolFilter = (event) => {
     setSelectedSchool(event.target.value);
   };
@@ -44,7 +48,6 @@ const UsersTable = () => {
     setSearchQuery(event.target.value);
   };
 
-  // Handle deleting a user
   const handleDelete = (id) => {
     const updatedUsers = users.filter((user) => user._id !== id); 
     setUsers(updatedUsers); 
@@ -104,47 +107,54 @@ const UsersTable = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white shadow-md rounded-lg">
-          <thead>
-            <tr className="text-left text-[14px] bg-[#F5F7F7] text-gray-500">
-              <th className="py-2 px-4">STUDENT</th>
-              <th className="py-2 px-4">DATE OF BIRTH</th>
-              <th className="py-2 px-4">SCHOOL</th>
-              <th className="py-2 px-4">CAMPUS</th>
-              <th className="py-2 px-4">PROGRAM</th>
-              <th className="py-2 px-4">ACTION</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user._id} className="text-[14px] text-gray-900 border-b border-gray-200">
-                <td className="py-3 px-4 flex items-center gap-3">
-                  <img
-                    src={user?.profilePicture || "https://i.pravatar.cc/40"} 
-                    alt={`${user?.firstName} ${user?.lastName}`}
-                    className="w-8 h-8 rounded-full"
-                  />
-                  <span>{`${user?.firstName} ${user?.lastName}`}</span>
-                </td>
-                <td className="py-3 px-4">{new Date(user?.dob).toLocaleDateString()}</td>
-                <td className="py-3 px-4">{user?.schoolName || "N/A"}</td>
-                <td className="py-3 px-4">{user?.campus || "N/A"}</td>
-                <td className="py-3 px-4">{user?.programAttended || "N/A"}</td>
-                <td className="py-3 px-4 flex items-center gap-3">
-                  <button
-                    onClick={() => handleViewProfile(user)}
-                    className="text-blue-500 hover:text-blue-700"
-                    title="View Profile"
-                  >
-                    View Details
-                  </button>
-                </td>
+      {/* Loader: Inline CSS Spinner */}
+      {loading ? (
+        <div className="flex justify-center items-center py-6">
+          <div className="w-12 h-12 border-4 border-t-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white shadow-md rounded-lg">
+            <thead>
+              <tr className="text-left text-[14px] bg-[#F5F7F7] text-gray-500">
+                <th className="py-2 px-4">STUDENT</th>
+                <th className="py-2 px-4">DATE OF BIRTH</th>
+                <th className="py-2 px-4">SCHOOL</th>
+                <th className="py-2 px-4">CAMPUS</th>
+                <th className="py-2 px-4">PROGRAM</th>
+                <th className="py-2 px-4">ACTION</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {filteredUsers.map((user) => (
+                <tr key={user._id} className="text-[14px] text-gray-900 border-b border-gray-200">
+                  <td className="py-3 px-4 flex items-center gap-3">
+                    <img
+                      src={user?.profilePicture || "https://i.pravatar.cc/40"} 
+                      alt={`${user?.firstName} ${user?.lastName}`}
+                      className="w-8 h-8 rounded-full"
+                    />
+                    <span>{`${user?.firstName} ${user?.lastName}`}</span>
+                  </td>
+                  <td className="py-3 px-4">{new Date(user?.dob).toLocaleDateString()}</td>
+                  <td className="py-3 px-4">{user?.schoolName || "N/A"}</td>
+                  <td className="py-3 px-4">{user?.campus || "N/A"}</td>
+                  <td className="py-3 px-4">{user?.programAttended || "N/A"}</td>
+                  <td className="py-3 px-4 flex items-center gap-3">
+                    <button
+                      onClick={() => handleViewProfile(user)}
+                      className="text-blue-500 hover:text-blue-700"
+                      title="View Profile"
+                    >
+                      View Details
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };

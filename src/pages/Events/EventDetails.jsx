@@ -5,6 +5,8 @@ import { IoMdArrowBack } from 'react-icons/io';
 import EventAppointmentsTable from '../../components/Events/EventAppointmentsTable';  // Assuming this table component is available
 import EditEventModal from '../../components/Events/EditEventModal';  // Import the modal
 import CancelEventModal from '../../components/Events/CancelEventModal';
+import { FaSchool } from "react-icons/fa";
+
 
 const EventDetail = () => {
   const location = useLocation(); 
@@ -116,16 +118,21 @@ const EventDetail = () => {
         {activeTab === 'details' ? (
           <div>
             <h4 className="text-[20px] font-bold text-black mb-4">
-            <p className="text-[18px] text-black font-bold mb-4 ">{event?.title}
+            <p className="text-[24px] text-black font-bold mb-4 ">{event?.title}
                {/* Status Badge */}
                <span className={`px-3 py-2 ml-2 text-[12px] rounded-full ${getStatusColor(event?.status)}`}>
                 {event?.status}
               </span>
             </p>
+              <span className="text-[18px]">Description : {event?.description}</span>
+              <br/>
+              <span className="text-[14px] text-gray-500 font mb-4">🎓 School : {event?.school.schoolName}</span>
+              <br/>
+              <span className="text-[14px] text-gray-500  mb-4">🏛️ Campus : {event?.school.campus}</span>
+              <br/>
 
-              <p className="text-[14px] text-gray-500  mb-4">{event?.description}</p>
+              <span className="text-[14px] text-gray-500  mb-4">🏛️ Lot Number : {event?.lotNumber}</span>
 
-             
             </h4>
 
             <div className="flex items-center text-[14px] text-gray-700 mb-2">

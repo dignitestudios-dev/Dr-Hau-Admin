@@ -39,7 +39,7 @@ const AuthInput = ({
                 color: "#6B7373",
               }}
             >
-              {isPassVisible ? <BsEye /> : <BsEyeSlash />}
+              {isPassVisible ?   <BsEyeSlash /> : <BsEye />}
             </button>
           )}
         </div>

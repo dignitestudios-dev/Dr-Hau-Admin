@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-// import { Logo } from "../assets/export";
-// import { sidebarArr } from "../constants/sidebarArr";
 import SidebarLink from "./SidebarLink";
 import { RiLogoutCircleLine, RiMenuLine } from "react-icons/ri";
-import {sidebarArr} from "../constants/sidebarArr";
-import {Logo} from "../assets/export";
+import { sidebarArr } from "../constants/sidebarArr";
+import { Logo } from "../assets/export";
+import axios from "../axios"; 
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -17,6 +16,25 @@ const Sidebar = () => {
 
   const handleCloseDrawer = () => {
     setIsDrawerOpen(false);
+  };
+
+  // Function to handle logout
+  const handleLogout = async () => {
+    try {
+      // Make an API request to logout
+      await axios.post('/auth/logout');
+      
+      // Clear local storage or any authentication data
+      localStorage.clear();
+      
+      // Redirect to login page or home
+      navigate("/login"); // Or wherever you want the user to go after logging out
+    } catch (error) {
+      console.error("Logout failed", error);
+      // Optionally, show a toast notification or an error message here
+    } finally {
+      handleCloseDrawer(); // Close the sidebar after logout
+    }
   };
 
   return (
@@ -35,12 +53,10 @@ const Sidebar = () => {
           isDrawerOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0 z-40 h-screen overflow-y-auto`}
       >
-        {/* <Link to="/" className="">
-          <img src={Logo} alt="perfectboat_logo" className=" " />
-        </Link> */}
-        <h1 className="text-white mt-2.5 text-[40px] font-bold">Logo</h1>
+        {/* <h1 className="text-white mt-2.5 text-[40px] font-bold">Logo</h1> */}
+        <img src={Logo} alt="Logo" className="mt-2.5 h-[80px] w-auto" />
 
-        <div className="w-full mt-20 flex flex-col justify-start items-start gap-2">
+        <div className="w-full mt-12 flex flex-col justify-start items-start gap-2">
           {sidebarArr?.map((link, index) => (
             <SidebarLink
               key={index}
@@ -49,10 +65,7 @@ const Sidebar = () => {
             />
           ))}
           <button
-            onClick={() => {
-              navigate("/", "Home");
-              handleCloseDrawer();
-            }}
+            onClick={handleLogout}
             className={`w-full h-[46px] outline-none rounded-[12px] 
             bg-transparent text-white/50 
             font-medium flex items-center justify-start transition-all duration-500 hover:bg-[#D0FCB3] hover:text-black px-3 gap-2`}

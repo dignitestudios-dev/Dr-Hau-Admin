@@ -29,17 +29,17 @@ const Navbar = () => {
         </div>
 
         <button
-          onClick={() => navigate("/profile")} // Navigate to the profile page when clicked
+          onClick={() => navigate("/change-password")} // Navigate to the profile page when clicked
           className="flex items-center gap-2 relative"
         >
-          <img
+          {/* <img
             src={`https://i.pravatar.cc/40?img=3`}
             alt="Profile"
             className="w-[28px] h-[28px] rounded-full cursor-pointer"
-          />
+          /> */}
           <div className="w-auto flex flex-col justify-start items-start">
             <p className="text-[11px] font-normal text-white/50">Welcome back,</p>
-            <p className="text-[11px] font-medium text-white">Kevin Brian</p>
+            <p className="text-[11px] font-medium text-white">Admin</p>
           </div>
         </button>
       </div>

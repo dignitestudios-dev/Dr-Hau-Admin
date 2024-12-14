@@ -186,7 +186,9 @@ const DashboardEvents = () => {
         </div>
 
         {/* Display loading message or error */}
-        {loading && <p className="text-black">Loading...</p>}
+        {loading && <div className="flex justify-center items-center py-6">
+          <div className="w-12 h-12 border-4 border-t-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
+        </div>}
         {error && <p className="text-red-500">{error}</p>}
 
         {/* Table for events */}

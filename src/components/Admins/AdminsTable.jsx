@@ -88,9 +88,11 @@ const AdminsTable = () => {
         </div>
       </div>
 
-      {/* Display loading message or error */}
-      {loading && <p className="text-black">Loading admins...</p>}
-      {error && <p className="text-red-500">{error}</p>}
+       {/* Display loading message or error */}
+       {loading && <div className="flex justify-center items-center py-6">
+          <div className="w-12 h-12 border-4 border-t-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
+        </div>}
+        {error && <p className="text-red-500">{error}</p>}
 
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white shadow-md rounded-lg">

@@ -15,6 +15,7 @@ const UserListModal = ({ isVisible, onClose }) => {
   const vaccinationsList = [
     { id: "FLU", name: "FLU" },
     { id: "TDAP", name: "TDAP" },
+    { id: "TD Vaccine", name: "TD Vaccine" },
     { id: "MMR", name: "MMR" },
     { id: "Rabies", name: "Rabies" },
     { id: "Hepatitis B", name: "Hepatitis B" },
@@ -40,7 +41,7 @@ const UserListModal = ({ isVisible, onClose }) => {
     setLoading(true);
 
     const requestBody = {
-      vaccinations: selectedVaccinations,
+      vaccinations: selectedVaccinations, // Only the selected vaccinations
       currentDate: currentDate, 
       lotNumber: lotNumber,
       userEmail: userEmail,
@@ -68,9 +69,16 @@ const UserListModal = ({ isVisible, onClose }) => {
     }
   };
 
+  // Handle vaccination checkbox change
   const handleVaccinationChange = (e) => {
-    const selectedOptions = Array.from(e.target.selectedOptions, (option) => option.value);
-    setSelectedVaccinations(selectedOptions);
+    const { value, checked } = e.target;
+    setSelectedVaccinations((prev) => {
+      if (checked) {
+        return [...prev, value]; // Add vaccination to selected list if checked
+      } else {
+        return prev.filter((vaccination) => vaccination !== value); // Remove if unchecked
+      }
+    });
   };
 
   return (
@@ -118,23 +126,27 @@ const UserListModal = ({ isVisible, onClose }) => {
           </div>
 
           <div className="mb-5">
-            <label htmlFor="vaccinations" className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-gray-700">
               Select Vaccination(s)
             </label>
-            <select
-              id="vaccinations"
-              multiple
-              className="mt-2 block w-full px-4 py-3 text-black border border-gray-300 rounded-md shadow-sm"
-              value={selectedVaccinations}
-              onChange={handleVaccinationChange}
-              disabled={loading}
-            >
+            <div className="mt-2">
               {vaccinationsList.map((vaccination) => (
-                <option key={vaccination.id} value={vaccination.id}>
-                  {vaccination.name}
-                </option>
+                <div key={vaccination.id} className="flex items-center mb-2">
+                  <input
+                    type="checkbox"
+                    id={vaccination.id}
+                    value={vaccination.id}
+                    checked={selectedVaccinations.includes(vaccination.id)}
+                    onChange={handleVaccinationChange}
+                    disabled={loading}
+                    className="mr-2"
+                  />
+                  <label htmlFor={vaccination.id} className="text-sm text-gray-700">
+                    {vaccination.name}
+                  </label>
+                </div>
               ))}
-            </select>
+            </div>
           </div>
 
           <div className="mt-8 flex justify-end space-x-4">

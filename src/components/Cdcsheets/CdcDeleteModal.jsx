@@ -1,7 +1,7 @@
 import React from "react";
-import { FaTrashAlt } from "react-icons/fa"; // Import delete icon
+import { FaTrashAlt } from "react-icons/fa"; 
 
-const CdcDeleteModal = ({ isOpen, onClose, onDelete, pdfName }) => {
+const CdcDeleteModal = ({ isOpen, onClose, onDelete, pdfName, pdfId, }) => {
   return (
     <>
       {isOpen && (
@@ -15,7 +15,6 @@ const CdcDeleteModal = ({ isOpen, onClose, onDelete, pdfName }) => {
               Are you sure you want to delete the "{pdfName}" file?
             </h3>
 
-            {/* Action buttons */}
             <div className="flex justify-between gap-4">
               <button
                 onClick={onClose}
@@ -24,7 +23,7 @@ const CdcDeleteModal = ({ isOpen, onClose, onDelete, pdfName }) => {
                 Cancel
               </button>
               <button
-                onClick={() => onDelete(pdfName)}
+                onClick={() => onDelete(pdfId)} // Use the pdfId to make the delete request
                 className="px-6 py-2 bg-red-600 text-white rounded-md w-full hover:bg-red-700 transition duration-300"
               >
                 Delete

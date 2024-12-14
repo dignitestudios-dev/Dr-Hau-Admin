@@ -39,7 +39,7 @@ const CreateEvent = () => {
 
   const vaccinationsList = [
     { id: "TDAP", name: "Tdap" },
-    { id: "TD", name: "Td" },
+    { id: "TD Vaccine", name: "TD Vaccine" },
     { id: "FLU", name: "Flu" },
     { id: "MMR", name: "MMR" },
     { id: "Varicella", name: "Varicella" },

@@ -71,7 +71,7 @@ const AppointmentsTable = () => {
             onClick={() => navigate("/dashboard")}
             className="text-[24px] text-gray-700 mr-2"
           />
-          <h3 className="text-[24px] font-bold text-black">Recent Appointments</h3>
+          <h3 className="text-[24px] font-bold text-black">Todays Appointments</h3>
         </div>
 
         <div className="flex gap-4 items-center">
@@ -111,19 +111,19 @@ const AppointmentsTable = () => {
             <tr className="text-left text-[14px] bg-[#F5F7F7] text-gray-500">
               <th className="py-2 px-4">STUDENT</th>
               <th className="py-2 px-4">DATE OF BIRTH</th>
-              <th className="py-2 px-4">CONSENT</th>
+              {/* <th className="py-2 px-4">CONSENT</th> */}
+              {/* <th className="py-2 px-4">PROGRAM</th> */}
               <th className="py-2 px-4">PROGRAM</th>
               <th className="py-2 px-4">STATUS</th>
+
               <th className="py-2 px-4">ACTION</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr>
-                <td colSpan="6" className="py-4 text-center">
-                  <span className="text-gray-500">Loading...</span>
-                </td>
-              </tr>
+              <div className="flex justify-center items-center py-6">
+              <div className="w-12 h-12 border-4 border-t-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
+            </div>
             ) : (
               filteredAppointments.map((appointment, index) => (
                 <tr key={index} className="text-[14px] text-gray-900 border-b border-gray-200">
@@ -136,9 +136,9 @@ const AppointmentsTable = () => {
                     {appointment?.user?.firstName} {appointment?.user?.lastName}
                   </td>
                   <td className="py-3 px-4">{new Date(appointment?.user?.dob).toLocaleDateString()}</td>
-                  <td className={`py-3 px-4 ${appointment?.status === "Scheduled" ? "text-blue-500" : "text-red-500"}`}>
+                  {/* <td className={`py-3 px-4 ${appointment?.status === "Scheduled" ? "text-blue-500" : "text-red-500"}`}>
                     {appointment?.approval}
-                  </td>
+                  </td> */}
                   {/* <td className="py-3 px-4">{appointment?.user?.address}</td> */}
                   <td className="py-3 px-4">{appointment?.user?.programAttended}</td>
                   <td className={`py-3 px-4 ${appointment?.status === "Scheduled" ? "text-blue-500" : "text-red-500"}`}>

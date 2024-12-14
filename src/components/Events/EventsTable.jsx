@@ -15,7 +15,7 @@ const EventsTable = () => {
   // Function to get current date in the proper format (e.g., 2024-10-03)
   function getCurrentDate() {
     const date = new Date();
-    return date.toISOString().split("T")[0]; // Get the date in YYYY-MM-DD format
+    return date?.toISOString()?.split("T")[0]; // Get the date in YYYY-MM-DD format
   }
 
   // Fetch events data from the API whenever the selected date or any filter changes
@@ -23,12 +23,12 @@ const EventsTable = () => {
     const fetchEvents = async () => {
       setLoading(true); // Set loading to true before making the request
       try {
-        const response = await axios.post('/admin/events?page=1&limit=50', {
+        const response = await axios?.post('/admin/events?page=1&limit=50', {
           currentDate: selectedDate, // Include the selected date in the request body
         });
 
-        if (response.data.success) {
-          setEvents(response.data.data); // Store events data in state
+        if (response?.data?.success) {
+          setEvents(response?.data?.data); // Store events data in state
         } else {
           setError("No events found for the selected date.");
         }
@@ -43,17 +43,17 @@ const EventsTable = () => {
   }, [selectedDate]); // Re-fetch events whenever selectedDate changes
 
   // Filter events based on status, school, and campus
-  const filteredEvents = events.filter((event) => {
-    const statusFilter = selectedTab === "All" || event.status.toLowerCase() === selectedTab.toLowerCase();
-    const schoolFilter = selectedSchool === "All" || event.school === selectedSchool;
-    const campusFilter = selectedCampus === "All" || event.campus === selectedCampus;
+  const filteredEvents = events?.filter((event) => {
+    const statusFilter = selectedTab === "All" || event.status?.toLowerCase() === selectedTab?.toLowerCase();
+    // const schoolFilter = selectedSchool === "All" || event?.school === selectedSchool;
+    // const campusFilter = selectedCampus === "All" || event?.campus === selectedCampus;
 
-    return statusFilter && schoolFilter && campusFilter;
+    return statusFilter //&& schoolFilter && campusFilter;
   });
 
   // Extract unique schools and campuses for dropdown options
-  const schools = [...new Set(events.map((event) => event.school))];
-  const campuses = [...new Set(events.map((event) => event.campus))];
+  // const schools = [...new Set(events?.map((event) => event.school))];
+  // const campuses = [...new Set(events?.map((event) => event.campus))];
 
   // const handleViewDetails = (status) => {
   //   if (status === "Upcoming" || status === "Cancelled") {
@@ -156,22 +156,22 @@ const EventsTable = () => {
               className="p-2 border rounded-md text-black"
             />
           </div>
-            <div className="flex flex-col">
+            {/* <div className="flex flex-col">
               <select
                 value={selectedSchool}
                 onChange={(e) => setSelectedSchool(e.target.value)}
                 className="p-2 border rounded-md text-black"
               >
                 <option value="All">All Schools</option>
-                {schools.map((school, index) => (
+                {schools?.map((school, index) => (
                   <option key={index} value={school}>
                     {school}
                   </option>
                 ))}
               </select>
-            </div>
+            </div> */}
 
-            <div className="flex flex-col">
+            {/* <div className="flex flex-col">
               <select
                 value={selectedCampus}
                 onChange={(e) => setSelectedCampus(e.target.value)}
@@ -184,12 +184,14 @@ const EventsTable = () => {
                   </option>
                 ))}
               </select>
-            </div>
+            </div> */}
           </div>
         </div>
 
         {/* Display loading message or error */}
-        {loading && <p className="text-black">Loading...</p>}
+        {loading && <div className="flex justify-center items-center py-6">
+          <div className="w-12 h-12 border-4 border-t-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
+        </div>}
         {error && <p className="text-red-500">{error}</p>}
 
         {/* Table for events */}
@@ -199,7 +201,10 @@ const EventsTable = () => {
               <tr className="text-left text-[14px] bg-[#F5F7F7] text-gray-500">
                 <th className="py-2 px-4">DATE</th>
                 <th className="py-2 px-4">TITLE</th>
+                <th className="py-2 px-4">CAMPUS</th>
+                <th className="py-2 px-4">SCHOOL</th>
                 <th className="py-2 px-4">TIME</th>
+
                 <th className="py-2 px-4">STATUS</th>
                 <th className="py-2 px-4"></th>
               </tr>
@@ -210,11 +215,15 @@ const EventsTable = () => {
                   key={index}
                   className="text-[14px] text-gray-900 border-b border-[#E5E7EB]"
                 >
-                  <td className="py-3 px-4">{new Date(selectedDate).toLocaleDateString()}</td>
+                  <td className="py-3 px-4">{new Date(selectedDate)?.toLocaleDateString()}</td>
                   <td className="py-3 px-4">{event?.title}</td>
+                  <td className="py-3 px-4">{event?.school?.schoolName}</td>
+                  <td className="py-3 px-4">{event?.school?.campus}</td>
+
+
                   <td className="py-3 px-4">
-                    {new Date(event?.timeFrom).toLocaleTimeString()} -{" "}
-                    {new Date(event?.timeTo).toLocaleTimeString()}
+                    {new Date(event?.timeFrom)?.toLocaleTimeString()} -{" "}
+                    {new Date(event?.timeTo)?.toLocaleTimeString()}
                   </td>
                   <td className="py-3 px-4">
                     <span
@@ -224,7 +233,7 @@ const EventsTable = () => {
                     </span>
                   </td>
                   <td
-onClick={() => handleViewDetails(event._id, event?.status)}
+onClick={() => handleViewDetails(event?._id, event?.status)}
 className="py-3 px-4 text-blue-500 cursor-pointer"
                   >
                     View details

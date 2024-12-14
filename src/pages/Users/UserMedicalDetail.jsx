@@ -88,6 +88,10 @@ const UserMedicalDetails = () => {
             <label className="block text-xl font-medium text-gray-700 mb-2">Exercise Regularly</label>
             <p className="text-lg text-gray-600">{medicalHistory.isExercise ? "Yes" : "No"}</p>
           </div>
+          <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
+            <label className="block text-xl font-medium text-gray-700 mb-2">Is Healthy</label>
+            <p className="text-lg text-gray-600">{medicalHistory.isHealthy ? "Yes" : "No"}</p>
+          </div>
 
           <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
             <label className="block text-xl font-medium text-gray-700 mb-2">Has TB</label>
