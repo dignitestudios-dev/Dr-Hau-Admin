@@ -351,7 +351,7 @@ const MedicalReportForm = () => {
 <h3 className="font-semibold text-lg mb-4 text-black">Procedures</h3>
 <div className="grid grid-cols-2 gap-6 mb-4">
   {/* Physical Exam Field */}
-  <div>
+  {/* <div>
     <label className="block text-sm font-medium text-black">Physical Exam</label>
     <input
       type="text"
@@ -361,7 +361,7 @@ const MedicalReportForm = () => {
       placeholder="Enter details (e.g., Cleared, etc.)"
       disabled={!isEditing}
     />
-  </div>
+  </div> */}
 
   {/* Physical Exam Date Field */}
   <div>
