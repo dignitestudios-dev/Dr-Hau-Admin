@@ -21,14 +21,14 @@ const PhysicalExam = () => {
         gender: '',  // Can be 'Male' or 'Female'
         schoolCity: 'ACC',
         phoneNo: '+11234567890',
-        heent: 'Normal',
-        neck: 'Normal',
-        lungs: 'Clear',
-        heart: 'Normal',
-        abdomen: 'Normal',
-        orthopedic: 'Normal',
-        neurologic: 'Normal',
-        skin: 'Healthy',
+        heent: '',
+        neck: '',
+        lungs: '',
+        heart: '',
+        abdomen: '',
+        orthopedic: '',
+        neurologic: '',
+        skin: '',
         comments: '',
         p4: true,
         p3: false,
@@ -144,7 +144,7 @@ const PhysicalExam = () => {
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-6 mb-4">
             <div>
               <label className="block text-sm font-medium mb-2">City</label>
               <input
@@ -170,17 +170,41 @@ const PhysicalExam = () => {
             <div>
               <label className="block text-sm font-medium mb-2">Zip Code</label>
               <input
-               name="zipCode"
-               value={formData.zipCode}
+               name="zipcode"
+               value={formData.zipcode}
                onChange={handleChange}
                 type="text"
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 placeholder="Zip Code"
               />
             </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">school City</label>
+              <input
+               name="schoolCity"
+               value={formData.schoolCity}
+               onChange={handleChange}
+                type="text"
+                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                placeholder="schoolCity"
+              />
+            </div>
+            
+           
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+              <label className="block text-sm font-medium mb-2">phone No</label>
+              <input
+               name="phoneNo"
+               value={formData.phoneNo}
+               onChange={handleChange}
+                type="text"
+                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                placeholder="phone No"
+              />
+            </div>
             <div>
               <label className="block text-sm font-medium mb-2">Date of Birth</label>
               <input
@@ -400,16 +424,109 @@ const PhysicalExam = () => {
           <h2 className="text-2xl font-semibold text-gray-800 mb-6">Part B: Physical Exam</h2>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-            {["HEENT", "Neck", "Lungs", "Heart", "Abdomen", "Orthopedic", "Neurologic", "Skin"].map((field) => (
-              <div key={field}>
-                <label className="block text-sm font-medium mb-2">{field}</label>
-                <input
-                  type="text"
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  placeholder="Write Details Here"
-                />
-              </div>
-            ))}
+             {/* HEENT Input */}
+        <div>
+          <label className="block text-sm font-medium mb-2">HEENT</label>
+          <input
+            type="text"
+            name="heent"
+            value={formData.heent}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Enter details"
+          />
+        </div>
+
+        {/* Neck Input */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Neck</label>
+          <input
+            type="text"
+            name="neck"
+            value={formData.neck}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Enter details"
+          />
+        </div>
+
+        {/* Lungs Input */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Lungs</label>
+          <input
+            type="text"
+            name="lungs"
+            value={formData.lungs}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Enter details"
+          />
+        </div>
+
+        {/* Heart Input */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Heart</label>
+          <input
+            type="text"
+            name="heart"
+            value={formData.heart}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Enter details"
+          />
+        </div>
+
+        {/* Abdomen Input */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Abdomen</label>
+          <input
+            type="text"
+            name="abdomen"
+            value={formData.abdomen}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Enter details"
+          />
+        </div>
+
+        {/* Orthopedic Input */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Orthopedic</label>
+          <input
+            type="text"
+            name="orthopedic"
+            value={formData.orthopedic}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Enter details"
+          />
+        </div>
+
+        {/* Neurologic Input */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Neurologic</label>
+          <input
+            type="text"
+            name="neurologic"
+            value={formData.neurologic}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Enter details"
+          />
+        </div>
+
+        {/* Skin Input */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Skin</label>
+          <input
+            type="text"
+            name="skin"
+            value={formData.skin}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Enter details"
+          />
+        </div>
           </div>
         </section>
 

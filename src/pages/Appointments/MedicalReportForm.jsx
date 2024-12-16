@@ -10,7 +10,7 @@ const MedicalReportForm = () => {
     const currentDate = new Date().toISOString();
     const [submitLoading, setSubmitLoading] = useState(false)
     const location = useLocation(); // To access the passed state
-      const { appointment } = location.state || {};
+      const { appointment } = location?.state || {};
 
       console.log("app-- ", appointment)
   const [isEditing, setIsEditing] = useState(false);
@@ -106,7 +106,10 @@ const MedicalReportForm = () => {
   };
 
   useEffect(()=>{
-    handleBackendData(appointment)
+    if(appointment){
+      handleBackendData(appointment)
+    }
+    
   },[appointment])
 
   
