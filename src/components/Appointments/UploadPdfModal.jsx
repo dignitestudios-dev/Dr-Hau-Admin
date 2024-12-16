@@ -1,15 +1,46 @@
 import React, { useState } from "react";
 import { FaFileUpload } from "react-icons/fa"; 
+import { ErrorToast, SuccessToast } from "../Global/Toaster";
+import axios from "../../axios";
 
-const UploadPdfModal = ({ isOpen, onClose }) => {
+const UploadPdfModal = ({ isOpen, onClose, id, report }) => {
   const [selectedPdf, setSelectedPdf] = useState(null);
+      const [submitLoading, setSubmitLoading] = useState(false)
+      const currentDate = new Date().toISOString();
+  
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setSelectedPdf(file);
   };
 
-  const handleUpload = () => {
+  const handleUpload = async(e) => {
+    e.preventDefault()
+    try{
+      setSubmitLoading(true)
+    const data = new FormData();
+  
+  data.append('appointment', id);  
+  data.append("reportId",report?._id)
+  data.append('currentDate', currentDate);
+  data.append('documents', selectedPdf);
+  let url = ""
+  if(report){
+   url= "/admin/updateReport"
+  }else{
+   url= "/admin/report"
+  }
+     const response = await axios.post(url, data);
+     console.log('Response:', response.data);
+     if(response.status === 200 || response.status === 201){
+        setSubmitLoading(false)
+        SuccessToast("Report Submitted")
+      }
+    } catch (error) {
+      console.log('Error:', error);
+      setSubmitLoading(false)
+      ErrorToast(error?.response?.data?.message)
+    }
     onClose();
   };
 
@@ -58,7 +89,7 @@ const UploadPdfModal = ({ isOpen, onClose }) => {
                 onClick={handleUpload}
                 className="px-6 py-2 bg-black text-white rounded-md w-full hover:bg-gray-800 transition duration-300"
               >
-                 Upload
+                 {submitLoading ? "Uploading..." :"Upload"}
               </button>
             </div>
           </div>

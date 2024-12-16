@@ -17,7 +17,7 @@ const EventAppointmentsTable = ({ eventId }) => {
     const fetchAppointments = async () => {
       try {
         setLoading(true)
-        const response = await axios.get(`/admin/events/${eventId}?page=${currentPage}&limit=60`);
+        const response = await axios.get(`/admin/events/${eventId}?page=${currentPage}&limit=10`);
         if (response.data.success) {
           setAppointments(response.data.data); 
           setTotalPages(response.data.totalPages)

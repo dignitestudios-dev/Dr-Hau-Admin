@@ -183,7 +183,7 @@ export const normalRoutes = [
     },
     {
       title: "physical Exam",
-      url: "/physical-exam",
+      url: "/physical-exam/:id",
       page: <GlobalLayout page={<PhysicalExam />} />,
 
     },

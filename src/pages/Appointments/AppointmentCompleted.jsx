@@ -34,7 +34,7 @@ const AppointmentCompleted = () => {
       <div className="bg-white shadow-md rounded-md p-6">
         <div>
           <h4 className="text-[20px] font-bold text-black mb-4">
-            Vaccination Appointment <span className="bg-green-500 text-white px-3 py-2 text-[12px] rounded-full">Completed</span>
+            Vaccination Appointment <span className="bg-green-500 text-white px-3 py-2 text-[12px] rounded-full">{appointment?.appointment?.adminStatus}</span>
           </h4>
           <p className="text-[14px] text-gray-600 mb-4">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc non eleifend odio, suscipit aliquam erat. Quisque eu fermentum tortor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc non eleifend odio, suscipit aliquam erat. Quisque eu fermentum tortor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc non eleifend odio, suscipit aliquam erat. Quisque eu fermentum tortor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc non eleifend odio, suscipit aliquam erat. Quisque eu fermentum tortor.
@@ -58,7 +58,7 @@ const AppointmentCompleted = () => {
             <div className="flex space-x-4">
             {/* View Report Button */}
             <button
-              onClick={() => navigate(`/medicalreportform/${appointment?.appointment?.id}`)}
+              onClick={() => navigate(`/medicalreportform/${appointment?.appointment?.id}`, { state: { appointment: appointment?.appointment?.report } })}
               className="flex items-center text-white bg-black px-6 py-2 rounded-md border border-black"
             >
               <FaFileAlt className="mr-2" /> {/* React Icon for Document */}
@@ -76,7 +76,8 @@ const AppointmentCompleted = () => {
 
             {/* Physical Exam Button */}
             <button
- onClick={() => navigate('/physical-exam')}              className="flex items-center text-white bg-black px-6 py-2 rounded-md border border-black"
+ onClick={() => navigate(`/physical-exam/${appointment?.appointment?.id}`)}     
+          className="flex items-center text-white bg-black px-6 py-2 rounded-md border border-black"
             >
               {/* <FaUpload className="mr-2" /> */}
 Physical Exam            </button>
@@ -88,6 +89,8 @@ Physical Exam            </button>
 
       {/* PDF Upload Modal */}
       <PdfUploadModal
+      id={appointment?.appointment?.id}
+      report={appointment?.appointment?.report}
         isOpen={isModalOpen}
         onClose={closeModal}
         onUpload={handleUpload}
