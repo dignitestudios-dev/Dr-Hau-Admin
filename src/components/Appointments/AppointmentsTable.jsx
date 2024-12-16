@@ -95,13 +95,13 @@ const AppointmentsTable = () => {
           </select> */}
 
           {/* Filter by Lot Number */}
-          {/* <input
+          <input
             type="text"
             value={lotNumberFilter}
             onChange={handleLotNumberFilterChange}
             placeholder="Filter by Lot Number"
             className="p-2 border text-black border-gray-300 rounded-md"
-          /> */}
+          />
         </div>
       </div>
 
