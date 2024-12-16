@@ -84,14 +84,15 @@ const DashboardEvents = () => {
 
   return (
     <>
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center">
-          <h3 className="text-[24px] font-bold p-4 text-black">Events</h3>
-        </div>
-      </div>
+      
 
       {/* Date Picker */}
       <div className="w-full h-auto bg-white p-6 rounded-md">
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex items-center">
+          <h3 className="text-[24px] font-bold  text-black">Events</h3>
+        </div>
+      </div>
         {/* <div className="flex justify-between items-center mb-4">
           <div className="flex gap-6">
             <label htmlFor="event-date" className="text-gray-700 font-medium">Select Date</label>

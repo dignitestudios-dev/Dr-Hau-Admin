@@ -84,7 +84,7 @@ const StudentsTable = () => {
             className="p-2 border rounded-md bg-white text-gray-700"
           />
           {/* Dropdown to filter by school */}
-          <select
+          {/* <select
             value={selectedSchool}
             onChange={handleSchoolFilter}
             className="p-2 border rounded-md bg-white text-gray-700"
@@ -103,7 +103,7 @@ const StudentsTable = () => {
             <option value="Harvard">Campus 1</option>
             <option value="MIT">Campus 2</option>
             <option value="Stanford">Campus 3</option>
-          </select>
+          </select> */}
         </div>
       </div>
 

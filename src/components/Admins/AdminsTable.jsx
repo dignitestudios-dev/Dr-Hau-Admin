@@ -64,27 +64,26 @@ const AdminsTable = () => {
         </div>
         <div className="flex items-center gap-4">
           {/* Search bar */}
-          <input
+          {/* <input
             type="text"
             placeholder="Search by name"
             value={searchQuery}
             onChange={handleSearchChange}
             className="p-2 border rounded-md bg-white text-gray-700"
-          />
+          /> */}
           {/* Dropdown to filter by school */}
-          <select
+          {/* <select
             value={selectedSchool}
             onChange={handleSchoolFilter}
             className="p-2 border rounded-md bg-white text-gray-700"
           >
             <option value="">Select School</option>
-            {/* Dynamically populate school options based on the admins data */}
             {Admins.map((admin, index) => (
               <option key={index} value={admin?.schoolName}>
                 {admin?.schoolName}
               </option>
             ))}
-          </select>
+          </select> */}
         </div>
       </div>
 

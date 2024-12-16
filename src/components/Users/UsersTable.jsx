@@ -72,7 +72,7 @@ const UsersTable = () => {
         <div className="flex items-center">
           <h3 className="text-[24px] font-bold text-black">Users</h3>
         </div>
-        <div className="flex items-center gap-4">
+        {/* <div className="flex items-center gap-4">
           <input
             type="text"
             placeholder="Search by name"
@@ -104,7 +104,7 @@ const UsersTable = () => {
               </option>
             ))}
           </select>
-        </div>
+        </div> */}
       </div>
 
       {/* Loader: Inline CSS Spinner */}

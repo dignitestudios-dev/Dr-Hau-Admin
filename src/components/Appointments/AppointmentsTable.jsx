@@ -84,7 +84,7 @@ const AppointmentsTable = () => {
           </button>
 
           {/* Filter by Status Dropdown */}
-          <select
+          {/* <select
             value={filter}
             onChange={handleFilterChange}
             className="p-2 border text-black border-gray-300 rounded-md"
@@ -92,16 +92,16 @@ const AppointmentsTable = () => {
             <option value="All">All Status</option>
             <option value="Scheduled">Scheduled</option>
             <option value="Not Confirmed">Not Confirmed</option>
-          </select>
+          </select> */}
 
           {/* Filter by Lot Number */}
-          <input
+          {/* <input
             type="text"
             value={lotNumberFilter}
             onChange={handleLotNumberFilterChange}
             placeholder="Filter by Lot Number"
             className="p-2 border text-black border-gray-300 rounded-md"
-          />
+          /> */}
         </div>
       </div>
 
