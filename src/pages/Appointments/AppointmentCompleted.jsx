@@ -34,24 +34,32 @@ const AppointmentCompleted = () => {
       <div className="bg-white shadow-md rounded-md p-6">
         <div>
           <h4 className="text-[20px] font-bold text-black mb-4">
-            Vaccination Appointment <span className="bg-green-500 text-white px-3 py-2 text-[12px] rounded-full">{appointment?.appointment?.adminStatus}</span>
+          {appointment?.event?.title} <span className="bg-green-500 text-white px-3 py-2 text-[12px] rounded-full">{appointment?.appointment?.adminStatus}</span>
           </h4>
           <p className="text-[14px] text-gray-600 mb-4">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc non eleifend odio, suscipit aliquam erat. Quisque eu fermentum tortor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc non eleifend odio, suscipit aliquam erat. Quisque eu fermentum tortor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc non eleifend odio, suscipit aliquam erat. Quisque eu fermentum tortor. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc non eleifend odio, suscipit aliquam erat. Quisque eu fermentum tortor.
-          </p>
+          {appointment?.event?.description}          </p>
 
           <div className="flex items-center text-[14px] text-gray-700 mb-2">
-            <span className="mr-3">🕒</span> 09:00 AM - 14:00 PM
+            <span className="mr-2">🕒</span> {appointment?.appointment?.date && new Date(appointment?.appointment?.date).toLocaleDateString('en-US', {
+  weekday: 'long', // 'short' will give abbreviated weekday names like 'Mon'
+  year: 'numeric',
+  month: 'long',  // 'short' will give abbreviated months like 'Jan'
+  day: 'numeric',
+})}
           </div>
-          <div className="flex items-center text-[14px] text-gray-700 mb-4">
+          {/* <div className="flex items-center text-[14px] text-gray-700 mb-4">
             <span className="mr-3">📅</span> June 12, 2024
-          </div>
+          </div> */}
 
-          <div className="mb-4">
+          <div className="mb-4 mt-4">
             <strong className="text-black">Vaccinations:</strong>
-            <ul className="list-disc ml-5 text-[14px] text-[#858585]">
-              <li>Hepatitis B Vaccination 2nd Dose</li>
-            </ul>
+            <ul className="">
+  {appointment?.appointment?.vaccinations?.map((vaccination, index) => (
+    <li key={index} className=" text-gray-600 text-[15px]">
+      {vaccination}
+    </li>
+  ))}
+</ul>
           </div>
 
           {appointment?.appointment?.adminStatus === "completed" && (

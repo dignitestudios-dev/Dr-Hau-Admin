@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { CiPen } from "react-icons/ci";
 import { useLocation, useParams } from "react-router-dom";
 import { ErrorToast, SuccessToast } from "../../components/Global/Toaster";
+import { useNavigate} from "react-router-dom";
+
 
 
 const MedicalReportForm = () => {
@@ -15,21 +17,21 @@ const MedicalReportForm = () => {
       console.log("app-- ", appointment)
   const [isEditing, setIsEditing] = useState(false);
 
+    const navigate = useNavigate();
+  
+
   const [formData, setFormData] = useState({
-    mumpsImmunity: false,
-    rubellaImmunity: false,
-    rubeolaImmunity: false,
-    varicellaImmunity: false,
-    hepatitisImmunity: false,
-
-    
-    mumpsDate: "", 
-    rubellaDate: "",
-    rubeolaDate: "",
-    varicellaDate: "",
-    hepatitisDate: "",
-
-    physicalExam: "",
+  mumpsImmunity: false,
+  rubellaImmunity: false,
+  rubeolaImmunity: false,
+  varicellaImmunity: false,
+  hepatitisImmunity: false,
+  mumpsDate: "", 
+  rubellaDate: "",
+  rubeolaDate: "",
+  varicellaDate: "",
+  hepatitisDate: "",
+  physicalExam: "",
   physicalExamDate: "",
   physicalExamNote: "",
   tspotTest1: "", 
@@ -38,8 +40,7 @@ const MedicalReportForm = () => {
   tspotTest2: "", 
   tspot2Date: "",
   tspot2Note: "",
-
-    hepatitisBVaccination1Date: '',
+  hepatitisBVaccination1Date: '',
   hepatitisBVaccination1Note: '',
   hepatitisBVaccination2Date: '',
   hepatitisBVaccination2Note: '',
@@ -57,6 +58,18 @@ const MedicalReportForm = () => {
   tdapVaccinationNote: '',
   influenzaVaccinationDate: '',
   influenzaVaccinationNote: '',
+  benzodiazepine:"",
+  barbituates:"",
+  cocaine:"",
+  marijuana:"",
+  opiates:"",
+  amphetamines:"",
+  methamphetamines:"",
+  pcp:"",
+  methadone:"",
+  mdma:"",
+  propoxyphene:"",
+ oxycodone: "",
   });
 
   const handleBackendData = (backendData) => {
@@ -102,6 +115,24 @@ const MedicalReportForm = () => {
       tdapVaccinationNote: backendData.tdapVaccinationNote || "",
       influenzaVaccinationDate: backendData.influenzaVaccinationDate || "",
       influenzaVaccinationNote: backendData.influenzaVaccinationNote || "",
+
+      benzodiazepine: backendData.benzodiazepine || "",
+      barbituates: backendData.barbituates || "",
+      cocaine: backendData.cocaine || "",
+      marijuana: backendData.marijuana || "",
+      opiates: backendData.opiates || "",
+      amphetamines: backendData.amphetamines || "",
+      
+      methamphetamines: backendData.methamphetamines || "",
+      
+      pcp: backendData.pcp || "",
+      methadone: backendData.methadone || "",
+      mdma: backendData.mdma || "",
+      propoxyphene: backendData.propoxyphene || "",
+      oxycodone: backendData.oxycodone || "",
+
+      
+
     }));
   };
 
@@ -151,7 +182,7 @@ const MedicalReportForm = () => {
       if(response.status === 200 || response.status === 201){
         setSubmitLoading(false)
         SuccessToast("Report Submitted")
-        // navigate("event-details/675fd5356fff065eb9dd0729")
+        navigate("/events")
       }
     } catch (error) {
       console.log('Error:', error);
@@ -483,7 +514,7 @@ const MedicalReportForm = () => {
       disabled={!isEditing}
     />
   </div>
-  <div>
+  {/* <div>
     <label className="block text-sm font-medium text-black">Hepatitis B Vaccination #1 Note</label>
     <input
       type="text"
@@ -493,7 +524,7 @@ const MedicalReportForm = () => {
       placeholder="Enter note for first dose"
       disabled={!isEditing}
     />
-  </div>
+  </div> */}
 
   {/* Hepatitis B Vaccination #2 */}
   <div>
@@ -506,7 +537,7 @@ const MedicalReportForm = () => {
       disabled={!isEditing}
     />
   </div>
-  <div>
+  {/* <div>
     <label className="block text-sm font-medium text-black">Hepatitis B Vaccination #2 Note</label>
     <input
       type="text"
@@ -516,7 +547,7 @@ const MedicalReportForm = () => {
       placeholder="Enter note for second dose"
       disabled={!isEditing}
     />
-  </div>
+  </div> */}
 
   {/* Hepatitis B Vaccination #3 */}
   <div>
@@ -529,7 +560,7 @@ const MedicalReportForm = () => {
       disabled={!isEditing}
     />
   </div>
-  <div>
+  {/* <div>
     <label className="block text-sm font-medium text-black">Hepatitis B Vaccination #3 Note</label>
     <input
       type="text"
@@ -539,7 +570,7 @@ const MedicalReportForm = () => {
       placeholder="Enter note for final dose"
       disabled={!isEditing}
     />
-  </div>
+  </div> */}
 
   {/* MMR Vaccination #1 */}
   <div>
@@ -552,7 +583,7 @@ const MedicalReportForm = () => {
       disabled={!isEditing}
     />
   </div>
-  <div>
+  {/* <div>
     <label className="block text-sm font-medium text-black">MMR Vaccination #1 Note</label>
     <input
       type="text"
@@ -562,7 +593,7 @@ const MedicalReportForm = () => {
       placeholder="Enter note for first dose"
       disabled={!isEditing}
     />
-  </div>
+  </div> */}
 
   {/* MMR Vaccination #2 */}
   <div>
@@ -575,7 +606,7 @@ const MedicalReportForm = () => {
       disabled={!isEditing}
     />
   </div>
-  <div>
+  {/* <div>
     <label className="block text-sm font-medium text-black">MMR Vaccination #2 Note</label>
     <input
       type="text"
@@ -585,7 +616,7 @@ const MedicalReportForm = () => {
       placeholder="Enter note for second dose"
       disabled={!isEditing}
     />
-  </div>
+  </div> */}
 
   {/* Varicella Vaccination #1 */}
   <div>
@@ -598,7 +629,7 @@ const MedicalReportForm = () => {
       disabled={!isEditing}
     />
   </div>
-  <div>
+  {/* <div>
     <label className="block text-sm font-medium text-black">Varicella Vaccination #1 Note</label>
     <input
       type="text"
@@ -608,7 +639,7 @@ const MedicalReportForm = () => {
       placeholder="Enter note for first dose"
       disabled={!isEditing}
     />
-  </div>
+  </div> */}
 
   {/* Varicella Vaccination #2 */}
   <div>
@@ -621,7 +652,7 @@ const MedicalReportForm = () => {
       disabled={!isEditing}
     />
   </div>
-  <div>
+  {/* <div>
     <label className="block text-sm font-medium text-black">Varicella Vaccination #2 Note</label>
     <input
       type="text"
@@ -631,7 +662,7 @@ const MedicalReportForm = () => {
       placeholder="Enter note for second dose"
       disabled={!isEditing}
     />
-  </div>
+  </div> */}
 
   {/* Tdap Vaccination */}
   <div>
@@ -644,7 +675,7 @@ const MedicalReportForm = () => {
       disabled={!isEditing}
     />
   </div>
-  <div>
+  {/* <div>
     <label className="block text-sm font-medium text-black">Tdap Vaccination Note</label>
     <input
       type="text"
@@ -654,7 +685,7 @@ const MedicalReportForm = () => {
       placeholder="Enter note for Tdap vaccination"
       disabled={!isEditing}
     />
-  </div>
+  </div> */}
 
   {/* Influenza Vaccination */}
   <div>
@@ -667,7 +698,7 @@ const MedicalReportForm = () => {
       disabled={!isEditing}
     />
   </div>
-  <div>
+  {/* <div>
     <label className="block text-sm font-medium text-black">Influenza Vaccination Note</label>
     <input
       type="text"
@@ -677,7 +708,201 @@ const MedicalReportForm = () => {
       placeholder="Enter note for influenza vaccination"
       disabled={!isEditing}
     />
+  </div> */}
+
+
+  
+</div>
+<h3 className="font-semibold text-lg mb-4 text-black">Drug Report</h3>
+
+<div className="grid grid-cols-2 gap-6 mb-4">
+<div>
+  <div>
+    <label className="block text-sm font-medium text-black">Benzodiazepine</label>
+    <select
+      value={formData.benzodiazepine}
+      onChange={(e) => handleChange("benzodiazepine", e.target.value)}
+      className="w-full border rounded p-2 text-black"
+      disabled={!isEditing}
+    >
+            <option value="">Select</option>
+
+      <option value={true}>Positive</option>
+      <option value={false}>Negative</option>
+    </select>
   </div>
+</div>
+
+<div>
+  <div>
+    <label className="block text-sm font-medium text-black">Barbituates</label>
+    <select
+      value={formData.barbituates}
+      onChange={(e) => handleChange("barbituates", e.target.value)}
+      className="w-full border rounded p-2 text-black"
+      disabled={!isEditing}
+    >
+            <option value="">Select</option>
+
+      <option value={true}>Positive</option>
+      <option value={false}>Negative</option>
+    </select>
+  </div>
+</div>
+
+<div>
+  <div>
+    <label className="block text-sm font-medium text-black">cocaine</label>
+    <select
+      value={formData.cocaine}
+      onChange={(e) => handleChange("cocaine", e.target.value)}
+      className="w-full border rounded p-2 text-black"
+      disabled={!isEditing}
+    >
+            <option value="">Select</option>
+
+      <option value={true}>Positive</option>
+      <option value={false}>Negative</option>
+    </select>
+  </div>
+</div>
+
+<div>
+  <div>
+    <label className="block text-sm font-medium text-black">marijuana</label>
+    <select
+      value={formData.marijuana}
+      onChange={(e) => handleChange("marijuana", e.target.value)}
+      className="w-full border rounded p-2 text-black"
+      disabled={!isEditing}
+    >
+            <option value="">Select</option>
+
+      <option value={true}>Positive</option>
+      <option value={false}>Negative</option>
+    </select>
+  </div>
+</div>
+
+<div>
+  <div>
+    <label className="block text-sm font-medium text-black">opiates</label>
+    <select
+      value={formData.opiates}
+      onChange={(e) => handleChange("opiates", e.target.value)}
+      className="w-full border rounded p-2 text-black"
+      disabled={!isEditing}
+    >
+            <option value="">Select</option>
+
+      <option value={true}>Positive</option>
+      <option value={false}>Negative</option>
+    </select>
+  </div>
+</div>
+
+<div>
+  <div>
+    <label className="block text-sm font-medium text-black">amphetamines</label>
+    <select
+      value={formData.amphetamines}
+      onChange={(e) => handleChange("amphetamines", e.target.value)}
+      className="w-full border rounded p-2 text-black"
+      disabled={!isEditing}
+    >
+            <option value="">Select</option>
+
+      <option value={true}>Positive</option>
+      <option value={false}>Negative</option>
+    </select>
+  </div>
+</div>
+
+<div>
+  <div>
+    <label className="block text-sm font-medium text-black">pcp</label>
+    <select
+      value={formData.pcp}
+      onChange={(e) => handleChange("pcp", e.target.value)}
+      className="w-full border rounded p-2 text-black"
+      disabled={!isEditing}
+    >
+            <option value="">Select</option>
+
+      <option value={true}>Positive</option>
+      <option value={false}>Negative</option>
+    </select>
+  </div>
+</div>
+
+<div>
+  <div>
+    <label className="block text-sm font-medium text-black">methadone</label>
+    <select
+      value={formData.methadone}
+      onChange={(e) => handleChange("methadone", e.target.value)}
+      className="w-full border rounded p-2 text-black"
+      disabled={!isEditing}
+    >
+      <option value="">Select</option>
+      <option value={true}>Positive</option>
+      <option value={false}>Negative</option>
+      
+    </select>
+  </div>
+</div>
+
+<div>
+  <div>
+    <label className="block text-sm font-medium text-black">mdma</label>
+    <select
+      value={formData.mdma}
+      onChange={(e) => handleChange("mdma", e.target.value)}
+      className="w-full border rounded p-2 text-black"
+      disabled={!isEditing}
+    >
+           <option value="">Select</option>
+
+      <option value={true}>Positive</option>
+      <option value={false}>Negative</option>
+    </select>
+  </div>
+</div>
+
+
+<div>
+  <div>
+    <label className="block text-sm font-medium text-black">propoxyphene</label>
+    <select
+      value={formData.propoxyphene}
+      onChange={(e) => handleChange("propoxyphene", e.target.value)}
+      className="w-full border rounded p-2 text-black"
+      disabled={!isEditing}
+    >
+             
+     <option value="">Select</option>
+      <option value={true}>Positive</option>
+      <option value={false}>Negative</option>
+    </select>
+  </div>
+</div>
+
+
+<div>
+  <div>
+    <label className="block text-sm font-medium text-black">oxycodone</label>
+    <select
+      value={formData.oxycodone}
+      onChange={(e) => handleChange("oxycodone", e.target.value)}
+      className="w-full border rounded p-2 text-black"
+      disabled={!isEditing}
+    >
+       <option value="">Select</option> 
+      <option value={true}>Positive</option>
+      <option value={false}>Negative</option>
+    </select>
+  </div>
+</div>
 </div>
 
         {/* <h3 className="font-semibold text-lg mb-4 text-black">Drug Test Results</h3>

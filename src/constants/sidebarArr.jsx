@@ -91,11 +91,11 @@ export const sidebarArr = [
     icon: <RiNotificationLine />,
   },
   
-  {
-    title: "CDC Sheets",
-    url: "/cdc-sheets",
-    icon: <BsFiletypePdf />,
-  },
+  // {
+  //   title: "CDC Sheets",
+  //   url: "/cdc-sheets",
+  //   icon: <BsFiletypePdf />,
+  // },
   {
     title: "Settings",
     url: "/change-password",
