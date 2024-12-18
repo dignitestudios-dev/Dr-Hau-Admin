@@ -188,20 +188,22 @@ const UserAppointmentDetails = () => {
           ) :(
             <>
             {vaccinations.length > 0 && (
-              <div className="flex justify-end space-x-4 mt-8">
+              <div className="flex justify-start space-x-4 mt-8">
     
+    {/* Mark as Completed Button */}
+  {approvalStatus === 'approved' && (
     <button
-                    onClick={() => setShowCompleteModal(true)}
-                    // disabled={approvalStatus === 'rejected'}
-                    className="bg-green-500 text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform hover:scale-105"
-                  >
-                    Mark as Completed
-                  </button>
+      onClick={() => setShowCompleteModal(true)} // Open Complete Modal
+      className="bg-green-500 text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform hover:scale-105"
+    >
+      Mark as Completed
+    </button>
+  )}
                 {/* Approve Button */}
                 {approvalStatus === 'approved' ? (
                   <button
                     disabled
-                    className="bg-green-500 text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform hover:scale-105"
+                    className="display:none"
                   >
                     Approved
                   </button>
@@ -216,22 +218,14 @@ const UserAppointmentDetails = () => {
                 )}
     
                 {/* Reject Button */}
-                {approvalStatus === 'rejected' ? (
-                  <button
-                    disabled
-                    className="bg-red-500 text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform hover:scale-105"
-                  >
-                    Rejected
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => setShowRejectModal(true)}  // Open Reject Modal
-                    disabled={approvalStatus === 'rejected'}
-                    className="bg-red-500 text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform hover:scale-105"
-                  >
-                    Reject
-                  </button>
-                )}
+                {!(approvalStatus === 'rejected' || approvalStatus === 'approved') && (
+  <button
+    onClick={() => setShowRejectModal(true)}  // Open Reject Modal
+    className="bg-red-500 text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform hover:scale-105"
+  >
+    Reject
+  </button>
+)}
     
     
               </div>

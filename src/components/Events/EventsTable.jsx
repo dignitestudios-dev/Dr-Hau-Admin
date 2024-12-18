@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../../axios";
+import { MdChevronLeft, MdChevronRight } from "react-icons/md";
+
 
 const EventsTable = () => {
   const [events, setEvents] = useState([]); // To store the events data
@@ -12,6 +14,9 @@ const EventsTable = () => {
   const [selectedDate, setSelectedDate] = useState(getCurrentDate()); // Set default to current date
   const navigate = useNavigate();
 
+  //pagination 
+  const [currentPage, setCurrentPage] = useState(1); // Current page state
+    const [totalPages, setTotalPages] = useState(0); // Total pages state
   // Function to get current date in the proper format (e.g., 2024-10-03)
   function getCurrentDate() {
     const date = new Date();
@@ -23,12 +28,14 @@ const EventsTable = () => {
     const fetchEvents = async () => {
       setLoading(true); // Set loading to true before making the request
       try {
-        const response = await axios?.post('/admin/events?page=1&limit=50', {
+        const response = await axios?.post(`/admin/events?page=${currentPage}&limit=10`, {
           currentDate: selectedDate, // Include the selected date in the request body
         });
 
         if (response?.data?.success) {
-          setEvents(response?.data?.data); // Store events data in state
+          setEvents(response?.data?.data);
+          setTotalPages(response.data.totalPages); // Assuming API returns totalPages
+          // Store events data in state
         } else {
           setError("No events found for the selected date.");
         }
@@ -40,7 +47,7 @@ const EventsTable = () => {
     };
 
     fetchEvents();
-  }, [selectedDate]); // Re-fetch events whenever selectedDate changes
+  }, [selectedDate, currentPage]); // Re-fetch events whenever selectedDate changes
 
   // Filter events based on status, school, and campus
   const filteredEvents = events?.filter((event) => {
@@ -82,6 +89,19 @@ const EventsTable = () => {
     }
   };
 
+
+  // Pagination handlers
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
   return (
     <>
       <div className="flex justify-between items-center mb-4">
@@ -243,6 +263,26 @@ className="py-3 px-4 text-blue-500 cursor-pointer"
             </tbody>
           </table>
         </div>
+        {/* Pagination controls */}
+              <div className="flex justify-between items-center mt-4">
+                <button 
+                  onClick={handlePreviousPage} 
+                  disabled={currentPage === 1} 
+                  className={`flex items-center px-4 py-2 rounded-full transition-all duration-300 bg-blue-500 text-white ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'}`}
+                >
+                  <MdChevronLeft className="mr-2" /> Previous
+                </button>
+        
+                <span className="text-gray-500">Page {currentPage} of {totalPages}</span>
+        
+                <button 
+                  onClick={handleNextPage} 
+                  disabled={currentPage === totalPages} 
+                  className={`flex items-center px-4 py-2 rounded-full transition-all duration-300 bg-blue-500 text-white ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'}`}
+                >
+                  Next <MdChevronRight className="ml-2" />
+                </button>
+              </div>
       </div>
     </>
   );

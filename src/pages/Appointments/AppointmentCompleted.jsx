@@ -20,10 +20,10 @@ const AppointmentCompleted = () => {
   // Handle the PDF upload
   const handleUpload = (file) => {
     console.log("Uploaded file:", file);
-    // You can handle the uploaded file here, like sending it to a server.
   };
 
   
+  const hasPhysicalExamDetails = appointment?.appointment?.physicalExam;
 
   return (
     <div className="w-full h-auto p-6 bg-gray-100 overflow-auto">
@@ -64,38 +64,37 @@ const AppointmentCompleted = () => {
 
           {appointment?.appointment?.adminStatus === "completed" && (
             <div className="flex space-x-4">
-            {/* View Report Button */}
             <button
               onClick={() => navigate(`/medicalreportform/${appointment?.appointment?.id}`, { state: { appointment: appointment?.appointment?.report } })}
               className="flex items-center text-white bg-black px-6 py-2 rounded-md border border-black"
             >
-              <FaFileAlt className="mr-2" /> {/* React Icon for Document */}
-              Edit Report
+              <FaFileAlt className="mr-2" /> 
+              Medical Report
             </button>
 
-            {/* Upload PDF Button */}
             <button
               onClick={openModal}
               className="flex items-center text-white bg-black px-6 py-2 rounded-md border border-black"
             >
-              <FaUpload className="mr-2" /> {/* React Icon for Upload */}
+              <FaUpload className="mr-2" />
               Upload PDF
             </button>
 
-            {/* Physical Exam Button */}
-            <button
- onClick={() => navigate(`/physical-exam/${appointment?.appointment?.id}`)}     
-          className="flex items-center text-white bg-black px-6 py-2 rounded-md border border-black"
-            >
-              {/* <FaUpload className="mr-2" /> */}
-Physical Exam            </button>
-          </div>
+{/* Conditionally render the Physical Exam button */}
+{/* Disable the Physical Exam button and change color to gray if physical exam details are present */}
+<button
+                onClick={() => navigate(`/physical-exam/${appointment?.appointment?.id}`)}
+                disabled={hasPhysicalExamDetails} // Disable the button if physical exam details exist
+                className={`flex items-center text-white px-6 py-2 rounded-md  ${hasPhysicalExamDetails ? 'bg-gray-500 cursor-not-allowed' : 'bg-black'}`}
+              >
+                Physical Exam
+              </button>
+            </div>
           )}
 
         </div>
       </div>
 
-      {/* PDF Upload Modal */}
       <PdfUploadModal
       id={appointment?.appointment?.id}
       report={appointment?.appointment?.report}

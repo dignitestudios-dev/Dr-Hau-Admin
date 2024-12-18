@@ -6,6 +6,7 @@ const MarkAsCompletedModal = ({ show, onConfirm, onCancel }) => {
 
   const handleConfirm = () => {
     onConfirm();
+  
   };
 
   const handleCancel = () => {

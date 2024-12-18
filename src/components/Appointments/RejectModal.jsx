@@ -7,6 +7,7 @@ const RejectModal = ({ show, onConfirm, onCancel }) => {
   const handleConfirm = () => {
     ErrorToast("Appointment rejected.");
     onConfirm();
+    
   };
 
   const handleCancel = () => {

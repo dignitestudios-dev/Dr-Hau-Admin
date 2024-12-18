@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { IoMdArrowBack, IoMdEye, IoMdTrash } from "react-icons/io";
+import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import axios from "../../axios"; 
 
@@ -9,14 +10,17 @@ const UsersTable = () => {
   const [selectedCampus, setSelectedCampus] = useState(""); 
   const [searchQuery, setSearchQuery] = useState(""); 
   const [loading, setLoading] = useState(true); // Track loading state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const navigate = useNavigate();
 
   const fetchUsers = async () => {
     try {
       setLoading(true); // Set loading to true when fetching data
-      const response = await axios?.get("/admin/users/all"); 
+      const response = await axios.get(`/admin/users/all?page=${currentPage}&limit=10`); 
       if (response?.data?.success) {
         setUsers(response?.data?.data); 
+        setTotalPages(response?.data?.totalPages); // Assuming API returns totalPages
       } else {
         console.error("Failed to fetch users:", response?.data?.message);
       }
@@ -34,7 +38,7 @@ const UsersTable = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, []); 
+  }, [currentPage]); // Re-fetch users when currentPage changes
 
   const handleSchoolFilter = (event) => {
     setSelectedSchool(event.target.value);
@@ -66,45 +70,25 @@ const UsersTable = () => {
     return matchesSchool && matchesCampus && matchesSearch;
   });
 
+  // Pagination handlers
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
   return (
     <div className="w-full h-auto bg-white p-6 rounded-md">
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center">
           <h3 className="text-[24px] font-bold text-black">Users</h3>
         </div>
-        {/* <div className="flex items-center gap-4">
-          <input
-            type="text"
-            placeholder="Search by name"
-            value={searchQuery}
-            onChange={handleSearchChange}
-            className="p-2 border rounded-md bg-white text-gray-700"
-          />
-          <select
-            value={selectedSchool}
-            onChange={handleSchoolFilter}
-            className="p-2 border rounded-md bg-white text-gray-700"
-          >
-            <option value="">Select School</option>
-            {Array?.from(new Set(users?.map((user) => user?.schoolName)))?.map((school, index) => (
-              <option key={index} value={school}>
-                {school}
-              </option>
-            ))}
-          </select>
-          <select
-            value={selectedCampus}
-            onChange={handleCampusFilter}
-            className="p-2 border rounded-md bg-white text-gray-700"
-          >
-            <option value="">Select Campus</option>
-            {Array.from(new Set(users?.map((user) => user?.campus))).map((campus, index) => (
-              <option key={index} value={campus}>
-                {campus}
-              </option>
-            ))}
-          </select>
-        </div> */}
       </div>
 
       {/* Loader: Inline CSS Spinner */}
@@ -143,8 +127,8 @@ const UsersTable = () => {
                   <td className="py-3 px-4 flex items-center gap-3">
                     <button
                       onClick={() => handleViewProfile(user)}
-                      className="text-blue-500 hover:text-blue-700"
-                      title="View Profile"
+                      className="text-blue-500 hover:text-blue-700 mb-3"
+                      title="View Details"
                     >
                       View Details
                     </button>
@@ -155,6 +139,27 @@ const UsersTable = () => {
           </table>
         </div>
       )}
+
+      {/* Pagination controls */}
+      <div className="flex justify-between items-center mt-4">
+        <button 
+          onClick={handlePreviousPage} 
+          disabled={currentPage === 1} 
+          className={`flex items-center px-4 py-2 rounded-full transition-all duration-300 bg-blue-500 text-white ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'}`}
+        >
+          <MdChevronLeft className="mr-2" /> Previous
+        </button>
+
+        <span className="text-gray-500">Page {currentPage} of {totalPages}</span>
+
+        <button 
+          onClick={handleNextPage} 
+          disabled={currentPage === totalPages} 
+          className={`flex items-center px-4 py-2 rounded-full transition-all duration-300 bg-blue-500 text-white ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'}`}
+        >
+          Next <MdChevronRight className="ml-2" />
+        </button>
+      </div>
     </div>
   );
 };

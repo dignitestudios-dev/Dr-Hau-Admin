@@ -51,7 +51,7 @@ const PhysicalExam = () => {
     VaricellaPrior: '50',
     ppdDone: true,
     ppdNotDoneReason: '',
-    hxPPD: 'No history of PPD',
+    hxPPD: true,
     negativePPD: 'Yes',
     isStudentHealthy: true,
     isNormalExam: true,
@@ -63,11 +63,23 @@ const PhysicalExam = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
+  
+    // Check if it's a radio button
+    if (type === 'radio') {
+      // Convert the value to a boolean if it's "true" or "false"
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value === 'true', // convert the string to boolean
+      }));
+    } else {
+      // For other input types (checkboxes, text, etc.)
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: type === 'checkbox' ? checked : value,
+      }));
+    }
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -128,7 +140,7 @@ const PhysicalExam = () => {
             <label className="block text-sm font-medium mb-2">Address</label>
             <input
               name="address"
-              value={formData.address}
+              value={formData?.address}
               onChange={handleChange}
               type="text"
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -141,7 +153,7 @@ const PhysicalExam = () => {
               <label className="block text-sm font-medium mb-2">City</label>
               <input
                 name="city"
-                value={formData.city}
+                value={formData?.city}
                 onChange={handleChange}
                 type="text"
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -152,7 +164,7 @@ const PhysicalExam = () => {
               <label className="block text-sm font-medium mb-2">State</label>
               <input
                 name="state"
-                value={formData.state}
+                value={formData?.state}
                 onChange={handleChange}
                 type="text"
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -174,7 +186,7 @@ const PhysicalExam = () => {
               <label className="block text-sm font-medium mb-2">School City</label>
               <input
                 name="schoolCity"
-                value={formData.schoolCity}
+                value={formData?.schoolCity}
                 onChange={handleChange}
                 type="text"
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -188,14 +200,14 @@ const PhysicalExam = () => {
               <label className="block text-sm font-medium mb-2">Phone No</label>
               <input
                 name="phoneNo"
-                value={formData.phoneNo}
+                value={formData?.phoneNo}
                 onChange={handleChange}
                 type="text"
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 placeholder="Phone No"
               />
             </div>
-            <div>
+            {/* <div>
               <label className="block text-sm font-medium mb-2">Date of Birth</label>
               <input
                 name="dateOfBirth"
@@ -204,13 +216,13 @@ const PhysicalExam = () => {
                 type="date"
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
-            </div>
+            </div> */}
             
             
           </div>
         </section>
 
-        <div className="flex items-center">
+           {/* <div className="flex items-center">
               <label className="mr-4">Gender:</label>
               <label className="mr-6">
                 <input
@@ -234,7 +246,7 @@ const PhysicalExam = () => {
                 />
                 Female
               </label>
-            </div>
+            </div> */}
         {/* Part B */}
         <section>
           <h2 className="text-2xl font-semibold text-gray-800 mb-6">Part B: Physical Exam</h2>
@@ -255,6 +267,18 @@ const PhysicalExam = () => {
                 />
               </div>
             ))}
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-sm font-medium mb-2 mt-4">Comments</label>
+            <input
+              name="comments"
+              value={formData?.comments}
+              onChange={handleChange}
+              type="text"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="comments"
+            />
           </div>
         </section>
 
@@ -283,14 +307,26 @@ const PhysicalExam = () => {
                 <label htmlFor={name} className="text-sm font-medium">{label}</label>
               </div>
             ))}
-          </div>
 
+            
+          </div>
+          <div className="mb-6">
+            <label className="block text-sm font-medium mb-2 mt-4">Other</label>
+            <input
+              name="other"
+              value={formData?.other}
+              onChange={handleChange}
+              type="text"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="other"
+            />
+          </div>
 
           <div>
               <label className="block text-sm font-medium mb-2 mt-8">Blood Pressure Down</label>
               <input
                 name="bloodPressureDown"
-                value={formData.bloodPressureDown}
+                value={formData?.bloodPressureDown}
                 onChange={handleChange}
                 type="text"
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -301,7 +337,7 @@ const PhysicalExam = () => {
               <label className="block text-sm font-medium mb-2 mt-4">Blood Pressure Up</label>
               <input
                 name="bloodPressureUp"
-                value={formData.bloodPressureUp}
+                value={formData?.bloodPressureUp}
                 onChange={handleChange}
                 type="text"
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -312,7 +348,7 @@ const PhysicalExam = () => {
               <label className="block text-sm font-medium mb-2 mt-4">pulse</label>
               <input
                 name="pulse"
-                value={formData.pulse}
+                value={formData?.pulse}
                 onChange={handleChange}
                 type="text"
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -352,14 +388,14 @@ const PhysicalExam = () => {
 
           <div className="grid grid-cols- sm:grid-cols-2 md:grid-cols-2 gap-6">
             {/* MMR */}
-            <div className="flex items-center">
+          <div className="flex items-center">
               <label className="mr-4">MMR</label>
               <label className="mr-6">
                 <input
                   type="radio"
                   name="MMR"
                   value={true}
-                  checked={formData.MMR === true}
+                  checked={formData?.MMR === true}
                   onChange={handleChange}
                   className="mr-2"
                 />
@@ -370,7 +406,7 @@ const PhysicalExam = () => {
                   type="radio"
                   name="MMR"
                   value={false}
-                  checked={formData.MMR === false}
+                  checked={formData?.MMR === false}
                   onChange={handleChange}
                   className="mr-2"
                 />
@@ -382,7 +418,7 @@ const PhysicalExam = () => {
               <label className="block text-sm font-medium mb-2">MMR Prior</label>
               <input
                 name="MMRPrior"
-                value={formData.MMRPrior}
+                value={formData?.MMRPrior}
                 onChange={handleChange}
                 type="text"
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -400,7 +436,7 @@ const PhysicalExam = () => {
                   type="radio"
                   name="hepatitisB"
                   value={true}
-                  checked={formData.hepatitisB === true}
+                  checked={formData?.hepatitisB === true}
                   onChange={handleChange}
                   className="mr-2"
                 />
@@ -411,7 +447,7 @@ const PhysicalExam = () => {
                   type="radio"
                   name="hepatitisB"
                   value={false}
-                  checked={formData.hepatitisB === false}
+                  checked={formData?.hepatitisB === false}
                   onChange={handleChange}
                   className="mr-2"
                 />
@@ -423,7 +459,7 @@ const PhysicalExam = () => {
               <label className="block text-sm font-medium mb-2">hepatitisBPrior</label>
               <input
                 name="hepatitisBPrior"
-                value={formData.hepatitisBPrior}
+                value={formData?.hepatitisBPrior}
                 onChange={handleChange}
                 type="text"
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -441,7 +477,7 @@ const PhysicalExam = () => {
                   type="radio"
                   name="Varicella"
                   value={true}
-                  checked={formData.Varicella === true}
+                  checked={formData?.Varicella === true}
                   onChange={handleChange}
                   className="mr-2"
                 />
@@ -452,7 +488,7 @@ const PhysicalExam = () => {
                   type="radio"
                   name="Varicella"
                   value={false}
-                  checked={formData.Varicella === false}
+                  checked={formData?.Varicella === false}
                   onChange={handleChange}
                   className="mr-2"
                 />
@@ -464,7 +500,7 @@ const PhysicalExam = () => {
               <label className="block text-sm font-medium mb-2">Varicella Prior</label>
               <input
                 name="VaricellaPrior"
-                value={formData.VaricellaPrior}
+                value={formData?.VaricellaPrior}
                 onChange={handleChange}
                 type="text"
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -480,7 +516,7 @@ const PhysicalExam = () => {
                   type="radio"
                   name="ppdDone"
                   value={true}
-                  checked={formData.ppdDone === true}
+                  checked={formData?.ppdDone === true}
                   onChange={handleChange}
                   className="mr-2"
                 />
@@ -491,7 +527,7 @@ const PhysicalExam = () => {
                   type="radio"
                   name="ppdDone"
                   value={false}
-                  checked={formData.ppdDone === false}
+                  checked={formData?.ppdDone === false}
                   onChange={handleChange}
                   className="mr-2"
                 />
@@ -504,7 +540,7 @@ const PhysicalExam = () => {
               <label className="block text-sm font-medium mb-2">PPD DONE REASON</label>
               <input
                 name="ppdNotDoneReason"
-                value={formData.ppdNotDoneReason}
+                value={formData?.ppdNotDoneReason}
                 onChange={handleChange}
                 type="text"
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -512,17 +548,33 @@ const PhysicalExam = () => {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-2">hxPPD</label>
-              <input
-                name="hxPPD"
-                value={formData.hxPPD}
-                onChange={handleChange}
-                type="text"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                placeholder="Enter hxPPD"
-              />
+            {/* hxPPD Done */}
+            <div className="flex items-center">
+              <label className="mr-4">hxPPD</label>
+              <label className="mr-6">
+                <input
+                  type="radio"
+                  name="hxPPD"
+                  value={true}
+                  checked={formData?.hxPPD === true}
+                  onChange={handleChange}
+                  className="mr-2"
+                />
+                Yes
+              </label>
+              <label className="mr-6">
+                <input
+                  type="radio"
+                  name="hxPPD"
+                  value={false}
+                  checked={formData?.hxPPD === false}
+                  onChange={handleChange}
+                  className="mr-2"
+                />
+                No
+              </label>
             </div>
+
           </div>
 
         
@@ -535,7 +587,7 @@ const PhysicalExam = () => {
                   type="radio"
                   name="negativePPD"
                   value={true}
-                  checked={formData.negativePPD === true}
+                  checked={formData?.negativePPD === true}
                   onChange={handleChange}
                   className="mr-2"
                 />
@@ -546,7 +598,7 @@ const PhysicalExam = () => {
                   type="radio"
                   name="negativePPD"
                   value={false}
-                  checked={formData.negativePPD === false}
+                  checked={formData?.negativePPD === false}
                   onChange={handleChange}
                   className="mr-2"
                 />
@@ -563,7 +615,7 @@ const PhysicalExam = () => {
                   type="radio"
                   name="isNormalExam"
                   value={true}
-                  checked={formData.isNormalExam === true}
+                  checked={formData?.isNormalExam === true}
                   onChange={handleChange}
                   className="mr-2"
                 />
@@ -574,7 +626,7 @@ const PhysicalExam = () => {
                   type="radio"
                   name="isNormalExam"
                   value={false}
-                  checked={formData.isNormalExam === false}
+                  checked={formData?.isNormalExam === false}
                   onChange={handleChange}
                   className="mr-2"
                 />
@@ -592,7 +644,7 @@ const PhysicalExam = () => {
                   type="radio"
                   name="clinicianSign"
                   value={true}
-                  checked={formData.clinicianSign === true}
+                  checked={formData?.clinicianSign === true}
                   onChange={handleChange}
                   className="mr-2"
                 />
@@ -603,7 +655,7 @@ const PhysicalExam = () => {
                   type="radio"
                   name="clinicianSign"
                   value={false}
-                  checked={formData.clinicianSign === false}
+                  checked={formData?.clinicianSign === false}
                   onChange={handleChange}
                   className="mr-2"
                 />
@@ -619,7 +671,7 @@ const PhysicalExam = () => {
                   type="radio"
                   name="studentSign"
                   value={true}
-                  checked={formData.studentSign === true}
+                  checked={formData?.studentSign === true}
                   onChange={handleChange}
                   className="mr-2"
                 />
@@ -630,7 +682,7 @@ const PhysicalExam = () => {
                   type="radio"
                   name="studentSign"
                   value={false}
-                  checked={formData.studentSign === false}
+                  checked={formData?.studentSign === false}
                   onChange={handleChange}
                   className="mr-2"
                 />
@@ -643,7 +695,7 @@ const PhysicalExam = () => {
               <label className="block text-sm font-medium mb-2 mt-8">studentSignDate</label>
               <input
                 name="studentSignDate"
-                value={formData.studentSignDate ? formData.studentSignDate.split("T")[0] : ""}
+                value={formData?.studentSignDate ? formData?.studentSignDate.split("T")[0] : ""}
                 onChange={handleChange}
                 type="date"
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -655,21 +707,18 @@ const PhysicalExam = () => {
               <label className="block text-sm font-medium mb-2 mt-4">clinicianSignDate</label>
               <input
                 name="clinicianSignDate"
-                value={formData.studentSignDate ? formData.clinicianSignDate.split("T")[0] : ""}
+                value={formData?.studentSignDate ? formData?.clinicianSignDate?.split("T")[0] : ""}
                 onChange={handleChange}
                 type="date"
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
             </div> 
-
-
         </section>
 
-        {/* Submit Button */}
-        <div className="flex justify-center">
+        <div className="flex justify-end">
           <button
             type="submit"
-            className="bg-blue-600 text-white py-3 px-6 rounded-md font-semibold"
+            className="bg-black text-white py-3 px-6 rounded-md font-semibold"
             // disabled={submitLoading}
           >
             {submitLoading ? "Submitting..." : "Submit"}
