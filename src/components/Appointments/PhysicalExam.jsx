@@ -537,7 +537,7 @@ const PhysicalExam = () => {
 
 
             <div>
-              <label className="block text-sm font-medium mb-2">PPD DONE REASON</label>
+              <label className="block text-sm font-medium mb-2">PPD not done reason</label>
               <input
                 name="ppdNotDoneReason"
                 value={formData?.ppdNotDoneReason}
