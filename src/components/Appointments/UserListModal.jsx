@@ -19,7 +19,7 @@ const UserListModal = ({ isVisible, onClose }) => {
     { id: "MMR", name: "MMR" },
     { id: "Rabies", name: "Rabies" },
     { id: "Hepatitis B", name: "Hepatitis B" },
-    { id: "Polio", name: "Polio" },
+    { id: "Varicella", name: "Varicella" },
   ];
 
   // Initialize the current date when the component mounts
