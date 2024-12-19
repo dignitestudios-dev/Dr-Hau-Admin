@@ -50,11 +50,11 @@ const UserListModal = ({ isVisible, onClose }) => {
     try {
       const response = await axios.post("/admin/appointment/walkin", requestBody);
 
-      if (response.data.success) {
+      if (response?.data?.success) {
         alert("Walk-in appointment created successfully");
         onClose(); 
       } else {
-        setErrorMessage(response.data.message || "An unexpected error occurred. Please try again.");
+        setErrorMessage(response?.data?.message || "An unexpected error occurred. Please try again.");
       }
     } catch (error) {
       console.error("Error submitting walk-in appointment:", error);

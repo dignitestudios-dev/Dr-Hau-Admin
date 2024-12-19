@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { IoMdArrowBack, IoMdEye, IoMdTrash } from "react-icons/io";
+import { IoMdEye, IoMdTrash } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import axios from "../../axios"; // Import axios instance for API calls
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
-
+import { ToasterContainer, SuccessToast, ErrorToast } from "../Global/Toaster"; // Import the toast functions
 
 const AdminsTable = () => {
   const [Admins, setAdmins] = useState([]); // Admin data state
@@ -13,6 +13,9 @@ const AdminsTable = () => {
   const [error, setError] = useState(""); // Error state
   const [currentPage, setCurrentPage] = useState(1); // Current page state
   const [totalPages, setTotalPages] = useState(0); // Total pages state
+  const [showDeleteModal, setShowDeleteModal] = useState(false); // State to manage modal visibility
+  const [adminToDelete, setAdminToDelete] = useState(null); // Admin to delete
+  const [deleting, setDeleting] = useState(false); // State for deletion loading
   const navigate = useNavigate();
 
   // Fetch admins from the API with pagination
@@ -45,9 +48,26 @@ const AdminsTable = () => {
     setSearchQuery(event.target.value);
   };
 
-  const handleDelete = (id) => {
-    const updatedAdmins = Admins.filter((admin) => admin.id !== id);
-    setAdmins(updatedAdmins);
+  const handleDelete = async () => {
+    setDeleting(true); // Set deleting state to true to show loading on the button
+    try {
+      // API call to delete the admin
+      const response = await axios.post(`/admin/school/delete/${adminToDelete.id}`);
+      if (response.data.success) {
+        // Remove deleted admin from the state
+        setAdmins(Admins.filter((admin) => admin.id !== adminToDelete.id));
+        setShowDeleteModal(false); // Close the modal after deletion
+        SuccessToast("Admin deleted successfully!"); // Show success toaster
+      } else {
+        setError("Failed to delete the admin.");
+        ErrorToast("Failed to delete the admin."); // Show error toaster
+      }
+    } catch (error) {
+      setError("Error deleting admin.");
+      ErrorToast("Error deleting admin."); // Show error toaster
+    } finally {
+      setDeleting(false); // Reset deleting state to false after the operation
+    }
   };
 
   const handleViewProfile = (admin) => {
@@ -116,21 +136,24 @@ const AdminsTable = () => {
                 <td className="py-3 px-4">{admin?.programDep}</td>
                 <td className="py-3 px-4">{admin?.campus}</td>
                 <td className="py-3 px-4">{admin?.schoolName}</td>
-                <td className="py-3 px-4 flex items-center gap-3">
+                <td className="py-3 px-4 flex items-center gap-4">
                   <button
                     onClick={() => handleViewProfile(admin)}
-                    className="text-blue-500 mb-6 hover:text-blue-700"
-                    title="View  Details"
+                    className="text-blue-500 hover:text-blue-700 mb-4"
+                    title="View Profile"
                   >
-                    View Details
+                    <IoMdEye size={20} />
                   </button>
-                  {/* <button
-                    onClick={() => handleDelete(admin.id)}
-                    className="text-red-500 hover:text-red-700"
+                  <button
+                    onClick={() => {
+                      setAdminToDelete(admin); // Set the admin to delete
+                      setShowDeleteModal(true); // Show the modal
+                    }}
+                    className="text-red-500 hover:text-red-700 mb-4"
                     title="Delete Admin"
                   >
                     <IoMdTrash size={20} />
-                  </button> */}
+                  </button>
                 </td>
               </tr>
             ))}
@@ -140,9 +163,9 @@ const AdminsTable = () => {
 
       {/* Pagination controls */}
       <div className="flex justify-between items-center mt-4">
-        <button 
-          onClick={handlePreviousPage} 
-          disabled={currentPage === 1} 
+        <button
+          onClick={handlePreviousPage}
+          disabled={currentPage === 1}
           className={`flex items-center px-4 py-2 rounded-full transition-all duration-300 bg-blue-500 text-white ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'}`}
         >
           <MdChevronLeft className="mr-2" /> Previous
@@ -150,14 +173,42 @@ const AdminsTable = () => {
 
         <span className="text-gray-500">Page {currentPage} of {totalPages}</span>
 
-        <button 
-          onClick={handleNextPage} 
-          disabled={currentPage === totalPages} 
+        <button
+          onClick={handleNextPage}
+          disabled={currentPage === totalPages}
           className={`flex items-center px-4 py-2 rounded-full transition-all duration-300 bg-blue-500 text-white ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'}`}
         >
           Next <MdChevronRight className="ml-2" />
         </button>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full sm:w-3/4 md:w-1/3 lg:w-1/4">
+            <h3 className="text-xl font-bold text-center mb-4 text-black">Confirm Deletion</h3>
+            <p className="text-center mb-4 text-black">Are you sure you want to delete this admin?</p>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 disabled:opacity-50"
+              >
+                {deleting ? "Deleting..." : "Yes, Delete"}
+              </button>
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notifications */}
+      <ToasterContainer />
     </div>
   );
 };
