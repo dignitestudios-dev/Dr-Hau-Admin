@@ -28,6 +28,7 @@ import AdminProfile from "../pages/Admins/AdminProfile";
 import CompletedEventDetails from "../pages/Events/CompletedEventDetails";
 import PhysicalExam from "../components/Appointments/PhysicalExam";
 import ChangePassword from "../pages/Settings/ChangePassword";
+import MedicalDetail from "../pages/Appointments/MedicalDetail";
 
 export const normalRoutes = [
     {
@@ -191,6 +192,12 @@ export const normalRoutes = [
       title: "Update Password",
       url: "/change-password",
       page: <GlobalLayout page={<ChangePassword />} />,
+
+    },
+    {
+      title: "medicaldetail",
+      url: "/medicaldetail",
+      page: <GlobalLayout page={<MedicalDetail />} />,
 
     },
 

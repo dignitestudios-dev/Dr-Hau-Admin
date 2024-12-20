@@ -19,6 +19,7 @@ const UserAppointmentDetails = () => {
   const [showApproveModal, setShowApproveModal] = useState(false);  // Track visibility of Approve Modal
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [ showCompleteModal, setShowCompleteModal] = useState(false);
+  console.log(appointmentData,"appointmentData")
 
   useEffect(() => {
     if (appointmentId) {
@@ -167,9 +168,7 @@ const UserAppointmentDetails = () => {
               <p className="text-sm text-gray-700">{item.value}</p>
             </div>
           ))}
-        </div>
-
-        <div className="bg-white rounded-lg p-6 mt-8 space-y-4">
+        <div className="bg-white rounded-lg mt-8 space-y-4">
           <h4 className="text-xl font-semibold text-gray-800">Vaccinations</h4>
           <ul className="list-disc pl-5">
             {vaccinations.length > 0 ? (
@@ -181,7 +180,13 @@ const UserAppointmentDetails = () => {
             )}
           </ul>
         </div>
-
+        <div className="bg-white rounded-lg  mt-8 space-y-4">
+          <h4 className="text-xl font-semibold text-gray-800">Medical History</h4>
+          <ul className="list-disc pl-5">
+         <li className="text-gray-700 text-sm cursor-pointer  underline" onClick={()=>navigate('/medicaldetail',{state:appointmentData})}>View Detail</li>
+          </ul>
+        </div>
+        </div>
         {
           appointmentData?.status === "completed" ? (
             <></>
