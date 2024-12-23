@@ -18,15 +18,18 @@ const AdminsTable = () => {
   const [deleting, setDeleting] = useState(false); // State for deletion loading
   const navigate = useNavigate();
 
-  // Fetch admins from the API with pagination
+  // Fetch admins from the API with pagination and search query
   useEffect(() => {
     const fetchAdmins = async () => {
       setLoading(true); // Set loading to true before making the request
       try {
-        const response = await axios.get(`/admin/school?page=${currentPage}&limit=10`); // API call with pagination
-        if (response.data.success) {
-          setAdmins(response.data.data); // Update admins data with the API response
-          setTotalPages(response.data.totalPages); // Assuming API returns totalPages
+        const response = await axios.post(`/admin/schools?page=${currentPage}&limit=10`, {
+          schoolName: selectedSchool || null,
+          search: searchQuery || null // Send search query if available
+        }); // API call with pagination and search
+        if (response?.data?.success) {
+          setAdmins(response?.data?.data); // Update admins data with the API response
+          setTotalPages(response?.data?.totalPages); // Assuming API returns totalPages
         } else {
           setError("Failed to fetch admin data.");
         }
@@ -38,7 +41,7 @@ const AdminsTable = () => {
     };
 
     fetchAdmins(); // Call the function to fetch admins data
-  }, [currentPage]); // Re-fetch when currentPage changes
+  }, [currentPage, searchQuery, selectedSchool]); // Re-fetch when currentPage, searchQuery, or selectedSchool changes
 
   const handleSchoolFilter = (event) => {
     setSelectedSchool(event.target.value);
@@ -74,12 +77,6 @@ const AdminsTable = () => {
     navigate(`/admin-profile/${admin.id}`); // Pass the admin ID in the route
   };
 
-  const filteredAdmins = Admins.filter((admin) => {
-    const matchesSchool = selectedSchool ? admin.schoolName === selectedSchool : true;
-    const matchesSearch = admin.adminName.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesSchool && matchesSearch;
-  });
-
   // Pagination handlers
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -99,6 +96,17 @@ const AdminsTable = () => {
         <div className="flex items-center">
           <h3 className="text-[24px] font-bold text-black">Admins</h3>
         </div>
+      </div>
+
+      {/* Search Input */}
+      <div className="mb-4">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={handleSearchChange}
+          placeholder="Search by admin name"
+          className="p-2 border border-gray-300 rounded-md w-full text-black"
+        />
       </div>
 
       {/* Display loading message or error */}
@@ -122,7 +130,7 @@ const AdminsTable = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredAdmins?.map((admin, index) => (
+            {Admins?.map((admin, index) => (
               <tr key={index} className="text-[14px] text-gray-900 border-b border-gray-200">
                 <td className="py-3 px-4 flex items-center gap-3">
                   <img

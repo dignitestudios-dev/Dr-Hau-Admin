@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { IoMdArrowBack, IoMdEye, IoMdTrash } from "react-icons/io";
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "../../axios";
@@ -8,11 +7,12 @@ const MedicalDetail = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const navigate = useNavigate();
-
+  
   const location = useLocation();
   const appointmentData = location.state;
-  console.log(appointmentData, "appointmentDataappointmentData");
-  // Re-fetch users when currentPage changes
+  
+
+  console.log(appointmentData, "appointmentData");
 
   // Pagination handlers
   const handleNextPage = () => {
@@ -28,84 +28,133 @@ const MedicalDetail = () => {
   };
 
   return (
-    <div className="w-full h-auto bg-white p-6 rounded-md">
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center">
-          <h3 className="text-[24px] font-bold text-black">Medical History</h3>
+    <div className="w-full h-auto bg-gray-100 p-10 overflow-auto">
+      <div className="bg-white shadow-lg rounded-lg p-8 space-y-8">
+        {/* Profile Section */}
+        <div className="flex items-center space-x-6 mb-8">
+          <img
+            src={appointmentData?.user?.profilePicture || "https://via.placeholder.com/150"}
+            alt="Profile"
+            className="w-32 h-32 rounded-full object-cover"
+          />
+          <div>
+            <h3 className="text-2xl font-semibold text-gray-800">
+              {appointmentData?.user?.firstName} {appointmentData.user?.lastName}
+            </h3>
+            <p className="text-lg text-gray-600">{appointmentData.user?.email || "N/A"}</p>
+            <p className="text-lg text-gray-600">
+              School: {appointmentData?.user?.schoolName || "N/A"} ({appointmentData?.user?.campus || "N/A"})
+            </p>
+            <p className="text-lg text-gray-600">Program: {appointmentData.user?.programAttended || "N/A"}</p>
+            <p className="text-lg text-gray-600">Gender: {appointmentData?.user?.gender || "N/A"}</p>
+            <p className="text-lg text-gray-600">Date of Birth: {appointmentData?.user?.dob ? new Date(appointmentData?.user?.dob).toLocaleDateString() : "N/A"}</p>
+          </div>
         </div>
-      </div>
 
-      {/* Loader: Inline CSS Spinner */}
+        {/* Medical Details Section */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {/* Medical Problems */}
+          <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
+            <label className="block text-xl font-medium text-gray-700 mb-2">Medical Problems</label>
+            <p className="text-lg text-gray-600">{appointmentData?.medicalHistory?.medicalProblems || "N/A"}</p>
+          </div>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white shadow-md rounded-lg">
-          <thead>
-            <tr className="text-left text-nowrap text-[14px] bg-[#F5F7F7] text-gray-500">
-              <th className="py-2 px-4">Medical Problems</th>
-              <th className="py-2 px-4">Allergies</th>
-              <th className="py-2 px-4">Surgeries</th>
-              <th className="py-2 px-4">Medications</th>
-              <th className="py-2 px-4">Is Pregnant</th>
-              <th className="py-2 px-4">Exercise Regularly </th>
-              <th className="py-2 px-4">Is Healthy </th>
-              <th className="py-2 px-4">Has TB </th>
-              <th className="py-2 px-4">Uses Tobacco </th>
-              <th className="py-2 px-4">Alcoholic </th>
-              <th className="py-2 px-4">Is Bending </th>
-              <th className="py-2 px-4">Is Lifting </th>
-              <th className="py-2 px-4">Is Moving Hands </th>
-              <th className="py-2 px-4">Vision Or Hearing Issues </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr className="text-[14px] text-gray-900 border-b border-gray-200">
-              <td className="py-3 px-4">
-                {appointmentData?.medicalHistory?.medicalProblems || "N/A"}
-              </td>
-              <td className="py-3 px-4">
-                {appointmentData?.medicalHistory?.allergies || "N/A"}
-              </td>
-              <td className="py-3 px-4">
-                {appointmentData?.medicalHistory?.surgeries || "N/A"}
-              </td>
-              <td className="py-3 px-4">
-                {appointmentData?.medicalHistory?.medications || "N/A"}
-              </td>
-              <td className="py-3 px-4">
-                {appointmentData?.medicalHistory?.isPregnant ? "Yes" : "No"}
-              </td>
-              <td className="py-3 px-4">
-                {appointmentData?.medicalHistory?.isExercise ? "Yes" : "No"}
-              </td>
-              <td className="py-3 px-4">
-                {appointmentData?.medicalHistory?.isHealthy ? "Yes" : "No"}
-              </td>
-              <td className="py-3 px-4">
-                {appointmentData?.medicalHistory?.isTB ? "Yes" : "No"}
-              </td>
-              <td className="py-3 px-4">
-                {appointmentData?.medicalHistory?.isTobacco ? "Yes" : "No"}
-              </td>
-              <td className="py-3 px-4">
-                {appointmentData?.medicalHistory?.isAlcoholic ? "Yes" : "No"}
-              </td>
-              <td className="py-3 px-4">
-                {appointmentData?.medicalHistory?.isBending ? "Yes" : "No"}
-              </td>
-              <td className="py-3 px-4">
-                {appointmentData?.medicalHistory?.isLifting ? "Yes" : "No"}
-              </td>
-              <td className="py-3 px-4">
-                {appointmentData?.medicalHistory?.isMovingHands ? "Yes" : "No"}
-              </td>
-              <td className="py-3 px-4">
-                {appointmentData?.medicalHistory?.isVisionOrHearing
-                  ? "Yes"
-                  : "No"}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+          {/* Allergies */}
+          <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
+            <label className="block text-xl font-medium text-gray-700 mb-2">Allergies</label>
+            <p className="text-lg text-gray-600">{appointmentData?.medicalHistory?.allergies || "N/A"}</p>
+          </div>
+
+          {/* Surgeries */}
+          <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
+            <label className="block text-xl font-medium text-gray-700 mb-2">Surgeries</label>
+            <p className="text-lg text-gray-600">{appointmentData?.medicalHistory?.surgeries || "N/A"}</p>
+          </div>
+
+          {/* Medications */}
+          <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
+            <label className="block text-xl font-medium text-gray-700 mb-2">Medications</label>
+            <p className="text-lg text-gray-600">{appointmentData?.medicalHistory?.medications || "N/A"}</p>
+          </div>
+
+          {/* Pregnancy Status */}
+          <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
+            <label className="block text-xl font-medium text-gray-700 mb-2">Is Pregnant</label>
+            <p className="text-lg text-gray-600">{appointmentData?.medicalHistory?.isPregnant ? "Yes" : "No"}</p>
+          </div>
+
+          {/* Exercise Regularly */}
+          <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
+            <label className="block text-xl font-medium text-gray-700 mb-2">Exercise Regularly</label>
+            <p className="text-lg text-gray-600">{appointmentData?.medicalHistory?.isExercise ? "Yes" : "No"}</p>
+          </div>
+
+          {/* Is Healthy */}
+          <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
+            <label className="block text-xl font-medium text-gray-700 mb-2">Is Healthy</label>
+            <p className="text-lg text-gray-600">{appointmentData?.medicalHistory?.isHealthy ? "Yes" : "No"}</p>
+          </div>
+
+          {/* Has TB */}
+          <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
+            <label className="block text-xl font-medium text-gray-700 mb-2">Has TB</label>
+            <p className="text-lg text-gray-600">{appointmentData?.medicalHistory?.isTB ? "Yes" : "No"}</p>
+          </div>
+
+          {/* Uses Tobacco */}
+          <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
+            <label className="block text-xl font-medium text-gray-700 mb-2">Uses Tobacco</label>
+            <p className="text-lg text-gray-600">{appointmentData?.medicalHistory?.isTobacco ? "Yes" : "No"}</p>
+          </div>
+
+          {/* Alcoholic */}
+          <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
+            <label className="block text-xl font-medium text-gray-700 mb-2">Alcoholic</label>
+            <p className="text-lg text-gray-600">{appointmentData?.medicalHistory?.isAlcoholic ? "Yes" : "No"}</p>
+          </div>
+
+          {/* Is Bending */}
+          <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
+            <label className="block text-xl font-medium text-gray-700 mb-2">Is Bending</label>
+            <p className="text-lg text-gray-600">{appointmentData?.medicalHistory?.isBending ? "Yes" : "No"}</p>
+          </div>
+
+          {/* Is Lifting */}
+          <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
+            <label className="block text-xl font-medium text-gray-700 mb-2">Is Lifting</label>
+            <p className="text-lg text-gray-600">{appointmentData?.medicalHistory?.isLifting ? "Yes" : "No"}</p>
+          </div>
+
+          {/* Is Moving Hands */}
+          <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
+            <label className="block text-xl font-medium text-gray-700 mb-2">Is Moving Hands</label>
+            <p className="text-lg text-gray-600">{appointmentData?.medicalHistory?.isMovingHands ? "Yes" : "No"}</p>
+          </div>
+
+          {/* Vision or Hearing Issues */}
+          <div className="p-4 bg-gray-50 rounded-lg shadow-sm">
+            <label className="block text-xl font-medium text-gray-700 mb-2">Vision or Hearing Issues</label>
+            <p className="text-lg text-gray-600">{appointmentData?.medicalHistory?.isVisionOrHearing ? "Yes" : "No"}</p>
+          </div>
+        </div>
+
+        {/* Pagination Controls */}
+        {/* <div className="flex justify-between items-center mt-8">
+          <button
+            onClick={handlePreviousPage}
+            className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg"
+          >
+            <MdChevronLeft size={20} />
+            Previous
+          </button>
+          <button
+            onClick={handleNextPage}
+            className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg"
+          >
+            Next
+            <MdChevronRight size={20} />
+          </button>
+        </div> */}
       </div>
     </div>
   );

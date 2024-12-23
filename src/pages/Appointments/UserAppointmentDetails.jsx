@@ -6,6 +6,7 @@ import ApproveModal from "../../components/Appointments/ApproveModal";
 import RejectModal from "../../components/Appointments/RejectModal";
 import MarkAsCompletedModal from "../../components/Appointments/MarkAsCompletedModal";
 import { ErrorToast, SuccessToast } from "../../components/Global/Toaster";
+import PasswordModal from "../../components/Students/PasswordModal";
 
 const UserAppointmentDetails = () => {
   const navigate = useNavigate();
@@ -19,8 +20,11 @@ const UserAppointmentDetails = () => {
   const [showApproveModal, setShowApproveModal] = useState(false);  // Track visibility of Approve Modal
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [ showCompleteModal, setShowCompleteModal] = useState(false);
-  console.log(appointmentData,"appointmentData")
-
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false); // Password modal state
+  const [password, setPassword] = useState(""); // Password input
+  const [passwordError, setPasswordError] = useState(""); // Error message for incorrect password
+  const [isAuthorizedToViewMedical, setIsAuthorizedToViewMedical] = useState(false);
+  
   useEffect(() => {
     if (appointmentId) {
       const fetchAppointmentDetails = async () => {
@@ -74,16 +78,33 @@ const UserAppointmentDetails = () => {
 
     try {
       const response = await axios.post('/admin/appointment/status', requestBody);
-      if (response.data.success) {
-        SuccessToast(response.data.message);
+      if (response?.data?.success) {
+        SuccessToast(response?.data?.message);
         setShowCompleteModal(false)
       }
     } catch (err) {
-      ErrorToast(err.response.data.message)
+      ErrorToast(err.response?.data?.message)
       console.error(err);
     }
   };
 
+  
+  const handlePasswordSubmit = async () => {
+    try {
+      const response = await axios.post("/admin/password", { password });
+      if (response.data.success) {
+        setPassword(""); // Reset password input
+        setPasswordError(""); // Clear any previous error
+        setIsPasswordModalOpen(false); // Close modal
+        setIsAuthorizedToViewMedical(true); // Allow access to medical history
+      } else {
+        setPasswordError("Incorrect password. Please try again.");
+      }
+    } catch (error) {
+      setPasswordError("An error occurred. Please try again.");
+    }
+  };
+  
   
 
   // Loading or error handling UI
@@ -119,7 +140,7 @@ const UserAppointmentDetails = () => {
     );
   }
 
-  const data = appointmentData && appointmentData.user ? appointmentData.user : {};
+  const data = appointmentData && appointmentData?.user ? appointmentData?.user : {};
   const event = appointmentData?.event;
 
   // Check if vaccinations array is empty
@@ -140,7 +161,7 @@ const UserAppointmentDetails = () => {
       <div className="bg-white shadow-xl rounded-lg p-8 space-y-8">
         <div className="flex items-center space-x-6 border-b pb-6">
           <img
-            src={data.profilePicture || "https://i.pravatar.cc/?img=8"} 
+            src={data?.profilePicture || "https://i.pravatar.cc/?img=8"} 
             alt="profile"
             className="w-20 h-20 rounded-full object-cover border-4 border-indigo-500"
           />
@@ -150,7 +171,7 @@ const UserAppointmentDetails = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
           {[ 
             { label: "Date of Birth", value: new Date(data?.dob).toLocaleDateString() },
             { label: "School Name", value: appointmentData?.user?.schoolName || 'N/A' },
@@ -164,15 +185,15 @@ const UserAppointmentDetails = () => {
             { label: "Lot Number", value: event?.lotNumber || 'N/A' },
           ].map((item, index) => (
             <div key={index} className="flex flex-col space-y-1">
-              <p className="text-xs font-semibold text-gray-500">{item.label}</p>
-              <p className="text-sm text-gray-700">{item.value}</p>
+              <p className="text-xs font-semibold text-gray-500">{item?.label}</p>
+              <p className="text-sm text-gray-700">{item?.value}</p>
             </div>
           ))}
-        <div className="bg-white rounded-lg mt-8 space-y-4">
+        <div className="bg-white rounded-lg mt-8 space-y-4 justify-start">
           <h4 className="text-xl font-semibold text-gray-800">Vaccinations</h4>
           <ul className="list-disc pl-5">
-            {vaccinations.length > 0 ? (
-              vaccinations.map((vaccination, index) => (
+            {vaccinations?.length > 0 ? (
+              vaccinations?.map((vaccination, index) => (
                 <li key={index} className="text-sm text-gray-700">{vaccination}</li>
               ))
             ) : (
@@ -182,9 +203,27 @@ const UserAppointmentDetails = () => {
         </div>
         <div className="bg-white rounded-lg  mt-8 space-y-4">
           <h4 className="text-xl font-semibold text-gray-800">Medical History</h4>
-          <ul className="list-disc pl-5">
-         <li className="text-gray-700 text-sm cursor-pointer  underline" onClick={()=>navigate('/medicaldetail',{state:appointmentData})}>View Detail</li>
-          </ul>
+          <div className="bg-white rounded-lg mt-8 space-y-4">
+  <ul className="list-disc pl-5">
+    
+    {isAuthorizedToViewMedical ? (
+      <li
+        className="text-blue-600 text-sm cursor-pointer underline"
+        onClick={() => navigate("/medicaldetail", { state: appointmentData })}
+      >
+        Click to view medical details
+      </li>
+    ) : (
+      <li
+        className="text-blue-600 text-sm cursor-pointer underline"
+        onClick={() => setIsPasswordModalOpen(true)}
+      >
+        Password required to view
+      </li>
+    )}
+  </ul>
+</div>
+
         </div>
         </div>
         {
@@ -260,6 +299,19 @@ const UserAppointmentDetails = () => {
       <MarkAsCompletedModal show={showCompleteModal}
         onConfirm={() => { handleComplete(false); setShowCompleteModal(false); }}  // Confirm rejection
         onCancel={() => setShowCompleteModal(false)}/>
+
+
+
+<PasswordModal
+  isOpen={isPasswordModalOpen}
+  onClose={() => setIsPasswordModalOpen(false)}
+  onSubmit={handlePasswordSubmit}
+  errorMessage={passwordError}
+  password={password}
+  setPassword={setPassword}
+/>
+
+
     </div>
   );
 };

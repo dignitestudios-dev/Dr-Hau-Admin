@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react"; 
 import { IoMdArrowBack, IoMdEye, IoMdTrash } from "react-icons/io";
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
@@ -17,7 +17,17 @@ const UsersTable = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true); // Set loading to true when fetching data
-      const response = await axios.get(`/admin/users/all?page=${currentPage}&limit=10`); 
+      const response = await axios.post(`/admin/users/all?page=${currentPage}&limit=10`, {
+        email: null,
+        firstName: null,
+        lastName: null,
+        lastSSN: null,
+        schoolName: selectedSchool || null,
+        programAttended: null,
+        campus: selectedCampus || null,
+        gender: null, // Example: could be added based on searchQuery if needed
+        search: searchQuery // Include the search query for filtering results
+      }); 
       if (response?.data?.success) {
         setUsers(response?.data?.data); 
         setTotalPages(response?.data?.totalPages); // Assuming API returns totalPages
@@ -38,7 +48,7 @@ const UsersTable = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, [currentPage]); // Re-fetch users when currentPage changes
+  }, [currentPage, searchQuery, selectedSchool, selectedCampus]); // Re-fetch users when searchQuery, school, campus, or currentPage changes
 
   const handleSchoolFilter = (event) => {
     setSelectedSchool(event.target.value);
@@ -61,15 +71,6 @@ const UsersTable = () => {
     navigate(`/student-profile/${user._id}`); 
   };
 
-  const filteredUsers = users.filter((user) => {
-    const matchesSchool = selectedSchool ? user.schoolName === selectedSchool : true;
-    const matchesCampus = selectedCampus ? user.campus === selectedCampus : true;
-    const matchesSearch =
-      user?.firstName?.toLowerCase()?.includes(searchQuery?.toLowerCase()) ||
-      user?.lastName?.toLowerCase()?.includes(searchQuery?.toLowerCase());
-    return matchesSchool && matchesCampus && matchesSearch;
-  });
-
   // Pagination handlers
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -91,6 +92,17 @@ const UsersTable = () => {
         </div>
       </div>
 
+      {/* Search Input */}
+      <div className="mb-4">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={handleSearchChange}
+          placeholder="Search by first or last name"
+          className="p-2 border border-gray-300 rounded-md w-full text-black"
+        />
+      </div>
+
       {/* Loader: Inline CSS Spinner */}
       {loading ? (
         <div className="flex justify-center items-center py-6">
@@ -110,7 +122,7 @@ const UsersTable = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.map((user) => (
+              {users?.map((user) => (
                 <tr key={user._id} className="text-[14px] text-gray-900 border-b border-gray-200">
                   <td className="py-3 px-4 flex items-center gap-3">
                     <img

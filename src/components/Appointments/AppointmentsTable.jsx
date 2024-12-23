@@ -3,6 +3,8 @@ import { IoMdArrowBack, IoMdAdd } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import UserListModal from "./UserListModal";
 import axios from '../../axios'; // Assuming axios is set up as provided
+import { IoMdRefresh } from "react-icons/io"; // Import the refresh icon
+
 
 const AppointmentsTable = () => {
   const navigate = useNavigate();
@@ -30,38 +32,53 @@ const AppointmentsTable = () => {
   };
 
   // Fetch appointments from the API
-  useEffect(() => {
-    const fetchAppointments = async () => {
-      try {
-        const currentDate = new Date().toISOString(); // Get current date in ISO format
-        const response = await axios.post("/admin/appointments/today", { currentDate });
+  const fetchAppointments = async () => {
+    setLoading(true); // Show loading indicator
+    try {
+      const currentDate = new Date().toISOString(); // Get current date in ISO format
+      const response = await axios.post("/admin/appointments/today", { currentDate });
 
-        if (response.data.success) {
-          setAppointments(response.data.data); // Set the fetched appointments in state
-        }
-      } catch (error) {
-        console.error("Error fetching appointments:", error);
-      } finally {
-        setLoading(false);
+      if (response.data.success) {
+        setAppointments(response.data.data); // Set the fetched appointments in state
       }
-    };
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+    } finally {
+      setLoading(false); // Hide loading indicator
+    }
+  };
 
-    fetchAppointments();
-  }, []); // Empty dependency array ensures this runs once on component mount
+  useEffect(() => {
+    fetchAppointments(); // Fetch data on component mount
+  }, []);// Empty dependency array ensures this runs once on component mount
 
   // Filter appointments based on lot number and status
   const filteredAppointments = appointments
     .filter((appointment) => {
       // Filter by status if filter is not "All"
-      if (filter !== "All" && appointment.status !== filter) {
+      if (filter !== "All" && appointment?.status !== filter) {
         return false;
       }
       // Filter by lot number if it's provided
-      if (lotNumberFilter && !appointment.event.lotNumber.includes(lotNumberFilter)) {
+      if (lotNumberFilter && !appointment?.event?.lotNumber.includes(lotNumberFilter)) {
         return false;
       }
       return true;
     });
+
+const getStatusColor = (adminStatus) => {
+  switch (adminStatus) {
+    case "pending":
+      return "text-red-500"; 
+    case "inProgress":
+      return "text-yellow-500"; 
+    case "consented":
+    case "approved":
+      return "text-green-500"; 
+    default:
+      return "text-gray-500"; 
+  }
+};
 
   return (
     <div className="w-full h-auto bg-white p-6 rounded-md">
@@ -75,6 +92,15 @@ const AppointmentsTable = () => {
         </div>
 
         <div className="flex gap-4 items-center">
+
+          {/* Filter by Lot Number */}
+          <input
+            type="text"
+            value={lotNumberFilter}
+            onChange={handleLotNumberFilterChange}
+            placeholder="Filter by Lot Number"
+            className="p-2 border text-black border-gray-300 rounded-md"
+          />
           <button
             onClick={toggleModal}
             className="flex items-center bg-black text-white p-2 rounded-md cursor-pointer"
@@ -82,6 +108,14 @@ const AppointmentsTable = () => {
             <IoMdAdd size={20} className="mr-2" />
             Walk In
           </button>
+
+          <button
+  onClick={fetchAppointments} // Refresh button calls fetchAppointments
+  className="bg-black text-white p-2 rounded-md cursor-pointer flex items-center justify-center"
+>
+  <IoMdRefresh size={20} className="mr-1" />  Refresh 
+</button>          
+        
 
           {/* Filter by Status Dropdown */}
           {/* <select
@@ -94,68 +128,70 @@ const AppointmentsTable = () => {
             <option value="Not Confirmed">Not Confirmed</option>
           </select> */}
 
-          {/* Filter by Lot Number */}
-          <input
-            type="text"
-            value={lotNumberFilter}
-            onChange={handleLotNumberFilterChange}
-            placeholder="Filter by Lot Number"
-            className="p-2 border text-black border-gray-300 rounded-md"
-          />
+          
         </div>
       </div>
 
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border-collapse">
-          <thead>
-            <tr className="text-left text-[14px] bg-[#F5F7F7] text-gray-500">
-              <th className="py-2 px-4">STUDENT</th>
-              <th className="py-2 px-4">DATE OF BIRTH</th>
-              {/* <th className="py-2 px-4">CONSENT</th> */}
-              {/* <th className="py-2 px-4">PROGRAM</th> */}
-              <th className="py-2 px-4">PROGRAM</th>
-              <th className="py-2 px-4">STATUS</th>
+  {/* Loader above table headings */}
+  {loading && (
+    <div className="flex justify-center items-center py-6">
+      <div className="w-12 h-12 border-4 border-t-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
+    </div>
+  )}
 
-              <th className="py-2 px-4">ACTION</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <div className="flex justify-center items-center py-6">
-              <div className="w-12 h-12 border-4 border-t-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
-            </div>
-            ) : (
-              filteredAppointments.map((appointment, index) => (
-                <tr key={index} className="text-[14px] text-gray-900 border-b border-gray-200">
-                  <td className="py-3 px-4 flex items-center">
-                    <img
-                      src={appointment?.user?.profilePicture}
-                      alt="Profile"
-                      className="w-10 h-10 rounded-full object-cover mr-2"
-                    />
-                    {appointment?.user?.firstName} {appointment?.user?.lastName}
-                  </td>
-                  <td className="py-3 px-4">{new Date(appointment?.user?.dob).toLocaleDateString()}</td>
-                  {/* <td className={`py-3 px-4 ${appointment?.status === "Scheduled" ? "text-blue-500" : "text-red-500"}`}>
-                    {appointment?.approval}
-                  </td> */}
-                  {/* <td className="py-3 px-4">{appointment?.user?.address}</td> */}
-                  <td className="py-3 px-4">{appointment?.user?.programAttended}</td>
-                  <td className={`py-3 px-4 ${appointment?.status === "Scheduled" ? "text-blue-500" : "text-red-500"}`}>
-                    {appointment?.adminStatus}
-                  </td>
-                  
-                  <td className="py-3 px-4">
-                    <button onClick={() => handleViewDetails(appointment)} className="text-blue-500 mr-2">
-                      View Details
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+  <table className="min-w-full bg-white border-collapse">
+    <thead>
+      <tr className="text-left text-[14px] bg-[#F5F7F7] text-gray-500">
+        <th className="py-2 px-4">STUDENT</th>
+        <th className="py-2 px-4">DATE OF BIRTH</th>
+        <th className="py-2 px-4">PROGRAM</th>
+        <th className="py-2 px-4">STATUS</th>
+        <th className="py-2 px-4">ACTION</th>
+      </tr>
+    </thead>
+    <tbody>
+      {!loading &&
+        filteredAppointments.map((appointment, index) => (
+          <tr
+            key={index}
+            className="text-[14px] text-gray-900 border-b border-gray-200"
+          >
+            <td className="py-3 px-4 flex items-center">
+              <img
+                src={appointment?.user?.profilePicture}
+                alt="Profile"
+                className="w-10 h-10 rounded-full object-cover mr-2"
+              />
+              {appointment?.user?.firstName} {appointment?.user?.lastName}
+            </td>
+            <td className="py-3 px-4">
+              {new Date(appointment?.user?.dob).toLocaleDateString()}
+            </td>
+            <td className="py-3 px-4">
+              {appointment?.user?.programAttended}
+            </td>
+            <td
+              className={`py-3 px-4 ${getStatusColor(
+                appointment?.adminStatus
+              )}`}
+            >
+              {appointment?.adminStatus}
+            </td>
+            <td className="py-3 px-4">
+              <button
+                onClick={() => handleViewDetails(appointment)}
+                className="text-blue-500 mr-2"
+              >
+                View Details
+              </button>
+            </td>
+          </tr>
+        ))}
+    </tbody>
+  </table>
+</div>
+
 
       <UserListModal
         isVisible={showModal}
