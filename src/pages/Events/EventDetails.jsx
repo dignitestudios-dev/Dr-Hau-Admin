@@ -131,7 +131,7 @@ const EventDetail = () => {
               <span className="text-[14px] text-gray-500  mb-4">🏛️ Campus : {event?.school.campus}</span>
               <br/>
 
-              <span className="text-[14px] text-gray-500  mb-4">🏛️ Lot Number : {event?.lotNumber}</span>
+              {/* <span className="text-[14px] text-gray-500  mb-4">🏛️ Lot Number : {event?.lotNumber}</span> */}
 
             </h4>
 

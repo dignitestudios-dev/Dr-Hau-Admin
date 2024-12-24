@@ -52,7 +52,7 @@ const PhysicalExam = () => {
     ppdDone: true,
     ppdNotDoneReason: '',
     hxPPD: true,
-    negativePPD: 'Yes',
+    negativePPD: true,
     isStudentHealthy: true,
     isNormalExam: true,
     studentSign: true,
