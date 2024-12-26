@@ -35,12 +35,13 @@ const CreateEvent = () => {
   const [selectedSchool, setSelectedSchool] = useState("");  // School dropdown selection
   const [selectedCampus, setSelectedCampus] = useState("");  // Campus dropdown selection
   const [selectedVaccinations, setSelectedVaccinations] = useState([]);  // Store selected vaccinations
+  const [vaccinationLotNumbers, setVaccinationLotNumbers] = useState({}); // Track lot numbers for vaccines
   const [error, setError] = useState("");  // For handling form errors
 
   const vaccinationsList = [
-    { id: "TDAP", name: "Tdap" },
-    { id: "TD Vaccine", name: "TD Vaccine" },
-    { id: "FLU", name: "Flu" },
+    { id: "Tdap", name: "Tdap" },
+    { id: "Td Vaccine", name: "Td Vaccine" },
+    { id: "FLU", name: "FLU" },
     { id: "MMR", name: "MMR" },
     { id: "Varicella", name: "Varicella" },
     { id: "Hepatitis B", name: "Hepatitis B" },
@@ -69,16 +70,32 @@ const CreateEvent = () => {
       return;
     }
 
+    // Create the lotNumber object only for the selected vaccines with their lot numbers
+    const lotNumber = selectedVaccinations.reduce((acc, vaccinationId) => {
+      const lotNumberValue = vaccinationLotNumbers[vaccinationId];
+      if (lotNumberValue) {
+        const vaccineName = vaccinationsList.find(vaccine => vaccine.id === vaccinationId).name;
+        acc[vaccineName] = lotNumberValue; // Store the lot number with the correct vaccine name
+      }
+      return acc;
+    }, {});
+
+    // If no lot numbers are provided for selected vaccines, show an error
+    if (Object.keys(lotNumber).length === 0) {
+      setError("Please provide lot numbers for the selected vaccinations.");
+      return;
+    }
+
     // Create the event data with school and campus
     const eventData = {
-      title: eventName,  // Change this from eventName to title
-      schoolName: selectedSchool,  // Use the school name directly from dropdown
-      schoolCampus: selectedCampus,  // Use the campus name directly from dropdown
+      title: eventName,
+      schoolName: selectedSchool,
+      schoolCampus: selectedCampus,
       description: eventDescription,
       date: new Date(eventDate).toISOString(),
       timeFrom: timeFrom.toISOString(),
       timeTo: timeTo.toISOString(),
-      vaccinations: selectedVaccinations,  // Selected vaccinations array
+      lotNumber, // Include the lot numbers for selected vaccines
     };
 
     try {
@@ -106,6 +123,14 @@ const CreateEvent = () => {
     );
   };
 
+  // Handle lot number change for each vaccine
+  const handleLotNumberChange = (vaccinationId, lotNumber) => {
+    setVaccinationLotNumbers((prev) => ({
+      ...prev,
+      [vaccinationId]: lotNumber, // Update the lot number for the vaccine
+    }));
+  };
+
   return (
     <div className="w-full p-6 rounded-md shadow-md overflow-auto">
       <div className="flex items-center mb-6">
@@ -122,6 +147,7 @@ const CreateEvent = () => {
         {error && <div className="mb-4 text-red-500 text-sm">{error}</div>}
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Event Name */}
           <div>
             <label htmlFor="eventName" className="block text-sm font-medium text-gray-700">Event Name</label>
             <input
@@ -135,6 +161,7 @@ const CreateEvent = () => {
             />
           </div>
 
+          {/* Event Date */}
           <div>
             <label htmlFor="eventDate" className="block text-sm font-medium text-gray-700">Event Date</label>
             <input
@@ -147,6 +174,7 @@ const CreateEvent = () => {
             />
           </div>
 
+          {/* Start Time */}
           <div>
             <label htmlFor="eventStartTime" className="block text-sm font-medium text-gray-700">Start Time</label>
             <input
@@ -159,7 +187,7 @@ const CreateEvent = () => {
             />
           </div>
 
-          {/* Event End Time */}
+          {/* End Time */}
           <div>
             <label htmlFor="eventEndTime" className="block text-sm font-medium text-gray-700">End Time</label>
             <input
@@ -233,7 +261,7 @@ const CreateEvent = () => {
             <h4 className="block text-sm font-medium text-gray-700">Select Vaccinations</h4>
             <div className="grid grid-cols-2 gap-4 mt-2">
               {vaccinationsList.map((vaccination) => (
-                <label key={vaccination.id} className="flex items-center space-x-2">
+                <div key={vaccination.id} className="flex items-center space-x-2">
                   <input
                     type="checkbox"
                     value={vaccination.id}
@@ -241,8 +269,19 @@ const CreateEvent = () => {
                     checked={selectedVaccinations.includes(vaccination.id)}
                     className="h-4 w-4 text-blue-500 border-gray-300 rounded"
                   />
-                  <span className="text-sm text-black ">{vaccination.name}</span>
-                </label>
+                  <span className="text-sm text-black">{vaccination.name}</span>
+
+                  {/* Lot Number Input */}
+                  {selectedVaccinations.includes(vaccination.id) && (
+                    <input
+                      type="text"
+                      placeholder="Lot number"
+                      value={vaccinationLotNumbers[vaccination.id] || ""}
+                      onChange={(e) => handleLotNumberChange(vaccination.id, e.target.value)}
+                      className="p-2 border text-black border-black rounded-lg shadow-sm"
+                    />
+                  )}
+                </div>
               ))}
             </div>
           </div>

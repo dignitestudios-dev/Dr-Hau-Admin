@@ -131,8 +131,14 @@ const EventDetail = () => {
               <span className="text-[14px] text-gray-500  mb-4">🏛️ Campus : {event?.school.campus}</span>
               <br/>
 
-              {/* <span className="text-[14px] text-gray-500  mb-4">🏛️ Lot Number : {event?.lotNumber}</span> */}
-
+              <span className="text-[14px] text-gray-500 mb-4">🏛️ Lot Numbers:</span>
+<ul className="text-[14px] text-black mb-4">
+  {Object.entries(event?.lotNumber || {}).map(([vaccine, lotNumber]) => (
+    <li className='ml-5 text-gray-600' key={vaccine}>
+      <span>{vaccine}:</span> {lotNumber}
+    </li>
+  ))}
+</ul>
             </h4>
 
             <div className="flex items-center text-[14px] text-gray-700 mb-2">

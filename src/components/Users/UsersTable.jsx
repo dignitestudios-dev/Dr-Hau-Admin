@@ -113,12 +113,12 @@ const UsersTable = () => {
           <table className="min-w-full bg-white shadow-md rounded-lg">
             <thead>
               <tr className="text-left text-[14px] bg-[#F5F7F7] text-gray-500">
-                <th className="py-2 px-4">STUDENT</th>
-                <th className="py-2 px-4">DATE OF BIRTH</th>
-                <th className="py-2 px-4">SCHOOL</th>
-                <th className="py-2 px-4">CAMPUS</th>
-                <th className="py-2 px-4">PROGRAM</th>
-                <th className="py-2 px-4">ACTION</th>
+                <th className="py-3 px-4">STUDENT</th>
+                <th className="py-3 px-4">DATE OF BIRTH</th>
+                <th className="py-3 px-4">SCHOOL</th>
+                <th className="py-3 px-4">CAMPUS</th>
+                <th className="py-3 px-4">PROGRAM</th>
+                <th className="py-3 px-4">ACTION</th>
               </tr>
             </thead>
             <tbody>
@@ -139,7 +139,7 @@ const UsersTable = () => {
                   <td className="py-3 px-4 flex items-center gap-3">
                     <button
                       onClick={() => handleViewProfile(user)}
-                      className="text-blue-500 hover:text-blue-700 mb-3"
+                      className="text-blue-500 hover:text-blue-700"
                       title="View Details"
                     >
                       View Details
