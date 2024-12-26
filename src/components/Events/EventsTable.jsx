@@ -223,9 +223,11 @@ const EventsTable = () => {
                 <th className="py-2 px-4">TITLE</th>
                 <th className="py-2 px-4">CAMPUS</th>
                 <th className="py-2 px-4">SCHOOL</th>
-                <th className="py-2 px-4">TIME</th>
+                <th className="py-2 px-4">Event ID</th>
 
+                <th className="py-2 px-4">TIME</th>
                 <th className="py-2 px-4">STATUS</th>
+
                 <th className="py-2 px-4"></th>
               </tr>
             </thead>
@@ -239,6 +241,7 @@ const EventsTable = () => {
                   <td className="py-3 px-4">{event?.title}</td>
                   <td className="py-3 px-4">{event?.school?.schoolName}</td>
                   <td className="py-3 px-4">{event?.school?.campus}</td>
+                  <td className="py-3 px-4">{event?.bennyEventId}</td>
 
 
                   <td className="py-3 px-4">

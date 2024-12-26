@@ -4,7 +4,7 @@ import axios from "../../axios"; // Assuming axios is set up
 const UserListModal = ({ isVisible, onClose }) => {
   if (!isVisible) return null;
 
-  const [lotNumber, setLotNumber] = useState(""); // For lot number input
+  const [bennyEventId, setbennyEventId] = useState(""); // For bennyEventId input
   const [userEmail, setUserEmail] = useState(""); // For user email input
   const [selectedVaccinations, setSelectedVaccinations] = useState([]); // Store selected vaccinations
   const [errorMessage, setErrorMessage] = useState(""); // Error message state
@@ -32,8 +32,8 @@ const UserListModal = ({ isVisible, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!userEmail || selectedVaccinations.length === 0 || !lotNumber) {
-      setErrorMessage("Please provide user email, lot number, and vaccination(s).");
+    if (!userEmail || selectedVaccinations.length === 0 || !bennyEventId) {
+      setErrorMessage("Please provide user email, bennyEventId, and vaccination(s).");
       return;
     }
 
@@ -43,7 +43,7 @@ const UserListModal = ({ isVisible, onClose }) => {
     const requestBody = {
       vaccinations: selectedVaccinations, // Only the selected vaccinations
       currentDate: currentDate, 
-      lotNumber: lotNumber,
+      bennyEventId: bennyEventId,
       userEmail: userEmail,
     };
 
@@ -96,18 +96,18 @@ const UserListModal = ({ isVisible, onClose }) => {
 
         <form onSubmit={handleSubmit}>
           <div className="mb-5">
-            <label htmlFor="lotNumber" className="block text-sm font-medium text-gray-700">
-              Lot Number
+            <label htmlFor="bennyEventId" className="block text-sm font-medium text-gray-700">
+            Event Id
             </label>
             <input
-              id="lotNumber"
-              type="text"
-              placeholder="Enter Lot Number"
-              className="mt-2 block w-full px-4 py-3 border text-black border-gray-300 rounded-md shadow-sm"
-              value={lotNumber}
-              onChange={(e) => setLotNumber(e.target.value)}
-              disabled={loading}
-            />
+  id="bennyEventId"
+  type="text"
+  placeholder="Enter Event Id"
+  className="mt-2 block w-full px-4 py-3 border text-black border-gray-300 rounded-md shadow-sm"
+  value={bennyEventId}
+  onChange={(e) => setbennyEventId(e.target.value)} // Corrected here
+  disabled={loading}
+/>
           </div>
 
           <div className="mb-5">
