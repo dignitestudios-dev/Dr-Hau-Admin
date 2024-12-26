@@ -182,7 +182,7 @@ const UserAppointmentDetails = () => {
             { label: "Appointment Date", value: new Date(appointmentData?.date).toLocaleDateString() },
             { label: "Event Description", value: event?.description || 'N/A' },
             { label: "Event Time", value: `${new Date(event?.timeFrom).toLocaleTimeString()} - ${new Date(event?.timeTo).toLocaleTimeString()}` },
-            { label: "Lot Number", value: event?.lotNumber || 'N/A' },
+            { label: "", value:  '' },
           ].map((item, index) => (
             <div key={index} className="flex flex-col space-y-1">
               <p className="text-xs font-semibold text-gray-500">{item?.label}</p>
