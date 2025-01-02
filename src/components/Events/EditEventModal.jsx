@@ -5,7 +5,8 @@ const EditEventModal = ({ isOpen, onRequestClose, eventData, onUpdateEvent }) =>
   const [description, setDescription] = useState('');
   const [timeFrom, setTimeFrom] = useState('');
   const [timeTo, setTimeTo] = useState('');
-  const [vaccinations, setVaccinations] = useState([]);
+  const [vaccinations, setVaccinations] = useState([]); // This is no longer needed for the backend
+  const [vaccinationLotNumbers, setVaccinationLotNumbers] = useState({}); // This will hold the lot numbers
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -14,9 +15,9 @@ const EditEventModal = ({ isOpen, onRequestClose, eventData, onUpdateEvent }) =>
     'Rabies',
     'MMR',
     'Varicella',
-    'TDAP',
+    'Tdap', // Changed from 'TDAP' to 'Tdap'
     'FLU',
-    'TD Vaccine'
+    // 'Tdap', // Changed from 'TD Vaccine' to 'Tdap' for consistency
   ];
 
   // Initialize modal state with current event data
@@ -25,36 +26,53 @@ const EditEventModal = ({ isOpen, onRequestClose, eventData, onUpdateEvent }) =>
       setDescription(eventData.description);
       setTimeFrom(eventData.timeFrom);
       setTimeTo(eventData.timeTo);
-      setVaccinations(eventData.vaccinations || []);
+      
+      // Initialize lot numbers for selected vaccinations
+      const initialLotNumbers = {};
+      eventData.vaccinationLotNumbers?.forEach((vaccination, lotNumber) => {
+        initialLotNumbers[vaccination] = lotNumber;
+      });
+      setVaccinationLotNumbers(initialLotNumbers);
     }
   }, [eventData, isOpen]);
 
   // Handle checkbox change (add or remove vaccinations)
   const handleVaccinationChange = (e) => {
     const vaccination = e.target.value;
-    setVaccinations((prevVaccinations) =>
-      e.target.checked
-        ? [...prevVaccinations, vaccination] // Add if checked
-        : prevVaccinations.filter((v) => v !== vaccination) // Remove if unchecked
-    );
+    if (e.target.checked) {
+      // If checked, add to vaccination list
+      setVaccinations((prevVaccinations) => [...prevVaccinations, vaccination]);
+    } else {
+      // If unchecked, remove from vaccination list
+      setVaccinations((prevVaccinations) => prevVaccinations.filter((v) => v !== vaccination));
+    }
+  };
+
+  // Handle lot number change
+  const handleLotNumberChange = (vaccination, lotNumber) => {
+    setVaccinationLotNumbers((prevLotNumbers) => ({
+      ...prevLotNumbers,
+      [vaccination]: lotNumber,
+    }));
   };
 
   const handleSubmit = async () => {
     setLoading(true);
     setError(null);
 
+    // Now send the lot numbers as an object
     const updatedEvent = {
       description,
       timeFrom,
       timeTo,
-      vaccinations,
+      lotNumber: vaccinationLotNumbers, // Send only lotNumber field now
     };
 
     try {
       const response = await axios.post(`/admin/event/${eventData._id}`, updatedEvent);
       if (response.data.success) {
-        onUpdateEvent(); 
-        onRequestClose(); 
+        onUpdateEvent();
+        onRequestClose();
       } else {
         setError('Failed to update event. Please try again later.');
       }
@@ -132,6 +150,17 @@ const EditEventModal = ({ isOpen, onRequestClose, eventData, onUpdateEvent }) =>
                   className="mr-2"
                 />
                 <label htmlFor={vaccination} className="text-gray-700">{vaccination}</label>
+
+                {/* Lot Number Input */}
+                {vaccinations.includes(vaccination) && (
+                  <input
+                    type="text"
+                    placeholder="Lot number"
+                    value={vaccinationLotNumbers[vaccination] || ''}
+                    onChange={(e) => handleLotNumberChange(vaccination, e.target.value)}
+                    className="ml-4 p-2 border text-black border-black rounded-lg shadow-sm"
+                  />
+                )}
               </div>
             ))}
           </div>
