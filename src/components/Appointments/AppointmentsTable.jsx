@@ -53,18 +53,29 @@ const AppointmentsTable = () => {
   }, []);// Empty dependency array ensures this runs once on component mount
 
   // Filter appointments based on lot number and status
-  const filteredAppointments = appointments
-    .filter((appointment) => {
-      // Filter by status if filter is not "All"
-      if (filter !== "All" && appointment?.status !== filter) {
+  const filteredAppointments = appointments.filter((appointment) => {
+    // Filter by status if filter is not "All"
+    if (filter !== "All" && appointment?.status !== filter) {
+      return false;
+    }
+  
+    // Filter by lot number if it's provided
+    if (lotNumberFilter) {
+      const lotNumberObj = appointment?.event?.lotNumber || {};
+      // Check if any key or value in lotNumber matches the filter
+      const matchesLotNumber = Object.entries(lotNumberObj).some(
+        ([key, value]) =>
+          key.toLowerCase().includes(lotNumberFilter.toLowerCase()) ||
+          value.includes(lotNumberFilter)
+      );
+      if (!matchesLotNumber) {
         return false;
       }
-      // Filter by lot number if it's provided
-      if (lotNumberFilter && !appointment?.event?.lotNumber.includes(lotNumberFilter)) {
-        return false;
-      }
-      return true;
-    });
+    }
+  
+    return true;
+  });
+  
 
 const getStatusColor = (adminStatus) => {
   switch (adminStatus) {
