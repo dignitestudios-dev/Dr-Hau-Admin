@@ -151,57 +151,68 @@ const getStatusColor = (adminStatus) => {
     </div>
   )}
 
-  <table className="min-w-full bg-white border-collapse">
-    <thead>
-      <tr className="text-left text-[14px] bg-[#F5F7F7] text-gray-500">
-        <th className="py-2 px-4">STUDENT</th>
-        <th className="py-2 px-4">DATE OF BIRTH</th>
-        <th className="py-2 px-4">PROGRAM</th>
-        <th className="py-2 px-4">STATUS</th>
-        <th className="py-2 px-4">ACTION</th>
-      </tr>
-    </thead>
-    <tbody>
-      {!loading &&
-        filteredAppointments.map((appointment, index) => (
-          <tr
-            key={index}
-            className="text-[14px] text-gray-900 border-b border-gray-200"
-          >
-            <td className="py-3 px-4 flex items-center">
-              <img
-                src={appointment?.user?.profilePicture}
-                alt="Profile"
-                className="w-10 h-10 rounded-full object-cover mr-2"
-              />
-              {appointment?.user?.firstName} {appointment?.user?.lastName}
-            </td>
-            <td className="py-3 px-4">
-              {new Date(appointment?.user?.dob).toLocaleDateString()}
-            </td>
-            <td className="py-3 px-4">
-              {appointment?.user?.programAttended}
-            </td>
-            <td
-              className={`py-3 px-4 ${getStatusColor(
-                appointment?.adminStatus
-              )}`}
+  {/* Display "No appointments today" if no appointments are available */}
+  {!loading && filteredAppointments.length === 0 && (
+    <div className="flex justify-center py-6 text-gray-500">
+      No appointments today.
+    </div>
+  )}
+
+  {/* Table with appointments */}
+  {filteredAppointments.length > 0 && (
+    <table className="min-w-full bg-white border-collapse">
+      <thead>
+        <tr className="text-left text-[14px] bg-[#F5F7F7] text-gray-500">
+          <th className="py-2 px-4">STUDENT</th>
+          <th className="py-2 px-4">DATE OF BIRTH</th>
+          <th className="py-2 px-4">PROGRAM</th>
+          <th className="py-2 px-4">STATUS</th>
+          <th className="py-2 px-4">ACTION</th>
+        </tr>
+      </thead>
+      <tbody>
+        {!loading &&
+          filteredAppointments.map((appointment, index) => (
+            <tr
+              key={index}
+              className="text-[14px] text-gray-900 border-b border-gray-200"
             >
-              {appointment?.adminStatus}
-            </td>
-            <td className="py-3 px-4">
-              <button
-                onClick={() => handleViewDetails(appointment)}
-                className="text-blue-500 mr-2"
+              <td className="py-3 px-4 flex items-center">
+                <img
+                  src={appointment?.user?.profilePicture}
+                  alt="Profile"
+                  className="w-10 h-10 rounded-full object-cover mr-2"
+                />
+                {appointment?.user?.firstName} {appointment?.user?.lastName}
+              </td>
+              <td className="py-3 px-4">
+                {new Date(appointment?.user?.dob).toLocaleDateString()}
+              </td>
+              <td className="py-3 px-4">
+                {appointment?.user?.programAttended}
+              </td>
+              <td
+                className={`py-3 px-4 ${getStatusColor(
+                  appointment?.adminStatus
+                )}`}
               >
-                View Details
-              </button>
-            </td>
-          </tr>
-        ))}
-    </tbody>
-  </table>
+                {appointment?.adminStatus}
+              </td>
+              <td className="py-3 px-4">
+                <button
+                  onClick={() => handleViewDetails(appointment)}
+                  className="text-blue-500 mr-2"
+                >
+                  View Details
+                </button>
+              </td>
+            </tr>
+          ))}
+      </tbody>
+    </table>
+  )}
 </div>
+
 
 
       <UserListModal
