@@ -514,7 +514,7 @@ const MedicalReportForm = () => {
       disabled={!isEditing}
     />
   </div>
-  {/* <div>
+  <div>
     <label className="block text-sm font-medium text-black">Hepatitis B Vaccination #1 Note</label>
     <input
       type="text"
@@ -524,7 +524,7 @@ const MedicalReportForm = () => {
       placeholder="Enter note for first dose"
       disabled={!isEditing}
     />
-  </div> */}
+  </div>
 
   {/* Hepatitis B Vaccination #2 */}
   <div>
@@ -535,9 +535,9 @@ const MedicalReportForm = () => {
       onChange={(e) => handleChange("hepatitisBVaccination2Date", e.target.value)}
       className="w-full border rounded p-2 text-black"
       disabled={!isEditing}
-    />
+    /> 
   </div>
-  {/* <div>
+  <div>
     <label className="block text-sm font-medium text-black">Hepatitis B Vaccination #2 Note</label>
     <input
       type="text"
@@ -547,7 +547,7 @@ const MedicalReportForm = () => {
       placeholder="Enter note for second dose"
       disabled={!isEditing}
     />
-  </div> */}
+  </div> 
 
   {/* Hepatitis B Vaccination #3 */}
   <div>
@@ -560,7 +560,7 @@ const MedicalReportForm = () => {
       disabled={!isEditing}
     />
   </div>
-  {/* <div>
+  <div>
     <label className="block text-sm font-medium text-black">Hepatitis B Vaccination #3 Note</label>
     <input
       type="text"
@@ -570,7 +570,7 @@ const MedicalReportForm = () => {
       placeholder="Enter note for final dose"
       disabled={!isEditing}
     />
-  </div> */}
+  </div>
 
   {/* MMR Vaccination #1 */}
   <div>
@@ -583,7 +583,7 @@ const MedicalReportForm = () => {
       disabled={!isEditing}
     />
   </div>
-  {/* <div>
+  <div>
     <label className="block text-sm font-medium text-black">MMR Vaccination #1 Note</label>
     <input
       type="text"
@@ -593,7 +593,7 @@ const MedicalReportForm = () => {
       placeholder="Enter note for first dose"
       disabled={!isEditing}
     />
-  </div> */}
+  </div>
 
   {/* MMR Vaccination #2 */}
   <div>
@@ -606,7 +606,7 @@ const MedicalReportForm = () => {
       disabled={!isEditing}
     />
   </div>
-  {/* <div>
+  <div>
     <label className="block text-sm font-medium text-black">MMR Vaccination #2 Note</label>
     <input
       type="text"
@@ -616,7 +616,7 @@ const MedicalReportForm = () => {
       placeholder="Enter note for second dose"
       disabled={!isEditing}
     />
-  </div> */}
+  </div>
 
   {/* Varicella Vaccination #1 */}
   <div>
@@ -629,7 +629,7 @@ const MedicalReportForm = () => {
       disabled={!isEditing}
     />
   </div>
-  {/* <div>
+  <div>
     <label className="block text-sm font-medium text-black">Varicella Vaccination #1 Note</label>
     <input
       type="text"
@@ -639,7 +639,7 @@ const MedicalReportForm = () => {
       placeholder="Enter note for first dose"
       disabled={!isEditing}
     />
-  </div> */}
+  </div>
 
   {/* Varicella Vaccination #2 */}
   <div>
@@ -652,7 +652,7 @@ const MedicalReportForm = () => {
       disabled={!isEditing}
     />
   </div>
-  {/* <div>
+  <div>
     <label className="block text-sm font-medium text-black">Varicella Vaccination #2 Note</label>
     <input
       type="text"
@@ -662,7 +662,7 @@ const MedicalReportForm = () => {
       placeholder="Enter note for second dose"
       disabled={!isEditing}
     />
-  </div> */}
+  </div>
 
   {/* Tdap Vaccination */}
   <div>
@@ -675,7 +675,7 @@ const MedicalReportForm = () => {
       disabled={!isEditing}
     />
   </div>
-  {/* <div>
+  <div>
     <label className="block text-sm font-medium text-black">Tdap Vaccination Note</label>
     <input
       type="text"
@@ -685,7 +685,7 @@ const MedicalReportForm = () => {
       placeholder="Enter note for Tdap vaccination"
       disabled={!isEditing}
     />
-  </div> */}
+  </div>
 
   {/* Influenza Vaccination */}
   <div>
@@ -698,7 +698,7 @@ const MedicalReportForm = () => {
       disabled={!isEditing}
     />
   </div>
-  {/* <div>
+  <div>
     <label className="block text-sm font-medium text-black">Influenza Vaccination Note</label>
     <input
       type="text"
@@ -708,7 +708,7 @@ const MedicalReportForm = () => {
       placeholder="Enter note for influenza vaccination"
       disabled={!isEditing}
     />
-  </div> */}
+  </div>
 
 
   
