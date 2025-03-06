@@ -9,77 +9,76 @@ const PhysicalExam = () => {
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const [formData, setFormData] = useState({
-    // lastName: '',
-    // firstName: '',
-    address: '',
-    city: '',
-    state: '',
+    lastName: "",
+    firstName: "",
+    address: "",
+    city: "",
+    state: "",
     zipcode: "",
-    dateOfBirth: '',
-    ssnLast4: '',
-    gender: '',
-    schoolCity: '',
-    phoneNo: '',
-    heent: '',
-    neck: '',
-    lungs: '',
-    heart: '',
-    abdomen: '',
-    orthopedic: '',
-    neurologic: '',
-    skin: '',
-    comments: '',
-    p4: true,
+    dateOfBirth: "",
+    ssnLast4: "",
+    gender: "",
+    schoolCity: "",
+    phoneNo: "",
+    heent: "",
+    neck: "",
+    lungs: "",
+    heart: "",
+    abdomen: "",
+    orthopedic: "",
+    neurologic: "",
+    skin: "",
+    comments: "",
+    p4: false,
     p3: false,
-    hepB: true,
-    other: '',
+    hepB: false,
+    other: "",
     tspot: false,
-    uds: true,
+    uds: false,
     noPhysicalExam: false,
     noBloodWork: false,
-    bloodPressureDown: 80,
-    bloodPressureUp: 120,
-    pulse: 72,
-    hepatitisB: true,
-    hepatitisBPrior: 'Yes',
-    TD: true,
-    TDPrior: '84',
-    influenza: true,
-    MMR: true,
-    MMRPrior: '49xp',
-    Varicella: true,
-    VaricellaPrior: '50',
-    ppdDone: true,
-    ppdNotDoneReason: '',
-    hxPPD: true,
-    negativePPD: true,
-    isStudentHealthy: true,
-    isNormalExam: true,
-    studentSign: true,
-    studentSignDate: '2024-11-19T00:00:00.000Z',
-    clinicianSign: true,
-    clinicianSignDate: '2024-11-19T00:00:00.000Z',
+    bloodPressureDown: "",
+    bloodPressureUp: "",
+    pulse: "",
+    hepatitisB: false,
+    hepatitisBPrior: "",
+    TD: false,
+    TDPrior: "",
+    influenza: false,
+    MMR: false,
+    MMRPrior: "",
+    Varicella: false,
+    VaricellaPrior: "",
+    ppdDone: false,
+    ppdNotDoneReason: "",
+    hxPPD: false,
+    negativePPD: false,
+    isStudentHealthy: false,
+    isNormalExam: false,
+    studentSign: false,
+    studentSignDate: "",
+    clinicianSign: false,
+    clinicianSignDate: "",
   });
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-  
+
     // Check if it's a radio button
-    if (type === 'radio') {
+    if (type === "radio") {
       // Convert the value to a boolean if it's "true" or "false"
       setFormData((prevData) => ({
         ...prevData,
-        [name]: value === 'true', // convert the string to boolean
+        [name]: value === "true", // convert the string to boolean
       }));
     } else {
       // For other input types (checkboxes, text, etc.)
       setFormData((prevData) => ({
         ...prevData,
-        [name]: type === 'checkbox' ? checked : value,
+        [name]: type === "checkbox" ? checked : value,
       }));
     }
   };
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -105,11 +104,15 @@ const PhysicalExam = () => {
 
   return (
     <div className="container mx-auto px-6 py-10 bg-gray-50 shadow-lg rounded-lg overflow-auto">
-      <h1 className="text-3xl font-semibold text-gray-800 mb-8">Physical Exam Sheet</h1>
+      <h1 className="text-3xl font-semibold text-gray-800 mb-8">
+        Physical Exam Sheet
+      </h1>
       <form onSubmit={handleSubmit} className="space-y-8 text-gray-700">
         {/* PART A */}
         <section>
-          <h2 className="text-2xl font-semibold text-gray-800 mb-6">Part A: Personal Information</h2>
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+            Part A: Personal Information
+          </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* <div>
@@ -183,7 +186,9 @@ const PhysicalExam = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">School City</label>
+              <label className="block text-sm font-medium mb-2">
+                School City
+              </label>
               <input
                 name="schoolCity"
                 value={formData?.schoolCity}
@@ -217,12 +222,10 @@ const PhysicalExam = () => {
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
             </div> */}
-            
-            
           </div>
         </section>
 
-           {/* <div className="flex items-center">
+        {/* <div className="flex items-center">
               <label className="mr-4">Gender:</label>
               <label className="mr-6">
                 <input
@@ -249,14 +252,25 @@ const PhysicalExam = () => {
             </div> */}
         {/* Part B */}
         <section>
-          <h2 className="text-2xl font-semibold text-gray-800 mb-6">Part B: Physical Exam</h2>
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+            Part B: Physical Exam
+          </h2>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
             {[
-              "heent", "neck", "lungs", "heart", "abdomen", "orthopedic", "neurologic", "skin"
+              "heent",
+              "neck",
+              "lungs",
+              "heart",
+              "abdomen",
+              "orthopedic",
+              "neurologic",
+              "skin",
             ].map((field) => (
               <div key={field}>
-                <label className="block text-sm font-medium mb-2">{field.charAt(0).toUpperCase() + field.slice(1)}</label>
+                <label className="block text-sm font-medium mb-2">
+                  {field.charAt(0).toUpperCase() + field.slice(1)}
+                </label>
                 <input
                   name={field}
                   value={formData[field]}
@@ -270,7 +284,9 @@ const PhysicalExam = () => {
           </div>
 
           <div className="mb-6">
-            <label className="block text-sm font-medium mb-2 mt-4">Comments</label>
+            <label className="block text-sm font-medium mb-2 mt-4">
+              Comments
+            </label>
             <input
               name="comments"
               value={formData?.comments}
@@ -284,7 +300,9 @@ const PhysicalExam = () => {
 
         {/* Blood Work */}
         <section>
-          <h2 className="text-2xl font-semibold text-gray-800 mb-6">Blood Work</h2>
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+            Blood Work
+          </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
             {[
               { label: "P4", name: "p4" },
@@ -304,11 +322,11 @@ const PhysicalExam = () => {
                   onChange={handleChange}
                   className="mr-2"
                 />
-                <label htmlFor={name} className="text-sm font-medium">{label}</label>
+                <label htmlFor={name} className="text-sm font-medium">
+                  {label}
+                </label>
               </div>
             ))}
-
-            
           </div>
           <div className="mb-6">
             <label className="block text-sm font-medium mb-2 mt-4">Other</label>
@@ -323,72 +341,75 @@ const PhysicalExam = () => {
           </div>
 
           <div>
-              <label className="block text-sm font-medium mb-2 mt-8">Blood Pressure Down</label>
-              <input
-                name="bloodPressureDown"
-                value={formData?.bloodPressureDown}
-                onChange={handleChange}
-                type="text"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                placeholder="XXXX"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2 mt-4">Blood Pressure Up</label>
-              <input
-                name="bloodPressureUp"
-                value={formData?.bloodPressureUp}
-                onChange={handleChange}
-                type="text"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                placeholder="XXXX"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2 mt-4">pulse</label>
-              <input
-                name="pulse"
-                value={formData?.pulse}
-                onChange={handleChange}
-                type="text"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                placeholder="XXXX"
-              />
-            </div>
+            <label className="block text-sm font-medium mb-2 mt-8">
+              Blood Pressure Down
+            </label>
+            <input
+              name="bloodPressureDown"
+              value={formData?.bloodPressureDown}
+              onChange={handleChange}
+              type="text"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="XXXX"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2 mt-4">
+              Blood Pressure Up
+            </label>
+            <input
+              name="bloodPressureUp"
+              value={formData?.bloodPressureUp}
+              onChange={handleChange}
+              type="text"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="XXXX"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2 mt-4">pulse</label>
+            <input
+              name="pulse"
+              value={formData?.pulse}
+              onChange={handleChange}
+              type="text"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="XXXX"
+            />
+          </div>
         </section>
 
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+          {[
+            { label: "hepatitisBPrior", name: "hepatitisBPrior" },
+            { label: "TD", name: "TD" },
+            { label: "influenza", name: "influenza" },
+          ].map(({ label, name }) => (
+            <div key={name} className="flex items-center">
+              <input
+                type="checkbox"
+                id={name}
+                name={name}
+                checked={formData[name]}
+                onChange={handleChange}
+                className="mr-2"
+              />
+              <label htmlFor={name} className="text-sm font-medium">
+                {label}
+              </label>
+            </div>
+          ))}
+        </div>
 
-
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-            {[
-              { label: "hepatitisBPrior", name: "hepatitisBPrior" },
-              { label: "TD", name: "TD" },
-              { label: "influenza", name: "influenza" },
-            ].map(({ label, name }) => (
-              <div key={name} className="flex items-center">
-                <input
-                  type="checkbox"
-                  id={name}
-                  name={name}
-                  checked={formData[name]}
-                  onChange={handleChange}
-                  className="mr-2"
-                />
-                <label htmlFor={name} className="text-sm font-medium">{label}</label>
-              </div>
-            ))}
-          </div>
-
-
-
-               {/* Additional Fields for MMR, Varicella, PPD */}
+        {/* Additional Fields for MMR, Varicella, PPD */}
         <section>
-          <h2 className="text-2xl font-semibold text-gray-800 mb-6">Immunization & PPD</h2>
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+            Immunization & PPD
+          </h2>
 
           <div className="grid grid-cols- sm:grid-cols-2 md:grid-cols-2 gap-6">
             {/* MMR */}
-          <div className="flex items-center">
+            <div className="flex items-center">
               <label className="mr-4">MMR</label>
               <label className="mr-6">
                 <input
@@ -415,7 +436,9 @@ const PhysicalExam = () => {
             </div>
             {/* MMR Prior */}
             <div>
-              <label className="block text-sm font-medium mb-2">MMR Prior</label>
+              <label className="block text-sm font-medium mb-2">
+                MMR Prior
+              </label>
               <input
                 name="MMRPrior"
                 value={formData?.MMRPrior}
@@ -426,10 +449,8 @@ const PhysicalExam = () => {
               />
             </div>
 
-
-
-{/* Heparitis */}
-<div className="flex items-center">
+            {/* Heparitis */}
+            <div className="flex items-center">
               <label className="mr-4">hepatitisB</label>
               <label className="mr-6">
                 <input
@@ -456,7 +477,9 @@ const PhysicalExam = () => {
             </div>
             {/* hepatitisBPrior */}
             <div>
-              <label className="block text-sm font-medium mb-2">hepatitisBPrior</label>
+              <label className="block text-sm font-medium mb-2">
+                hepatitisBPrior
+              </label>
               <input
                 name="hepatitisBPrior"
                 value={formData?.hepatitisBPrior}
@@ -466,8 +489,6 @@ const PhysicalExam = () => {
                 placeholder="Enter hepatitisB Prior info"
               />
             </div>
-
-
 
             {/* Varicella */}
             <div className="flex items-center">
@@ -497,7 +518,9 @@ const PhysicalExam = () => {
             </div>
             {/* Varicella Prior */}
             <div>
-              <label className="block text-sm font-medium mb-2">Varicella Prior</label>
+              <label className="block text-sm font-medium mb-2">
+                Varicella Prior
+              </label>
               <input
                 name="VaricellaPrior"
                 value={formData?.VaricellaPrior}
@@ -535,9 +558,10 @@ const PhysicalExam = () => {
               </label>
             </div>
 
-
             <div>
-              <label className="block text-sm font-medium mb-2">PPD not done reason</label>
+              <label className="block text-sm font-medium mb-2">
+                PPD not done reason
+              </label>
               <input
                 name="ppdNotDoneReason"
                 value={formData?.ppdNotDoneReason}
@@ -574,13 +598,11 @@ const PhysicalExam = () => {
                 No
               </label>
             </div>
-
           </div>
 
-        
-<div className="grid grid-cols-2">
-{/* negativePPD  */}
-<div className="flex items-center mt-8">
+          <div className="grid grid-cols-2">
+            {/* negativePPD  */}
+            <div className="flex items-center mt-8">
               <label className="mr-4">negativePPD</label>
               <label className="mr-6">
                 <input
@@ -606,9 +628,8 @@ const PhysicalExam = () => {
               </label>
             </div>
 
-
-        {/* isNormalExam  */}
-<div className="flex items-center mt-8">
+            {/* isNormalExam  */}
+            <div className="flex items-center mt-8">
               <label className="mr-4">isNormalExam</label>
               <label className="mr-6">
                 <input
@@ -634,10 +655,8 @@ const PhysicalExam = () => {
               </label>
             </div>
 
-
-
             {/* clinicianSign  */}
-<div className="flex items-center mt-8">
+            <div className="flex items-center mt-8">
               <label className="mr-4">clinicianSign</label>
               <label className="mr-6">
                 <input
@@ -661,10 +680,10 @@ const PhysicalExam = () => {
                 />
                 No
               </label>
-            </div>     
+            </div>
 
             {/* studentSign  */}
-<div className="flex items-center mt-8">
+            <div className="flex items-center mt-8">
               <label className="mr-4">studentSign</label>
               <label className="mr-6">
                 <input
@@ -688,31 +707,42 @@ const PhysicalExam = () => {
                 />
                 No
               </label>
-            </div>  
             </div>
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-2 mt-8">studentSignDate</label>
-              <input
-                name="studentSignDate"
-                value={formData?.studentSignDate ? formData?.studentSignDate.split("T")[0] : ""}
-                onChange={handleChange}
-                type="date"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
-            </div> 
+          <div>
+            <label className="block text-sm font-medium mb-2 mt-8">
+              studentSignDate
+            </label>
+            <input
+              name="studentSignDate"
+              value={
+                formData?.studentSignDate
+                  ? formData?.studentSignDate.split("T")[0]
+                  : ""
+              }
+              onChange={handleChange}
+              type="date"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
 
-
-            <div>
-              <label className="block text-sm font-medium mb-2 mt-4">clinicianSignDate</label>
-              <input
-                name="clinicianSignDate"
-                value={formData?.studentSignDate ? formData?.clinicianSignDate?.split("T")[0] : ""}
-                onChange={handleChange}
-                type="date"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
-            </div> 
+          <div>
+            <label className="block text-sm font-medium mb-2 mt-4">
+              clinicianSignDate
+            </label>
+            <input
+              name="clinicianSignDate"
+              value={
+                formData?.studentSignDate
+                  ? formData?.clinicianSignDate?.split("T")[0]
+                  : ""
+              }
+              onChange={handleChange}
+              type="date"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
         </section>
 
         <div className="flex justify-end">
