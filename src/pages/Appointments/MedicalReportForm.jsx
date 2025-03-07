@@ -12,7 +12,6 @@ const MedicalReportForm = () => {
   const location = useLocation(); // To access the passed state
   const { appointment } = location?.state || {};
 
-  console.log("app-- ", appointment);
   const [isEditing, setIsEditing] = useState(false);
 
   const navigate = useNavigate();
@@ -167,8 +166,10 @@ const MedicalReportForm = () => {
       data.append("currentDate", currentDate);
 
       for (const field in formData) {
+        console.log("==> ", field);
+
         // Check if the field has a non-empty value
-        if (formData[field] && formData[field] !== "") {
+        if (formData[field] !== "") {
           data.append(field, formData[field]);
         }
       }
@@ -465,7 +466,7 @@ const MedicalReportForm = () => {
           </div>
 
           {/* T-spot IGRA TB Test #1 Field */}
-          <div>
+          {/* <div>
             <label className="block text-sm font-medium text-black">
               T-spot IGRA TB Test #1
             </label>
@@ -480,7 +481,7 @@ const MedicalReportForm = () => {
               </option>
               <option value="Not Performed">Not Performed</option>
             </select>
-          </div>
+          </div> */}
 
           {/* T-spot Test #1 Date Field */}
           <div>
@@ -514,7 +515,7 @@ const MedicalReportForm = () => {
           </div>
 
           {/* T-spot IGRA TB Test #2 Field */}
-          <div>
+          {/* <div>
             <label className="block text-sm font-medium text-black">
               T-spot IGRA TB Test #2
             </label>
@@ -529,7 +530,7 @@ const MedicalReportForm = () => {
               </option>
               <option value="Not Performed">Not Performed</option>
             </select>
-          </div>
+          </div> */}
 
           {/* T-spot Test #2 Date Field */}
           <div>
