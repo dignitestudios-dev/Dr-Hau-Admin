@@ -10,11 +10,9 @@ const DashboardEvents = () => {
   const [selectedTab, setSelectedTab] = useState("All"); // Default to "All"
   const [selectedSchool, setSelectedSchool] = useState("All");
   const [selectedCampus, setSelectedCampus] = useState("All");
-  const [selectedDate, setSelectedDate] = useState(
-    new Date().toISOString().split("T")[0]
-  ); // This will give YYYY-MM-DD
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString()); // This will give YYYY-MM-DD
   const navigate = useNavigate();
-
+  console.log(new Date(selectedDate)?.toLocaleDateString(), "selecteddate");
   //pagination
   const [currentPage, setCurrentPage] = useState(1); // Current page state
   const [totalPages, setTotalPages] = useState(0); // Total pages state
@@ -54,10 +52,11 @@ const DashboardEvents = () => {
     const statusFilter =
       selectedTab === "All" ||
       event.status?.toLowerCase() === selectedTab?.toLowerCase(); // Case-insensitive status filter
-
+    console.log(event?.date, "checkFormate");
     const dateFilter =
       selectedDate &&
-      new Date(event.date).toISOString().split("T")[0] === selectedDate; // Compare the date part
+      new Date(event?.date).toLocaleDateString() ==
+        new Date(selectedDate)?.toLocaleDateString(); // Filter by selected date;
 
     const schoolFilter =
       selectedSchool === "All" || event.school?.schoolName === selectedSchool; // Filter by selected school
@@ -195,8 +194,8 @@ const DashboardEvents = () => {
               <input
                 type="date"
                 id="event-date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
+                value={new Date(selectedDate).toISOString().split("T")[0]}
+                onChange={(e) => setSelectedDate(new Date(e.target.value))}
                 className="p-2 border rounded-md text-black"
               />
             </div>
