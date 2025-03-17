@@ -10,17 +10,14 @@ const EventsTable = () => {
   const [selectedTab, setSelectedTab] = useState("All"); // Default to "All"
   const [selectedSchool, setSelectedSchool] = useState("All");
   const [selectedCampus, setSelectedCampus] = useState("All");
-  const [selectedDate, setSelectedDate] = useState(getCurrentDate()); // Set default to current date
+  const [selectedDate, setSelectedDate] = useState(
+    new Date().toISOString().split("T")[0]
+  ); // This will give YYYY-MM-DD
   const navigate = useNavigate();
 
   //pagination
   const [currentPage, setCurrentPage] = useState(1); // Current page state
   const [totalPages, setTotalPages] = useState(0); // Total pages state
-  // Function to get current date in the proper format (e.g., 2024-10-03)
-  function getCurrentDate() {
-    const date = new Date();
-    return date?.toISOString()?.split("T")[0]; // Get the date in YYYY-MM-DD format
-  }
 
   // Fetch events data from the API whenever the selected date or any filter changes
   useEffect(() => {
@@ -30,7 +27,7 @@ const EventsTable = () => {
         const response = await axios?.post(
           `/admin/events?page=${currentPage}&limit=10`,
           {
-            currentDate: selectedDate, // Include the selected date in the request body
+            currentDate: selectedDate,
           }
         );
 
@@ -56,13 +53,22 @@ const EventsTable = () => {
   const filteredEvents = events?.filter((event) => {
     const statusFilter =
       selectedTab === "All" ||
-      event.status?.toLowerCase() === selectedTab?.toLowerCase();
+      event.status?.toLowerCase() === selectedTab?.toLowerCase(); // Case-insensitive status filter
+
     const dateFilter =
       selectedDate &&
-      new Date(event.date).toISOString().split("T")[0] === selectedDate; // Compare the date
+      new Date(event.date).toISOString().split("T")[0] === selectedDate; // Compare the date part
 
-    return statusFilter && dateFilter; // Apply both filters
+    const schoolFilter =
+      selectedSchool === "All" || event.school?.schoolName === selectedSchool; // Filter by selected school
+
+    const campusFilter =
+      selectedCampus === "All" || event.school?.campus === selectedCampus; // Filter by selected campus
+
+    return statusFilter && dateFilter && schoolFilter && campusFilter; // Apply all filters
   });
+
+  console.log("filteredEvents-- ", filteredEvents);
 
   // Extract unique schools and campuses for dropdown options
   // const schools = [...new Set(events?.map((event) => event.school))];
@@ -259,7 +265,7 @@ const EventsTable = () => {
                     className="text-[14px] text-gray-900 border-b border-[#E5E7EB]"
                   >
                     <td className="py-3 px-4">
-                      {new Date(selectedDate)?.toLocaleDateString()}
+                      {new Date(event?.date)?.toLocaleDateString()}
                     </td>
                     <td className="py-3 px-4">{event?.title}</td>
                     <td className="py-3 px-4">{event?.school?.schoolName}</td>
@@ -267,8 +273,8 @@ const EventsTable = () => {
                     <td className="py-3 px-4">{event?.bennyEventId}</td>
 
                     <td className="py-3 px-4">
-                      {new Date(event?.timeFrom)?.toLocaleTimeString()} -{" "}
-                      {new Date(event?.timeTo)?.toLocaleTimeString()}
+                      {event?.timeFrom.split("T")[1].slice(0, 8)} -{" "}
+                      {event?.timeTo.split("T")[1].slice(0, 8)}
                     </td>
                     <td className="py-3 px-4">
                       <span
