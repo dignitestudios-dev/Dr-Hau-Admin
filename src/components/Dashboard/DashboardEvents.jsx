@@ -198,6 +198,8 @@ const DashboardEvents = () => {
                 id="event-date"
                 value={new Date(selectedDate).toISOString().split("T")[0]}
                 onChange={(e) => setSelectedDate(new Date(e.target.value))}
+                className="p-2 border rounded-md text-black"
+
               />
 {/* <input
   type="date"
