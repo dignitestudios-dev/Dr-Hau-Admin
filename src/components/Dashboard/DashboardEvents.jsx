@@ -10,8 +10,8 @@ const DashboardEvents = () => {
   const [selectedTab, setSelectedTab] = useState("All"); // Default to "All"
   const [selectedSchool, setSelectedSchool] = useState("All");
   const [selectedCampus, setSelectedCampus] = useState("All");
-  // const [selectedDate, setSelectedDate] = useState(new Date().toISOString()); 
-const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString()); 
+// const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
 
   const navigate = useNavigate();
   console.log(new Date(selectedDate)?.toLocaleDateString(), "selecteddate");
@@ -193,20 +193,20 @@ const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split(
           <div className="flex gap-6">
             <div className="flex items-center gap-4">
               {/* <label htmlFor="event-date" className="text-gray-700 font-medium">Select Date</label> */}
-{/*               <input
+              <input
                 type="date"
                 id="event-date"
                 value={new Date(selectedDate).toISOString().split("T")[0]}
                 onChange={(e) => setSelectedDate(new Date(e.target.value))}
-              /> */}
-<input
+              />
+{/* <input
   type="date"
   id="event-date"
   value={selectedDate}
   onChange={(e) => setSelectedDate(e.target.value)}
   className="p-2 border rounded-md text-black"
 
-/>
+/> */}
 
             </div>
             {/* <div className="flex flex-col">
