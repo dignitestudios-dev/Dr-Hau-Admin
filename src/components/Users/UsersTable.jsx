@@ -17,7 +17,7 @@ const UsersTable = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true); // Set loading to true when fetching data
-      const response = await axios.post(`/admin/users/all?page=${currentPage}&limit=10`, {
+      const response = await axios.post(`/admin/users/all?page=${currentPage}`, {
         email: null,
         firstName: null,
         lastName: null,
