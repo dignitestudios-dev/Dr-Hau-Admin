@@ -21,7 +21,7 @@ const UploadPdfModal = ({ isOpen, onClose, id, report }) => {
     const data = new FormData();
   
   data.append('appointment', id);  
-  data.append("reportId",report?._id)
+  // data.append("reportId",report?._id)
   data.append('currentDate', currentDate);
   data.append('documents', selectedPdf);
   let url = ""
