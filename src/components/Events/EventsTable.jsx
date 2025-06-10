@@ -263,9 +263,17 @@ const EventsTable = () => {
                     key={index}
                     className="text-[14px] text-gray-900 border-b border-[#E5E7EB]"
                   >
-                    <td className="py-3 px-4">
+{/*                     <td className="py-3 px-4">
                       {new Date(event?.date)?.toLocaleDateString()}
-                    </td>
+                    </td> */}
+<td className="py-3 px-4">
+  {new Date(event?.date)?.toLocaleDateString('en-US', {
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit'
+  })}
+</td>
+
                     <td className="py-3 px-4">{event?.title}</td>
                     <td className="py-3 px-4">{event?.school?.schoolName}</td>
                     <td className="py-3 px-4">{event?.school?.campus}</td>
