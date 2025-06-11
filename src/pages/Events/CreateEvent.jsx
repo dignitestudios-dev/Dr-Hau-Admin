@@ -131,6 +131,12 @@ const CreateEvent = () => {
     }));
   };
 
+ const capitalizeFirstLetter = (text) => {
+  if (!text) return "";
+  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+};
+
+
   return (
     <div className="w-full p-6 rounded-md shadow-md overflow-auto">
       <div className="flex items-center mb-6">
@@ -154,7 +160,8 @@ const CreateEvent = () => {
               id="eventName"
               type="text"
               value={eventName}
-              onChange={(e) => setEventName(e.target.value)}
+                onChange={(e) => setEventName(capitalizeFirstLetter(e.target.value))}
+
               required
               className="w-full p-4 mt-2 border text-black border-black rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter event name"
@@ -206,7 +213,7 @@ const CreateEvent = () => {
             <textarea
               id="eventDescription"
               value={eventDescription}
-              onChange={(e) => setEventDescription(e.target.value)}
+  onChange={(e) => setEventDescription(capitalizeFirstLetter(e.target.value))}
               required
               className="w-full p-4 mt-2 border text-black border-black rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter event description"

@@ -144,6 +144,9 @@ const EventDetail = () => {
             <div className="flex items-center text-[14px] text-gray-700 mb-2">
               <span className="mr-3">🕒</span> {new Date(event?.timeFrom).toLocaleTimeString()} - {new Date(event?.timeTo).toLocaleTimeString()}
             </div>
+
+
+            
             <div className="flex items-center text-[14px] text-gray-700 mb-4">
               <span className="mr-3">📅</span> {new Date(event?.date).toLocaleDateString()}
             </div>

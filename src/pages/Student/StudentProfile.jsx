@@ -103,8 +103,17 @@ const StudentProfile = () => {
             </div>
             <div className="w-[300px]">
               <p className="text-[14px] text-[#787F8C] font-semibold uppercase">Date of Birth</p>
-              <p className="text-[14px] text-[#181818]">{new Date(userData?.dob).toLocaleDateString()}</p>
+<p className="text-[14px] text-[#181818]">
+  {new Date(userData.dob).toLocaleDateString('en-GB', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    timeZone: 'UTC'
+  })}
+</p>
             </div>
+
+            
             <div className="w-[300px]">
               <p className="text-[14px] text-[#787F8C] font-semibold uppercase">Program Attended</p>
               <p className="text-[14px] text-[#181818]">{userData?.programAttended}</p>

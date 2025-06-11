@@ -132,14 +132,23 @@ const UsersTable = () => {
                     />
                     <span>{`${user?.firstName} ${user?.lastName}`}</span>
                   </td>
-                  <td className="py-3 px-4">{new Date(user?.dob).toLocaleDateString()}</td>
+                  {/* <td className="py-3 px-4">{new Date(user?.dob).toLocaleDateString()}</td> */}
+                  <td className="py-3 px-4">
+  {new Date(user?.dob).toLocaleDateString('en-GB', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    timeZone: 'UTC'
+  })}
+</td>
+
                   <td className="py-3 px-4">{user?.schoolName || "N/A"}</td>
                   <td className="py-3 px-4">{user?.campus || "N/A"}</td>
                   <td className="py-3 px-4">{user?.programAttended || "N/A"}</td>
                   <td className="py-3 px-4 flex items-center gap-3">
                     <button
                       onClick={() => handleViewProfile(user)}
-                      className="text-blue-500 hover:text-blue-700"
+                      className="text-blue-500 hover:text-blue-700 py-3 px-4"
                       title="View Details"
                     >
                       View Details

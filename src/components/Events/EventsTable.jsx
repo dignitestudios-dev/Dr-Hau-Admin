@@ -110,6 +110,12 @@ const EventsTable = () => {
       setCurrentPage(currentPage - 1);
     }
   };
+
+  const capitalizeFirstLetter = (text) => {
+  if (!text) return "";
+  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+};
+
   return (
     <>
       <div className="flex justify-between items-center">
@@ -280,18 +286,21 @@ const EventsTable = () => {
                     <td className="py-3 px-4">{event?.bennyEventId}</td>
 
                     <td className="py-3 px-4">
-                      {event?.timeFrom.split("T")[1].slice(0, 8)} -{" "}
-                      {event?.timeTo.split("T")[1].slice(0, 8)}
-                    </td>
-                    <td className="py-3 px-4">
-                      <span
-                        className={`py-1 px-3 rounded-full text-white ${getStatusClass(
-                          event?.status
-                        )}`}
-                      >
-                        {event?.status}
-                      </span>
-                    </td>
+                     {new Date(event?.timeFrom).toLocaleTimeString()} -{" "}
+{new Date(event?.timeTo).toLocaleTimeString()}                    </td>
+
+                                  {/* <span className="mr-3">🕒</span> {new Date(event?.timeFrom).toLocaleTimeString()} - {new Date(event?.timeTo).toLocaleTimeString()} */}
+
+                   <td className="py-3 px-4">
+  <span
+    className={`py-1 px-3 rounded-full text-white ${getStatusClass(
+      event?.status
+    )}`}
+  >
+    {capitalizeFirstLetter(event?.status)}
+  </span>
+</td>
+
                     <td
                       onClick={() =>
                         handleViewDetails(event?._id, event?.status)
