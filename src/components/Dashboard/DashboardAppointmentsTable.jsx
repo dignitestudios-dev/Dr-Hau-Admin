@@ -18,6 +18,13 @@ const DashboardAppointmentsTable = () => {
 
   const navigate = useNavigate(); 
 
+
+const capitalizeFirstLetter = (text) => {
+  if (!text) return "";
+  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+};
+
+
   return (
     <div className="w-full h-auto bg-white ">
       <div className="flex justify-between items-center mb-4">
@@ -52,7 +59,9 @@ const DashboardAppointmentsTable = () => {
                 <td className="py-3 px-4">{appointment.address}</td>
                 <td className="py-3 px-4">{appointment.program}</td>
                 <td className={`py-3 px-4 ${appointment.status === 'Scheduled' ? 'text-blue-500' : 'text-red-500'}`}>
-                  {appointment.status}
+                  {/* {appointment.status} */}
+                      {capitalizeFirstLetter(appointment.status)}
+
                 </td>
               </tr>
             ))}

@@ -21,6 +21,11 @@ const CompletedEventAppointmentsTable = () => {
     { name: "Olivia Mery", dob: "01-19-1998", address: "House no. 42, Street 7, United States...", program: "Bachelor of Science", status: "Scheduled" },
   ];
 
+  const capitalizeFirstLetter = (text) => {
+  if (!text) return "";
+  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+};
+
   return (
     <div className="w-full h-auto bg-white rounded-md ">
       <div className="overflow-x-auto">
@@ -50,7 +55,9 @@ const CompletedEventAppointmentsTable = () => {
                 <td className="py-3 px-4">{appointment.address}</td>
                 <td className="py-3 px-4">{appointment.program}</td>
                 <td className={`py-3 px-4 ${appointment.status === 'Scheduled' ? 'text-blue-500' : 'text-red-500'}`}>
-                  {appointment.status}
+                  {/* {appointment.status} */}
+                                                          {capitalizeFirstLetter(appointment?.status)}
+
                 </td>
               </tr>
             ))}

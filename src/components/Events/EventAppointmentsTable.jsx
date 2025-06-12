@@ -57,6 +57,12 @@ const EventAppointmentsTable = ({ eventId }) => {
       setCurrentPage(currentPage - 1);
     }
   };
+
+
+  const capitalizeFirstLetter = (text) => {
+  if (!text) return "";
+  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+};
   
   return (
     <div className="w-full h-auto bg-white rounded-md">
@@ -94,7 +100,11 @@ const EventAppointmentsTable = ({ eventId }) => {
                     appointment?.appointment?.adminStatus === "completed" ? "text-blue-500" : "text-red-500"
                   }`}
                 >
-                  {appointment?.appointment?.adminStatus}
+                  {/* {appointment?.appointment?.adminStatus} */}
+
+
+                                        {capitalizeFirstLetter(appointment?.appointment?.adminStatus)}
+
                 </td>
               </tr>
             ))}
