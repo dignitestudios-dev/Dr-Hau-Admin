@@ -298,7 +298,7 @@ const DashboardEvents = () => {
                     <td className="py-3 px-4">{event?.bennyEventId}</td>
 
                      <td className="py-3 px-4">
-                                          {formatTimeUTC(event?.timeFrom)} - {formatTimeUTC(event?.timeTo)}
+  {new Date(event?.timeFrom)?.toLocaleTimeString()} - {new Date(event?.timeTo)?.toLocaleTimeString()}
                                         </td>
                     <td className="py-3 px-4">
   <span

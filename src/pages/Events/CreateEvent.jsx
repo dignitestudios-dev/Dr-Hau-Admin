@@ -51,67 +51,72 @@ const CreateEvent = () => {
   const navigate = useNavigate();
 
   // Handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(""); // Reset error
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError(""); // Reset error
 
-    // Check if all required fields are filled
-    if (!eventName || !eventDate || !eventStartTime || !eventEndTime || !eventDescription || selectedVaccinations.length === 0 || !selectedSchool || !selectedCampus) {
-      setError("All fields are required, including selecting at least one vaccination!");
-      return;
+  // Check if all required fields are filled
+  if (!eventName || !eventDate || !eventStartTime || !eventEndTime || !eventDescription || selectedVaccinations.length === 0 || !selectedSchool || !selectedCampus) {
+    setError("All fields are required, including selecting at least one vaccination!");
+    return;
+  }
+
+  // Combine the date with start and end time to create a full date-time string
+  const eventStartDateTime = `${eventDate}T${eventStartTime}:00`; // Format: YYYY-MM-DDTHH:MM:SS
+  const eventEndDateTime = `${eventDate}T${eventEndTime}:00`; // Format: YYYY-MM-DDTHH:MM:SS
+
+  // Convert local time to UTC by creating a new Date object, which will automatically adjust to UTC
+  const timeFrom = new Date(eventStartDateTime).toISOString(); // This will automatically convert to UTC
+  const timeTo = new Date(eventEndDateTime).toISOString(); // This will automatically convert to UTC
+
+  if (new Date(timeTo) <= new Date(timeFrom)) {
+    setError("End time must be later than start time.");
+    return;
+  }
+
+  // Create the lotNumber object only for the selected vaccines with their lot numbers
+  const lotNumber = selectedVaccinations.reduce((acc, vaccinationId) => {
+    const lotNumberValue = vaccinationLotNumbers[vaccinationId];
+    if (lotNumberValue) {
+      const vaccineName = vaccinationsList.find(vaccine => vaccine.id === vaccinationId).name;
+      acc[vaccineName] = lotNumberValue; // Store the lot number with the correct vaccine name
     }
+    return acc;
+  }, {});
 
-    // Create time objects from the selected date and times
-    const timeFrom = new Date(`${eventDate}T${eventStartTime}:00Z`);
-    const timeTo = new Date(`${eventDate}T${eventEndTime}:00Z`);
+  // If no lot numbers are provided for selected vaccines, show an error
+  if (Object.keys(lotNumber).length === 0) {
+    setError("Please provide lot numbers for the selected vaccinations.");
+    return;
+  }
 
-    if (timeTo <= timeFrom) {
-      setError("End time must be later than start time.");
-      return;
-    }
-
-    // Create the lotNumber object only for the selected vaccines with their lot numbers
-    const lotNumber = selectedVaccinations.reduce((acc, vaccinationId) => {
-      const lotNumberValue = vaccinationLotNumbers[vaccinationId];
-      if (lotNumberValue) {
-        const vaccineName = vaccinationsList.find(vaccine => vaccine.id === vaccinationId).name;
-        acc[vaccineName] = lotNumberValue; // Store the lot number with the correct vaccine name
-      }
-      return acc;
-    }, {});
-
-    // If no lot numbers are provided for selected vaccines, show an error
-    if (Object.keys(lotNumber).length === 0) {
-      setError("Please provide lot numbers for the selected vaccinations.");
-      return;
-    }
-
-    // Create the event data with school and campus
-    const eventData = {
-      title: eventName,
-      schoolName: selectedSchool,
-      schoolCampus: selectedCampus,
-      description: eventDescription,
-      date: new Date(eventDate).toISOString(),
-      timeFrom: timeFrom.toISOString(),
-      timeTo: timeTo.toISOString(),
-      lotNumber, // Include the lot numbers for selected vaccines
-    };
-
-    try {
-      const response = await axios.post("/admin/event", eventData);
-
-      if (response.data.success) {
-        console.log("Event Created:", response.data);
-        navigate("/events");  // Navigate to events page
-      } else {
-        setError("Failed to create event. Please try again.");
-      }
-    } catch (error) {
-      console.error("Error creating event:", error);
-      setError("An error occurred while creating the event. Please try again.");
-    }
+  // Create the event data with school and campus
+  const eventData = {
+    title: eventName,
+    schoolName: selectedSchool,
+    schoolCampus: selectedCampus,
+    description: eventDescription,
+    date: new Date(eventDate).toISOString(), // This keeps the date in UTC
+    timeFrom, // Time in UTC
+    timeTo, // Time in UTC
+    lotNumber, // Include the lot numbers for selected vaccines
   };
+
+  try {
+    const response = await axios.post("/admin/event", eventData);
+
+    if (response.data.success) {
+      console.log("Event Created:", response.data);
+      navigate("/events");  // Navigate to events page
+    } else {
+      setError("Failed to create event. Please try again.");
+    }
+  } catch (error) {
+    console.error("Error creating event:", error);
+    setError("An error occurred while creating the event. Please try again.");
+  }
+};
+
 
   // Handle vaccination checkbox change
   const handleVaccinationChange = (e) => {
