@@ -89,6 +89,11 @@ const EventDetail = () => {
     }
   };
 
+  const capitalizeFirstLetter = (text) => {
+  if (!text) return "";
+  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+};
+
   return (
     <div className="w-full h-auto p-6 bg-gray-100 overflow-auto">
 
@@ -122,7 +127,7 @@ const EventDetail = () => {
             <p className="text-[24px] text-black font-bold mb-4 ">{event?.title}
                {/* Status Badge */}
                <span className={`px-3 py-2 ml-2 text-[12px] rounded-full ${getStatusColor(event?.status)}`}>
-                {event?.status}
+    {capitalizeFirstLetter(event?.status)}
               </span>
             </p>
               <span className="text-[18px]">Description : {event?.description}</span>
