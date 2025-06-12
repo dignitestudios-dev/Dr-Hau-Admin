@@ -6,6 +6,7 @@ import EventAppointmentsTable from '../../components/Events/EventAppointmentsTab
 import EditEventModal from '../../components/Events/EditEventModal';  // Import the modal
 import CancelEventModal from '../../components/Events/CancelEventModal';
 import { FaSchool } from "react-icons/fa";
+import { formatTimeUTC } from '../../constants/utility';
 
 
 const EventDetail = () => {
@@ -142,7 +143,8 @@ const EventDetail = () => {
             </h4>
 
             <div className="flex items-center text-[14px] text-gray-700 mb-2">
-              <span className="mr-3">🕒</span> {new Date(event?.timeFrom).toLocaleTimeString()} - {new Date(event?.timeTo).toLocaleTimeString()}
+<span className="mr-3">🕒</span> 
+{formatTimeUTC(event?.timeFrom)} - {formatTimeUTC(event?.timeTo)}
             </div>
 
 

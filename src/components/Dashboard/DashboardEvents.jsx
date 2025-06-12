@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../../axios";
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
+import { formatTimeUTC } from "../../constants/utility";
 
 const DashboardEvents = () => {
   const [events, setEvents] = useState([]); // To store the events data
@@ -297,8 +298,8 @@ const DashboardEvents = () => {
                     <td className="py-3 px-4">{event?.bennyEventId}</td>
 
                      <td className="py-3 px-4">
-                     {new Date(event?.timeFrom).toLocaleTimeString()} -{" "}
-{new Date(event?.timeTo).toLocaleTimeString()}                    </td>
+                                          {formatTimeUTC(event?.timeFrom)} - {formatTimeUTC(event?.timeTo)}
+                                        </td>
                     <td className="py-3 px-4">
   <span
     className={`py-1 px-3 rounded-full text-white ${getStatusClass(

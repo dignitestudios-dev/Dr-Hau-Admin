@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../../axios";
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
+import { formatTimeUTC } from "../../constants/utility";
 
 const EventsTable = () => {
   const [events, setEvents] = useState([]); // To store the events data
@@ -286,8 +287,8 @@ const EventsTable = () => {
                     <td className="py-3 px-4">{event?.bennyEventId}</td>
 
                     <td className="py-3 px-4">
-                     {new Date(event?.timeFrom).toLocaleTimeString()} -{" "}
-{new Date(event?.timeTo).toLocaleTimeString()}                    </td>
+                     {formatTimeUTC(event?.timeFrom)} - {formatTimeUTC(event?.timeTo)}
+                                         </td>
 
                                   {/* <span className="mr-3">🕒</span> {new Date(event?.timeFrom).toLocaleTimeString()} - {new Date(event?.timeTo).toLocaleTimeString()} */}
 
