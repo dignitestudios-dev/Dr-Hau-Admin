@@ -54,10 +54,13 @@ const EventsTable = () => {
       selectedTab === "All" ||
       event.status?.toLowerCase() === selectedTab?.toLowerCase(); // Case-insensitive status filter
     console.log(event?.date, "checkFormate");
-    const dateFilter =
-      selectedDate &&
-      new Date(event?.date).toLocaleDateString() ==
-        new Date(selectedDate)?.toLocaleDateString(); // Filter by selected date;
+
+   const dateFilter =
+  selectedDate &&
+  new Date(event?.date).toISOString().split("T")[0] ===
+    new Date(selectedDate).toISOString().split("T")[0];
+
+
 
     const schoolFilter =
       selectedSchool === "All" || event.school?.schoolName === selectedSchool; // Filter by selected school

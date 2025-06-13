@@ -65,6 +65,8 @@ const CreateProfile = () => {
     setIsModalOpen(false);
   };
 
+
+  
   return (
     <div className="w-full h-auto p-6 bg-gray-100 overflow-auto">
       <div className="flex items-center mb-4">
