@@ -91,6 +91,11 @@ const getStatusColor = (adminStatus) => {
   }
 };
 
+const capitalizeFirstLetter = (text) => {
+  if (!text) return "";
+  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+};
+
   return (
     <div className="w-full h-auto bg-white p-6 rounded-md">
       <div className="flex justify-between items-center mb-4">
@@ -196,7 +201,9 @@ const getStatusColor = (adminStatus) => {
                   appointment?.adminStatus
                 )}`}
               >
-                {appointment?.adminStatus}
+                {/* {appointment?.adminStatus} */}
+                    {capitalizeFirstLetter(appointment?.adminStatus)}
+
               </td>
               <td className="py-3 px-4">
                 <button
