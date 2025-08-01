@@ -21,20 +21,24 @@ const EditEventModal = ({ isOpen, onRequestClose, eventData, onUpdateEvent }) =>
   ];
 
   // Initialize modal state with current event data
-  useEffect(() => {
-    if (eventData) {
-      setDescription(eventData.description);
-      setTimeFrom(eventData.timeFrom);
-      setTimeTo(eventData.timeTo);
-      
-      // Initialize lot numbers for selected vaccinations
-      const initialLotNumbers = {};
-      eventData.vaccinationLotNumbers?.forEach((vaccination, lotNumber) => {
-        initialLotNumbers[vaccination] = lotNumber;
-      });
-      setVaccinationLotNumbers(initialLotNumbers);
-    }
-  }, [eventData, isOpen]);
+useEffect(() => {
+  if (eventData) {
+    setDescription(eventData.description);
+    setTimeFrom(eventData.timeFrom);
+    setTimeTo(eventData.timeTo);
+
+    console.log('Event Data:', eventData);
+    
+    // Initialize the selected vaccinations and lot numbers
+    setVaccinations(eventData.vaccinations || []);  // Set the selected vaccinations
+    const initialLotNumbers = {};
+    eventData.lotNumber && Object.entries(eventData.lotNumber).forEach(([vaccination, lotNumber]) => {
+      initialLotNumbers[vaccination] = lotNumber;
+    });
+    setVaccinationLotNumbers(initialLotNumbers);
+  }
+}, [eventData, isOpen]);
+
 
   // Handle checkbox change (add or remove vaccinations)
   const handleVaccinationChange = (e) => {
@@ -108,7 +112,7 @@ const EditEventModal = ({ isOpen, onRequestClose, eventData, onUpdateEvent }) =>
           />
         </div>
 
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <label className="block text-black font-medium mb-2" htmlFor="timeFrom">
             Start Time
           </label>
@@ -132,7 +136,7 @@ const EditEventModal = ({ isOpen, onRequestClose, eventData, onUpdateEvent }) =>
             onChange={(e) => setTimeTo(e.target.value)}
             className="w-full p-2 text-gray-700 border rounded-md"
           />
-        </div>
+        </div> */}
 
         <div className="mb-4">
           <label className="block text-gray-700 font-medium mb-2" htmlFor="vaccinations">

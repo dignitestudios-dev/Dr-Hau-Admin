@@ -180,7 +180,7 @@ const PhysicalExam = () => {
                 name="zipcode"
                 value={formData.zipcode}
                 onChange={handleChange}
-                type="text"
+                type="number"
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 placeholder="Zip Code"
               />
@@ -207,7 +207,7 @@ const PhysicalExam = () => {
                 name="phoneNo"
                 value={formData?.phoneNo}
                 onChange={handleChange}
-                type="text"
+                type="number"
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 placeholder="Phone No"
               />
@@ -348,7 +348,7 @@ const PhysicalExam = () => {
               name="bloodPressureDown"
               value={formData?.bloodPressureDown}
               onChange={handleChange}
-              type="text"
+              type="number"
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="XXXX"
             />
@@ -361,7 +361,7 @@ const PhysicalExam = () => {
               name="bloodPressureUp"
               value={formData?.bloodPressureUp}
               onChange={handleChange}
-              type="text"
+              type="number"
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="XXXX"
             />
@@ -372,7 +372,7 @@ const PhysicalExam = () => {
               name="pulse"
               value={formData?.pulse}
               onChange={handleChange}
-              type="text"
+              type="number"
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="XXXX"
             />

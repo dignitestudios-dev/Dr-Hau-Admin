@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "../../axios";
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import { formatTimeUTC } from "../../constants/utility";
+import DatePicker from "react-datepicker";
 
 const EventsTable = () => {
   const [events, setEvents] = useState([]); // To store the events data
@@ -201,13 +202,27 @@ const EventsTable = () => {
           <div className="flex gap-6">
             <div className="flex items-center gap-4">
               {/* <label htmlFor="event-date" className="text-gray-700 font-medium">Select Date</label> */}
-              <input
+              {/* <input
                 type="date"
                 id="event-date"
                 value={new Date(selectedDate).toISOString().split("T")[0]}
                 onChange={(e) => setSelectedDate(new Date(e.target.value))}
                 className="p-2 border rounded-md text-black"
-              />
+              /> */}
+              <div className="relative">
+  <DatePicker
+    selected={selectedDate}
+    onChange={(date) => setSelectedDate(date)}
+    className="p-2 pl-4 pr-8 z-20 border rounded-md text-black w-full"
+    calendarStartDay={0}
+  />
+  <span className="absolute right-3 top-2 text-gray-500">
+    📅
+  </span>
+</div>
+
+
+
             </div>
             {/* <div className="flex flex-col">
               <select
@@ -254,7 +269,7 @@ const EventsTable = () => {
         {/* Table for events - Only render if not loading */}
         {!loading && !error && filteredEvents?.length > 0 && (
           <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border-collapse">
+            <table className="min-w-full bg-white border-collapse ">
               <thead>
                 <tr className="text-left text-[14px] bg-[#F5F7F7] text-gray-500">
                   <th className="py-2 px-4">DATE</th>

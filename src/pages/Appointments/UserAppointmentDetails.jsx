@@ -7,6 +7,7 @@ import RejectModal from "../../components/Appointments/RejectModal";
 import MarkAsCompletedModal from "../../components/Appointments/MarkAsCompletedModal";
 import { ErrorToast, SuccessToast } from "../../components/Global/Toaster";
 import PasswordModal from "../../components/Students/PasswordModal";
+import { MdDateRange, MdSchool, MdAssignment, MdLocationOn, MdMail, MdEvent, MdDescription, MdAccessTime } from 'react-icons/md';
 
 const UserAppointmentDetails = () => {
   const navigate = useNavigate();
@@ -116,21 +117,51 @@ const UserAppointmentDetails = () => {
   };
 
   // Loading or error handling UI
-  if (loading) {
-    return (
-      <div className="w-full p-6 bg-gray-100 h-auto overflow-auto mt-1">
-        <div className="flex items-center mb-8">
-          <button
-            onClick={() => navigate(-1)}
-            className="text-black flex items-center transition-colors hover:text-gray-700"
-          >
-            <IoMdArrowBack className="text-2xl" />
-          </button>
-          <h3 className="text-3xl font-semibold text-black ml-2">Loading...</h3>
+ if (loading) {
+  return (
+    <div className="w-full p-6 bg-gray-100 h-auto overflow-auto mt-1 animate-pulse">
+      <div className="flex items-center mb-8">
+        <div className="h-8 w-8 bg-gray-300 rounded-full"></div>
+        <div className="ml-4 h-6 w-40 bg-gray-300 rounded"></div>
+      </div>
+
+      <div className="bg-white p-8 rounded-lg shadow space-y-6">
+        <div className="flex space-x-6 items-center border-b pb-6">
+          <div className="w-20 h-20 bg-gray-300 rounded-full"></div>
+          <div className="flex flex-col space-y-2">
+            <div className="h-4 w-40 bg-gray-300 rounded"></div>
+            <div className="h-3 w-32 bg-gray-200 rounded"></div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+          {Array(10).fill(0).map((_, idx) => (
+            <div key={idx} className="space-y-1">
+              <div className="h-3 w-24 bg-gray-200 rounded"></div>
+              <div className="h-4 w-36 bg-gray-300 rounded"></div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-8 space-y-4">
+          <div className="h-4 w-32 bg-gray-300 rounded"></div>
+          <div className="space-y-2 pl-5">
+            <div className="h-3 w-52 bg-gray-200 rounded"></div>
+            <div className="h-3 w-48 bg-gray-200 rounded"></div>
+          </div>
+        </div>
+
+        <div className="mt-8 space-y-4">
+          <div className="h-4 w-40 bg-gray-300 rounded"></div>
+          <div className="space-y-2 pl-5">
+            <div className="h-3 w-60 bg-gray-200 rounded"></div>
+          </div>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
+
 
   if (error) {
     return (
@@ -186,45 +217,69 @@ const UserAppointmentDetails = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
           {[
-            {
-              label: "Date of Birth",
-              value: new Date(data?.dob).toLocaleDateString(),
-            },
-            {
-              label: "School Name",
-              value: appointmentData?.user?.schoolName || "N/A",
-            },
-            {
-              label: "Program",
-              value: appointmentData?.user?.programAttended || "N/A",
-            },
-            { label: "Campus", value: appointmentData?.user?.campus || "N/A" },
-            { label: "Email", value: data?.email },
-            { label: "Appointment Status", value: appointmentData?.status },
-            {
-              label: "Appointment Date",
-              value: new Date(appointmentData?.date).toLocaleDateString(),
-            },
-            { label: "Event Description", value: event?.description || "N/A" },
-            {
-              label: "Event Time",
-              value: `${new Date(
-                event?.timeFrom
-              ).toLocaleTimeString()} - ${new Date(
-                event?.timeTo
-              ).toLocaleTimeString()}`,
-            },
-            { label: "", value: "" },
-          ].map((item, index) => (
-            <div key={index} className="flex flex-col space-y-1">
-              <p className="text-xs font-semibold text-gray-500">
-                {item?.label}
-              </p>
-              <p className="text-sm text-gray-700">{item?.value}</p>
-            </div>
-          ))}
+        {
+          label: "Date of Birth",
+          value: new Date(data?.dob).toLocaleDateString(),
+          icon: <MdDateRange className="text-blue-500" />,
+        },
+        {
+          label: "School Name",
+          value: appointmentData?.user?.schoolName || "N/A",
+          icon: <MdSchool className="text-green-500" />,
+        },
+        {
+          label: "Program",
+          value: appointmentData?.user?.programAttended || "N/A",
+          icon: <MdAssignment className="text-purple-500" />,
+        },
+        {
+          label: "Campus",
+          value: appointmentData?.user?.campus || "N/A",
+          icon: <MdLocationOn className="text-teal-500" />,
+        },
+        {
+          label: "Email",
+          value: data?.email,
+          icon: <MdMail className="text-gray-500" />,
+        },
+        {
+          label: "Appointment Status",
+          value: appointmentData?.status,
+          icon: <MdEvent className="text-orange-500" />,
+        },
+        {
+          label: "Appointment Date",
+          value: new Date(appointmentData?.date).toLocaleDateString(),
+          icon: <MdEvent className="text-red-500" />,
+        },
+        {
+          label: "Event Description",
+          value: event?.description || "N/A",
+          icon: <MdDescription className="text-yellow-500" />,
+        },
+        {
+          label: "Event Start Time",
+          value: `${new Date(event?.timeFrom).toLocaleTimeString()}`,
+          icon: <MdAccessTime className="text-pink-500" />,
+        },
+        {
+          label: "Event End Time",
+          value: ` ${new Date(event?.timeTo).toLocaleTimeString()}`,
+          icon: <MdAccessTime className="text-pink-500" />,
+        },
+      ].map((item, index) => (
+        <div key={index} className="flex items-center space-x-3 bg-white p-4 rounded-lg  border hover:bg-gray-50 transition duration-200">
+          <div className="text-xl">{item.icon}</div>
+          <div className="flex-1">
+            <p className="text-xs font-semibold text-gray-500">{item?.label}</p>
+            <p className="text-sm text-gray-700">{item?.value}</p>
+          </div>
+        </div>
+        
+      ))}
+
           <div className="bg-white rounded-lg mt-8 space-y-4 justify-start">
             <h4 className="text-xl font-semibold text-gray-800">
               Vaccinations

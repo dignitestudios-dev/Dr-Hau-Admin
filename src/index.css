@@ -7,3 +7,6 @@
 body {
     font-family: "Inter", sans-serif;
 }
+input[type="date"]::-webkit-clear-button {
+  display: none !important;
+}

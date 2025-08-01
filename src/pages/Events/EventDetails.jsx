@@ -123,73 +123,98 @@ const EventDetail = () => {
 
         {activeTab === 'details' ? (
           <div>
-            <h4 className="text-[20px] font-bold text-black mb-4">
-            <p className="text-[24px] text-black font-bold mb-4 ">{event?.title}
-               {/* Status Badge */}
-               <span className={`px-3 py-2 ml-2 text-[12px] rounded-full ${getStatusColor(event?.status)}`}>
-    {capitalizeFirstLetter(event?.status)}
-              </span>
-            </p>
-              <span className="text-[18px]">Description : {event?.description}</span>
-              <br/>
-              <span className="text-[14px] text-gray-500 font mb-4">🎓 School : {event?.school.schoolName}</span>
-              <br/>
-              <span className="text-[14px] text-gray-500  mb-4">🏛️ Campus : {event?.school.campus}</span>
-              <br/>
+            <div className=" mx-auto bg-white rounded-lg ">
+  <h4 className="text-[24px] font-bold text-black mb-6 flex items-center justify-between">
+    {event?.title}
+    {/* Status Badge */}
+    <span className={`px-3 py-2 ml-3 text-[12px]  rounded-full ${getStatusColor(event?.status)}`}>
+      {capitalizeFirstLetter(event?.status)}
+    </span>
+  </h4>
 
-              <span className="text-[14px] text-gray-500 mb-4">🏛️ Lot Numbers:</span>
-<ul className="text-[14px] text-black mb-4">
-  {Object.entries(event?.lotNumber || {}).map(([vaccine, lotNumber]) => (
-    <li className='ml-5 text-gray-600' key={vaccine}>
-      <span>{vaccine}:</span> {lotNumber}
-    </li>
-  ))}
-</ul>
-            </h4>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="border p-4 rounded-md">
+      <div className="text-[18px] mb-2">
+        <strong className='text-black'>Description:</strong>
+        <p className="text-gray-600">{event?.description}</p>
+      </div>
+    </div>
 
-            <div className="flex items-center text-[14px] text-gray-700 mb-2">
-<span className="mr-3">🕒</span> 
-<p>
-  {new Date(event?.timeFrom)?.toLocaleTimeString()} - {new Date(event?.timeTo)?.toLocaleTimeString()}
-</p>
-            </div>
+    <div className="border p-4 rounded-md">
+        <strong className='text-black'>Campus:</strong>
 
+      <div className="text-[14px] text-gray-500 mt-2">
+        
+        <span className="mr-2">🎓</span>{event?.school.schoolName}
+      </div>
+      <div className="text-[14px] text-gray-500">
+        <span className="mr-2">🏛️</span>{event?.school.campus}
+      </div>
+    </div>
 
-            
-            <div className="flex items-center text-[14px] text-gray-700 mb-4">
-              <span className="mr-3">📅</span> {new Date(event?.date).toLocaleDateString()}
-            </div>
+    <div className="border p-4 rounded-md col-span-1 md:col-span-2">
+      <strong className="block text-black mb-2">🏛️ Lot Numbers:</strong>
+      <div className="rounded-md col-span-1 md:col-span-2">
+  <ul className="flex flex-wrap text-[14px] text-gray-600 gap-6">
+    {Object.entries(event?.lotNumber || {}).map(([vaccine, lotNumber]) => (
+      <li className="flex items-center" key={vaccine}>
+        <span className="font-semibold">{vaccine}:</span> {lotNumber}
+      </li>
+    ))}
+  </ul>
+</div>
 
-            <div className="mb-4">
-              <strong className="text-black">Vaccinations:</strong>
-              <ul className="list-disc ml-5 text-[14px] text-[#858585]">
-                {event?.vaccinations.map((vaccination, index) => (
-                  <li key={index}>{vaccination}</li>
-                ))}
-              </ul>
-            </div>
-            {event?.status === "upcoming" ? (
-              <>
-              {/* Edit Event Button */}
-            <button 
-              onClick={openEditModal} 
-              className="bg-black text-white px-4 py-2 rounded-md mr-4"
-            >
-              Edit Event
-            </button>
+    </div>
 
-            {/* Cancel Event Button */}
-            <button 
-              onClick={openCancelModal} 
-              className="bg-red-500 text-white px-4 py-2 rounded-md"
-              disabled={event?.status === 'Cancelled'} // Disable if the event is already cancelled
-            >
-              {event.status === 'Cancelled' ? 'Event Cancelled' : 'Cancel Event'}
-            </button>
-              </>
-            ):(
-              <></>
-            )}
+    <div className="border p-4 rounded-md">
+      <div className="flex items-center text-[14px] text-gray-700">
+        <span className="mr-3">🕒</span>
+        <p>{new Date(event?.timeFrom)?.toLocaleTimeString()} - {new Date(event?.timeTo)?.toLocaleTimeString()}</p>
+      </div>
+    </div>
+
+    <div className="border p-4 rounded-md">
+      <div className="flex items-center text-[14px] text-gray-700">
+        <span className="mr-3">📅</span>
+        <p>{new Date(event?.date).toLocaleDateString()}</p>
+      </div>
+    </div>
+
+   <div className="border p-4 rounded-md col-span-1 md:col-span-2">
+  <strong className="text-black mb-2">Vaccinations:</strong>
+  <ul className="flex flex-wrap gap-4 text-[14px] text-[#858585]">
+    {event?.vaccinations.map((vaccination, index) => (
+      <li key={index} className="flex items-center">
+        {vaccination}
+      </li>
+    ))}
+  </ul>
+</div>
+
+  </div>
+
+  {event?.status === "upcoming" && (
+    <div className="mt-6 flex gap-4">
+      {/* Edit Event Button */}
+      <button
+        onClick={openEditModal}
+        className="bg-black text-white px-4 py-3 rounded-md text-sm font-semibold hover:bg-gray-800 transition-colors"
+      >
+        Edit Event
+      </button>
+
+      {/* Cancel Event Button */}
+      <button
+        onClick={openCancelModal}
+        className="bg-red-500 text-white px-4 py-3 rounded-md text-sm text-lg font-semibold hover:bg-red-600 transition-colors"
+        disabled={event?.status === 'Cancelled'}
+      >
+        {event?.status === 'Cancelled' ? 'Event Cancelled' : 'Cancel Event'}
+      </button>
+    </div>
+  )}
+</div>
+
           </div>
         ) : (
           <EventAppointmentsTable eventId={eventId} />

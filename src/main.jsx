@@ -6,6 +6,7 @@ import { BrowserRouter } from "react-router-dom";
 import { GlobalContextProvider } from "./contexts/GlobalContext.jsx";
 import { AuthProvider } from './contexts/AuthContext';
 import { ToasterContainer } from "./components/Global/Toaster.jsx";
+import "react-datepicker/dist/react-datepicker.css";
 
 
 ReactDOM.createRoot(document.getElementById("root")).render(
