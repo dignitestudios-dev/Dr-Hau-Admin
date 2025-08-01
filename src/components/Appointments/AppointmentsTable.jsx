@@ -194,7 +194,7 @@ const capitalizeFirstLetter = (text) => {
                 {new Date(appointment?.user?.dob).toLocaleDateString()}
               </td>
               <td className="py-3 px-4">
-                {appointment?.user?.programAttended}
+{appointment?.user?.programAttended && appointment.user.programAttended !== "null" ? appointment.user.programAttended : "N/A"}
               </td>
               <td
                 className={`py-3 px-4 ${getStatusColor(
