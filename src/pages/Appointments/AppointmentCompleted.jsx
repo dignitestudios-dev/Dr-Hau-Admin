@@ -79,12 +79,19 @@ const AppointmentCompleted = () => {
 
               {/* Conditionally render the Physical Exam button */}
               <button
+                onClick={() => navigate(`/blood-work`)}
+                disabled={hasPhysicalExamDetails} // Disable the button if physical exam details exist
+                className={`flex items-center text-white px-6 py-2 rounded-md ${hasPhysicalExamDetails ? 'bg-gray-500 cursor-not-allowed' : 'bg-black'}`}
+              >
+                Blood work
+              </button>
+              {/* <button
                 onClick={() => navigate(`/physical-exam/${appointment?.appointment?.id}`)}
                 disabled={hasPhysicalExamDetails} // Disable the button if physical exam details exist
                 className={`flex items-center text-white px-6 py-2 rounded-md ${hasPhysicalExamDetails ? 'bg-gray-500 cursor-not-allowed' : 'bg-black'}`}
               >
                 Physical Exam
-              </button>
+              </button> */}
 
               {/* New button: View Physical Report Details */}
               {hasPhysicalExamDetails && (

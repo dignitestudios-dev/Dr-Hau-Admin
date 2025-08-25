@@ -333,12 +333,40 @@ const UserAppointmentDetails = () => {
               <div className="flex justify-start space-x-4 mt-8">
                 {/* Mark as Completed Button */}
                 {approvalStatus === "approved" && (
+                  <>
                   <button
                     onClick={() => setShowCompleteModal(true)} // Open Complete Modal
-                    className="bg-green-500 text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform hover:scale-105"
+                    className="bg-green-500 disbale text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform hover:scale-105"
                   >
                     Mark as Completed
                   </button>
+                  <button
+                    onClick={() => navigate('/vitalsform')} // Open Complete Modal
+                    className="bg-black text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform hover:scale-105"
+                  >
+                    Vitals 
+                  </button>
+                   <button
+                    onClick={() => navigate('/vaccinationform')} // Open Complete Modal
+                    className="bg-black text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform hover:scale-105"
+                  >
+                    Vaccinations
+                  </button>
+                   <button
+                    onClick={() => navigate('/drugscreeningform')} // Open Complete Modal
+                    className="bg-black text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform hover:scale-105"
+                  >
+                    Drug Screening
+                  </button>
+                 <button
+                onClick={() => navigate(`/physical-exam`)}
+              // Disable the button if physical exam details exist
+                className={`flex items-center text-white px-6 py-2 rounded-md ${false ? 'bg-gray-500 cursor-not-allowed' : 'bg-black'}`}
+              >
+                Physical Exam
+              </button>
+                  </>
+                  
                 )}
                 {/* Approve Button */}
                 {approvalStatus === "approved" ? (

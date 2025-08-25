@@ -30,6 +30,10 @@ import PhysicalExam from "../components/Appointments/PhysicalExam";
 import ChangePassword from "../pages/Settings/ChangePassword";
 import MedicalDetail from "../pages/Appointments/MedicalDetail";
 import PhysicalExamDetails from "../components/Appointments/PhysicalExamDetails";
+import VitalsForm from "../pages/Appointments/VitalsForm";
+import VaccinationsForm from "../pages/Appointments/VaccinationsForm";
+import DrugScreeningForm from "../pages/Appointments/DrugScreeningForm";
+import BloodWork from "../pages/Appointments/BloodWork";
 
 export const normalRoutes = [
     {
@@ -185,7 +189,7 @@ export const normalRoutes = [
     },
     {
       title: "physical Exam",
-      url: "/physical-exam/:id",
+      url: "/physical-exam",
       page: <GlobalLayout page={<PhysicalExam />} />,
 
     },
@@ -205,6 +209,33 @@ export const normalRoutes = [
       title: "medicaldetail",
       url: "/physicalexamdetails/:id",
       page: <GlobalLayout page={<PhysicalExamDetails />} />,
+
+    },
+
+     {
+      title: "vitalsform",
+      url: "/vitalsform",
+      page: <GlobalLayout page={<VitalsForm />} />,
+
+    },
+    
+     {
+      title: "VaccinationForm",
+      url: "/vaccinationform",
+      page: <GlobalLayout page={<VaccinationsForm />} />,
+
+    },
+
+    {
+      title: "DrugScreeningForm",
+      url: "/drugscreeningform",
+      page: <GlobalLayout page={<DrugScreeningForm />} />,
+
+    },
+    {
+      title: "DrugScreeningForm",
+      url: "/blood-work",
+      page: <GlobalLayout page={<BloodWork />} />,
 
     },
     
