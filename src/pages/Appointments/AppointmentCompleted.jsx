@@ -1,11 +1,10 @@
 // src/pages/AppointmentCompleted.js
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { FaFileAlt, FaUpload } from 'react-icons/fa'; // Importing React Icons
-import PdfUploadModal from '../../components/Appointments/UploadPdfModal';
+import { FaFileAlt, FaUpload } from "react-icons/fa"; // Importing React Icons
+import PdfUploadModal from "../../components/Appointments/UploadPdfModal";
 import { FaRegEye } from "react-icons/fa";
-
 
 const AppointmentCompleted = () => {
   const navigate = useNavigate();
@@ -37,35 +36,54 @@ const AppointmentCompleted = () => {
       <div className="bg-white shadow-md rounded-md p-6">
         <div>
           <h4 className="text-[20px] font-bold text-black mb-4">
-            {appointment?.event?.title} <span className="bg-green-500 text-white px-3 py-2 text-[12px] rounded-full">{appointment?.appointment?.adminStatus}</span>
+            {appointment?.event?.title}{" "}
+            <span className="bg-green-500 text-white px-3 py-2 text-[12px] rounded-full">
+              {appointment?.appointment?.adminStatus}
+            </span>
           </h4>
-          <p className="text-[14px] text-gray-600 mb-4">{appointment?.event?.description}</p>
+          <p className="text-[14px] text-gray-600 mb-4">
+            {appointment?.event?.description}
+          </p>
 
           <div className="flex items-center text-[14px] text-gray-700 mb-2">
-            <span className="mr-2">🕒</span> {appointment?.appointment?.date && new Date(appointment?.appointment?.date).toLocaleDateString('en-US', {
-              weekday: 'long', // 'short' will give abbreviated weekday names like 'Mon'
-              year: 'numeric',
-              month: 'long',  // 'short' will give abbreviated months like 'Jan'
-              day: 'numeric',
-            })}
+            <span className="mr-2">🕒</span>{" "}
+            {appointment?.appointment?.date &&
+              new Date(appointment?.appointment?.date).toLocaleDateString(
+                "en-US",
+                {
+                  weekday: "long", // 'short' will give abbreviated weekday names like 'Mon'
+                  year: "numeric",
+                  month: "long", // 'short' will give abbreviated months like 'Jan'
+                  day: "numeric",
+                }
+              )}
           </div>
 
           <div className="mb-4 mt-4">
             <strong className="text-black">Vaccinations:</strong>
             <ul>
-              {appointment?.appointment?.vaccinations?.map((vaccination, index) => (
-                <li key={index} className="text-gray-600 text-[15px]">{vaccination}</li>
-              ))}
+              {appointment?.appointment?.vaccinations?.map(
+                (vaccination, index) => (
+                  <li key={index} className="text-gray-600 text-[15px]">
+                    {vaccination}
+                  </li>
+                )
+              )}
             </ul>
           </div>
 
           {appointment?.appointment?.adminStatus === "completed" && (
             <div className="flex space-x-4">
               <button
-                onClick={() => navigate(`/medicalreportform/${appointment?.appointment?.id}`, { state: { appointment: appointment?.appointment?.report } })}
+                onClick={() =>
+                  navigate(
+                    `/medicalreportform/${appointment?.appointment?.id}`,
+                    { state: { appointment: appointment?.appointment?.report } }
+                  )
+                }
                 className="flex items-center text-white bg-black px-6 py-2 rounded-md border border-black"
               >
-                <FaFileAlt className="mr-2" /> 
+                <FaFileAlt className="mr-2" />
                 Medical Report
               </button>
 
@@ -79,9 +97,17 @@ const AppointmentCompleted = () => {
 
               {/* Conditionally render the Physical Exam button */}
               <button
-                onClick={() => navigate(`/blood-work`)}
-                disabled={hasPhysicalExamDetails} // Disable the button if physical exam details exist
-                className={`flex items-center text-white px-6 py-2 rounded-md ${hasPhysicalExamDetails ? 'bg-gray-500 cursor-not-allowed' : 'bg-black'}`}
+                onClick={() =>
+                  navigate(`/blood-work`, {
+                    state: appointment?.appointment?.id,
+                  })
+                }
+                disabled={appointment?.appointment?.isBloodworkFormFilled} // Disable the button if physical exam details exist
+                className={`flex items-center text-white px-6 py-2 rounded-md ${
+                  appointment?.appointment?.isBloodworkFormFilled
+                    ? "bg-gray-500 cursor-not-allowed"
+                    : "bg-black"
+                }`}
               >
                 Blood work
               </button>
@@ -96,17 +122,19 @@ const AppointmentCompleted = () => {
               {/* New button: View Physical Report Details */}
               {hasPhysicalExamDetails && (
                 <button
-                onClick={() => navigate(`/physicalexamdetails/${appointment?.appointment?.physicalExam.id}`)}
-                className="flex items-center text-white bg-black px-6 py-2 rounded-md border border-black"
+                  onClick={() =>
+                    navigate(
+                      `/physicalexamdetails/${appointment?.appointment?.physicalExam.id}`
+                    )
+                  }
+                  className="flex items-center text-white bg-black px-6 py-2 rounded-md border border-black"
                 >
-                  <FaRegEye className='mr-2' />
-
+                  <FaRegEye className="mr-2" />
                   View Physical Exam Details
                 </button>
               )}
             </div>
           )}
-
         </div>
       </div>
 

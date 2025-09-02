@@ -108,7 +108,7 @@ const VaccinationsForm = ({ isEditing }) => {
       const res = await axios.post("/admin/medical-form", payload);
       if (res.status === 200) {
         SuccessToast("Vaccination data saved ✅");
-        navigate("/userappointmentdetails");
+        // navigate("/userappointmentdetails");
         // reset form if needed
         setFormData({
           noVaccinations: false,

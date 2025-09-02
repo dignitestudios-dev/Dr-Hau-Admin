@@ -193,6 +193,11 @@ const UserAppointmentDetails = () => {
 
   // Check if vaccinations array is empty
   const vaccinations = appointmentData?.vaccinations || [];
+  const allFormsFilled =
+    appointmentData?.isVitalFormFilled &&
+    appointmentData?.isVaccinationFormFilled &&
+    appointmentData?.isDrugScreenFormFilled &&
+    appointmentData?.isPhysicalExamFormFilled;
 
   return (
     <div className="w-full p-6 bg-gray-100 h-auto overflow-auto mt-1">
@@ -344,12 +349,21 @@ const UserAppointmentDetails = () => {
                 {/* Mark as Completed Button */}
                 {approvalStatus === "approved" && (
                   <>
+                    {/* Mark as Completed */}
                     <button
-                      onClick={() => setShowCompleteModal(true)} // Open Complete Modal
-                      className="bg-green-500 disbale text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform hover:scale-105"
+                      onClick={() => setShowCompleteModal(true)}
+                      disabled={!allFormsFilled} // ✅ disable until all forms filled
+                      className={`px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform 
+        ${
+          !allFormsFilled
+            ? "bg-green-500 text-white opacity-50 cursor-not-allowed"
+            : "bg-green-500 text-white hover:scale-105"
+        }`}
                     >
                       Mark as Completed
                     </button>
+
+                    {/* Vitals */}
                     <button
                       onClick={() => {
                         if (!appointmentData?.isVitalFormFilled) {
@@ -358,84 +372,84 @@ const UserAppointmentDetails = () => {
                           });
                         }
                       }}
-                      disabled={appointmentData?.isVitalFormFilled} // ✅ disable if true
-                      className={`bg-black text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform 
-    ${
-      appointmentData?.isVitalFormFilled
-        ? "opacity-50 cursor-not-allowed"
-        : "hover:scale-105"
-    }
-  `}
+                      disabled={appointmentData?.isVitalFormFilled}
+                      className={`px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform 
+        ${
+          appointmentData?.isVitalFormFilled
+            ? "bg-black text-white opacity-50 cursor-not-allowed"
+            : "bg-black text-white hover:scale-105"
+        }`}
                     >
                       Vitals
                     </button>
 
+                    {/* Vaccinations */}
                     <button
                       onClick={() =>
                         navigate("/vaccinationform", {
                           state: appointmentData?._id,
                         })
-                      } // Open Complete Modal
-                      disabled={appointmentData?.isVaccinationFormFilled} // ✅ disable if true
-                      className={`bg-black text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform 
-    ${
-      appointmentData?.isVaccinationFormFilled
-        ? "opacity-50 cursor-not-allowed"
-        : "hover:scale-105"
-    }
-  `}
+                      }
+                      disabled={appointmentData?.isVaccinationFormFilled}
+                      className={`px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform 
+        ${
+          appointmentData?.isVaccinationFormFilled
+            ? "bg-black text-white opacity-50 cursor-not-allowed"
+            : "bg-black text-white hover:scale-105"
+        }`}
                     >
                       Vaccinations
                     </button>
+
+                    {/* Drug Screening */}
                     <button
                       onClick={() =>
                         navigate("/drugscreeningform", {
                           state: appointmentData?._id,
                         })
-                      } // Open Complete Modal
-                      disabled={appointmentData?.isDrugScreenFormFilled} // ✅ disable if true
-                      className={`bg-black text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform 
-    ${
-      appointmentData?.isDrugScreenFormFilled
-        ? "opacity-50 cursor-not-allowed"
-        : "hover:scale-105"
-    }
-  `}
+                      }
+                      disabled={appointmentData?.isDrugScreenFormFilled}
+                      className={`px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform 
+        ${
+          appointmentData?.isDrugScreenFormFilled
+            ? "bg-black text-white opacity-50 cursor-not-allowed"
+            : "bg-black text-white hover:scale-105"
+        }`}
                     >
                       Drug Screening
                     </button>
+
+                    {/* Physical Exam */}
                     <button
                       onClick={() =>
                         navigate(`/physical-exam`, {
                           state: appointmentData?._id,
                         })
                       }
-                      // Disable the button if physical exam details exist
-                      disabled={appointmentData?.isPhysicalExamFormFilled} // ✅ disable if true
-                      className={`bg-black text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform 
-    ${
-      appointmentData?.isPhysicalExamFormFilled
-        ? "opacity-50 cursor-not-allowed"
-        : "hover:scale-105"
-    }
-  `}
+                      disabled={appointmentData?.isPhysicalExamFormFilled}
+                      className={`px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform 
+        ${
+          appointmentData?.isPhysicalExamFormFilled
+            ? "bg-black text-white opacity-50 cursor-not-allowed"
+            : "bg-black text-white hover:scale-105"
+        }`}
                     >
                       Physical Exam
                     </button>
+
+                    {/* View Form */}
                     <button
                       onClick={() =>
-                        navigate(`/view-form`, {
-                          state: appointmentData?._id,
-                        })
+                        navigate(`/view-form`, { state: appointmentData?._id })
                       }
-                      // Disable the button if physical exam details exist
-                      // ✅ disable if true
-                      className={`bg-black text-white px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform `}
+                      className={`px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform 
+      bg-black text-white hover:scale-105 `}
                     >
                       View Form
                     </button>
                   </>
                 )}
+
                 {/* Approve Button */}
                 {approvalStatus === "approved" ? (
                   <button disabled className="display:none">
