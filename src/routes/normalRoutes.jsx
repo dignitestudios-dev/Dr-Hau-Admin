@@ -34,6 +34,7 @@ import VitalsForm from "../pages/Appointments/VitalsForm";
 import VaccinationsForm from "../pages/Appointments/VaccinationsForm";
 import DrugScreeningForm from "../pages/Appointments/DrugScreeningForm";
 import BloodWork from "../pages/Appointments/BloodWork";
+import ViewForm from "../pages/Appointments/ViewForm";
 
 export const normalRoutes = [
     {
@@ -203,6 +204,12 @@ export const normalRoutes = [
       title: "medicaldetail",
       url: "/medicaldetail",
       page: <GlobalLayout page={<MedicalDetail />} />,
+
+    },
+    {
+      title: "view-form",
+      url: "/view-form",
+      page: <GlobalLayout page={<ViewForm />} />,
 
     },
     {

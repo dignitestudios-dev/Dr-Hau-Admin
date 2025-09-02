@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ErrorToast, SuccessToast } from "../Global/Toaster";
 import axios from "../../axios";
 
@@ -7,19 +7,10 @@ const PhysicalExam = () => {
   const { id } = useParams();
   const currentDate = new Date().toISOString();
   const [submitLoading, setSubmitLoading] = useState(false);
-
+  const [reportData, setReportData] = useState("");
+  const location = useLocation();
+const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    lastName: "",
-    firstName: "",
-    address: "",
-    city: "",
-    state: "",
-    zipcode: "",
-    dateOfBirth: "",
-    ssnLast4: "",
-    gender: "",
-    schoolCity: "",
-    phoneNo: "",
     heent: "",
     neck: "",
     lungs: "",
@@ -41,26 +32,19 @@ const PhysicalExam = () => {
     bloodPressureUp: "",
     pulse: "",
     hepatitisB: false,
-    hepatitisBPrior: "",
     TD: false,
-    TDPrior: "",
     influenza: false,
     MMR: false,
-    MMRPrior: "",
     Varicella: false,
-    VaricellaPrior: "",
     ppdDone: false,
-    ppdNotDoneReason: "",
     hxPPD: false,
     negativePPD: false,
-    isStudentHealthy: false,
-    isNormalExam: false,
-    studentSign: false,
-    studentSignDate: "",
-    clinicianSign: false,
+    isStudentHealthy: null, // Yes/No radio
+    clinicianSign: "",
     clinicianSignDate: "",
   });
- const fields = [
+
+  const fields = [
     "heent",
     "neck",
     "lungs",
@@ -70,40 +54,97 @@ const PhysicalExam = () => {
     "neurologic",
     "skin",
   ];
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
-    // Check if it's a radio button
     if (type === "radio") {
-      // Convert the value to a boolean if it's "true" or "false"
-      setFormData((prevData) => ({
-        ...prevData,
-        [name]: value === "true", // convert the string to boolean
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value === "true",
       }));
     } else {
-      // For other input types (checkboxes, text, etc.)
-      setFormData((prevData) => ({
-        ...prevData,
+      setFormData((prev) => ({
+        ...prev,
         [name]: type === "checkbox" ? checked : value,
       }));
     }
   };
 
+  const getReportData = async () => {
+    try {
+      const response = await axios.get(
+        `/admin/medical-form/${location?.state}`
+      );
+      if (response.status === 200) {
+        setReportData(response?.data?.data);
+        if (response?.data?.data) {
+          setFormData((prev) => ({
+            ...prev,
+            ...response.data.data,
+          }));
+        }
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    getReportData();
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       setSubmitLoading(true);
-      const dataToSend = { appointment: id, currentDate: currentDate };
+
+      let payload = {
+        type: "Physical Exam",
+        appointment: location?.state || "APPOINTMENT_ID",
+        data: {},
+        iscleared: formData.isStudentHealthy || false,
+      };
+
+      // sab fields copy karo except Part B (agar noPhysicalExam true ho to skip)
+      let dataToSend = {};
+
       for (const field in formData) {
-        if (formData[field] !== undefined && formData[field] !== "") {
+        if (
+          formData[field] !== undefined &&
+          formData[field] !== "" &&
+          field !== "isStudentHealthy" // isko alag bhejna hai
+        ) {
+          // Part B skip condition
+          if (
+            formData.noPhysicalExam &&
+            [
+              "heent",
+              "neck",
+              "lungs",
+              "heart",
+              "abdomen",
+              "orthopedic",
+              "neurologic",
+              "skin",
+              "comments",
+            ].includes(field)
+          ) {
+            continue; // skip Part B fields
+          }
+
           dataToSend[field] = formData[field];
         }
       }
 
-      const response = await axios.post("/admin/physicalReport", dataToSend);
+      payload.data = dataToSend;
+
+      const response = await axios.post("/admin/medical-form", payload);
+
       if (response.status === 200 || response.status === 201) {
         setSubmitLoading(false);
         SuccessToast("Report Submitted");
+        // navigate("/userappointmentdetails");
       }
     } catch (err) {
       console.log(err);
@@ -116,186 +157,70 @@ const PhysicalExam = () => {
       <h1 className="text-3xl font-semibold text-gray-800 mb-8">
         Physical Exam Sheet
       </h1>
+
       <form onSubmit={handleSubmit} className="space-y-8 text-gray-700">
-        {/* PART A */}
-        {/* <section>
+        {/* Part B */}
+        <section className="p-6 bg-white rounded-xl shadow-md">
           <h2 className="text-2xl font-semibold text-gray-800 mb-6">
-            Part A: Personal Information
+            Part B: Physical Exam
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-           
+          <div className="mb-6">
+            <label className="inline-flex items-center">
+              <input
+                type="checkbox"
+                name="noPhysicalExam"
+                checked={formData.noPhysicalExam}
+                onChange={handleChange}
+                className="mr-2"
+              />
+              No physical exam performed today
+            </label>
           </div>
 
-          <div className="mb-6">
-            <label className="block text-sm font-medium mb-2">Address</label>
-            <input
-              name="address"
-              value={formData?.address}
+          <div
+            className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ${
+              formData.noPhysicalExam ? "opacity-50 pointer-events-none" : ""
+            }`}
+          >
+            {fields.map((field) => (
+              <div key={field} className="space-y-2">
+                <label className="block text-sm font-medium">
+                  {field.charAt(0).toUpperCase() + field.slice(1)}
+                </label>
+                <select
+                  name={field}
+                  value={formData[field]}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+                  <option value="">Select</option>
+                  <option value="Normal">Normal</option>
+                  <option value="Abnormal">Abnormal</option>
+                </select>
+              </div>
+            ))}
+          </div>
+
+          <div
+            className={`mt-6 ${
+              formData.noPhysicalExam ? "opacity-50 pointer-events-none" : ""
+            }`}
+          >
+            <label className="block text-sm font-medium mb-2">Comments</label>
+            <textarea
+              name="comments"
+              value={formData.comments}
               onChange={handleChange}
-              type="text"
+              rows={3}
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Address"
+              placeholder="Additional comments"
             />
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-6 mb-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">City</label>
-              <input
-                name="city"
-                value={formData?.city}
-                onChange={handleChange}
-                type="text"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                placeholder="City"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">State</label>
-              <input
-                name="state"
-                value={formData?.state}
-                onChange={handleChange}
-                type="text"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                placeholder="State"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">Zip Code</label>
-              <input
-                name="zipcode"
-                value={formData.zipcode}
-                onChange={handleChange}
-                type="number"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                placeholder="Zip Code"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                School City
-              </label>
-              <input
-                name="schoolCity"
-                value={formData?.schoolCity}
-                onChange={handleChange}
-                type="text"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                placeholder="School City"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <label className="block text-sm font-medium mb-2">Phone No</label>
-              <input
-                name="phoneNo"
-                value={formData?.phoneNo}
-                onChange={handleChange}
-                type="number"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                placeholder="Phone No"
-              />
-            </div>
-          
-          </div>
-        </section> */}
-
-        {/* <div className="flex items-center">
-              <label className="mr-4">Gender:</label>
-              <label className="mr-6">
-                <input
-                  type="radio"
-                  name="gender"
-                  value="Male"
-                  checked={formData.gender === 'Male'}
-                  onChange={handleChange}
-                  className="mr-2"
-                />
-                Male
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="gender"
-                  value="Female"
-                  checked={formData.gender === 'Female'}
-                  onChange={handleChange}
-                  className="mr-2"
-                />
-                Female
-              </label>
-            </div> */}
-        {/* Part B */}
-          <section className="p-6 bg-white rounded-xl shadow-md">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-6">
-        Part B: Physical Exam
-      </h2>
-
-      {/* No Exam Checkbox */}
-      <div className="mb-6">
-        <label className="inline-flex items-center">
-          <input
-            type="checkbox"
-            name="noExam"
-            checked={formData.noExam}
-            onChange={handleChange}
-            className="mr-2"
-          />
-          No physical exam performed today
-        </label>
-      </div>
-
-      {/* Exam Fields */}
-      <div
-        className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ${
-          formData.noExam ? "opacity-50 pointer-events-none" : ""
-        }`}
-      >
-        {fields.map((field) => (
-          <div key={field} className="space-y-2">
-            <label className="block text-sm font-medium">
-              {field.charAt(0).toUpperCase() + field.slice(1)}
-            </label>
-            <select
-              name={field}
-              value={formData[field]}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            >
-              <option value="Normal">Normal</option>
-              <option value="Abnormal">Abnormal</option>
-            </select>
-
-            {/* Notes only if abnormal */}
-          
-          </div>
-        ))}
-      </div>
-
-      {/* Comments */}
-      <div
-        className={`mt-6 ${
-          formData.noExam ? "opacity-50 pointer-events-none" : ""
-        }`}
-      >
-        <label className="block text-sm font-medium mb-2">Comments</label>
-        <textarea
-          name="comments"
-          value={formData.comments}
-          onChange={handleChange}
-          rows={3}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          placeholder="Additional comments"
-        />
-      </div>
-    </section>
+        </section>
 
         {/* Blood Work */}
-        <section>
+        <section className="p-6 bg-white rounded-xl shadow-md">
           <h2 className="text-2xl font-semibold text-gray-800 mb-6">
             Blood Work
           </h2>
@@ -303,7 +228,7 @@ const PhysicalExam = () => {
             {[
               { label: "P4", name: "p4" },
               { label: "P3", name: "p3" },
-              { label: "Help B surface Ab", name: "hepB" },
+              { label: "Hep B surface Ab", name: "hepB" },
             ].map(({ label, name }) => (
               <div key={name} className="flex items-center">
                 <input
@@ -320,17 +245,19 @@ const PhysicalExam = () => {
               </div>
             ))}
           </div>
+
           <div className="mb-6">
             <label className="block text-sm font-medium mb-2 mt-4">Other</label>
             <input
               name="other"
-              value={formData?.other}
+              value={formData.other}
               onChange={handleChange}
               type="text"
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="other"
             />
           </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
             {[
               { label: "T-spot/QuantiFERON", name: "tspot" },
@@ -353,14 +280,15 @@ const PhysicalExam = () => {
               </div>
             ))}
           </div>
+
           <div>
             <label className="block text-sm font-medium mb-2 mt-8">
               Blood Pressure Down
             </label>
             <input
               name="bloodPressureDown"
-              value={formData?.bloodPressureDown}
-              onChange={handleChange}
+              value={reportData?.Vitals?.diastolic || ""}
+              disabled
               type="number"
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="XXXX"
@@ -372,207 +300,117 @@ const PhysicalExam = () => {
             </label>
             <input
               name="bloodPressureUp"
-              value={formData?.bloodPressureUp}
-              onChange={handleChange}
+              value={reportData?.Vitals?.systolic || ""}
+              disabled
               type="number"
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="XXXX"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-2 mt-4">pulse</label>
+            <label className="block text-sm font-medium mb-2 mt-4">Pulse</label>
             <input
               name="pulse"
-              value={formData?.pulse}
-              onChange={handleChange}
+              value={reportData?.Vitals?.pulse || ""}
+              disabled
               type="number"
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="XXXX"
             />
           </div>
         </section>
-        <h2 className="text-2xl font-semibold text-gray-800 mb-6">
-          Vaccine given today
-        </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-          {[
-            { label: "Hepatitis B ", name: "hepatitisBPrior" },
-            { label: "TD", name: "TD" },
-            { label: "influenza", name: "influenza" },
-          ].map(({ label, name }) => (
-            <div key={name} className="flex items-center">
+        {/* Vaccines */}
+        <section className="p-6 bg-white rounded-xl shadow-md">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+            Vaccine given today
+          </h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            {[
+              { label: "Hepatitis B", name: "hepatitisB" },
+              { label: "TD", name: "TD" },
+              { label: "Influenza", name: "influenza" },
+              { label: "MMR", name: "MMR" },
+              { label: "Varicella", name: "Varicella" },
+              { label: "PPD", name: "ppdDone" },
+              { label: "Hx of positive PPD", name: "hxPPD" },
+              {
+                label: "Recent negative PPD Or QuantiFERON",
+                name: "negativePPD",
+              },
+            ].map(({ label, name }) => (
+              <div key={name} className="flex items-center">
+                <input
+                  type="checkbox"
+                  id={name}
+                  name={name}
+                  checked={formData[name]}
+                  onChange={handleChange}
+                  className="mr-2"
+                />
+                <label htmlFor={name} className="text-sm font-medium">
+                  {label}
+                </label>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Healthy Student */}
+        <section className="p-6 bg-white rounded-xl shadow-md">
+          <label className="text-sm font-medium mb-2 block">
+            This student is healthy and fit enough to perform all activities as
+            required by the selected program and vocation
+          </label>
+          <div className="flex gap-6">
+            <label className="flex items-center">
               <input
-                type="checkbox"
-                id={name}
-                name={name}
-                checked={formData[name]}
+                type="radio"
+                name="isStudentHealthy"
+                value="true"
+                checked={formData.isStudentHealthy === true}
                 onChange={handleChange}
                 className="mr-2"
               />
-              <label htmlFor={name} className="text-sm font-medium">
-                {label}
-              </label>
-            </div>
-          ))}
-        </div>
-
-        {/* Additional Fields for MMR, Varicella, PPD */}
-        <section>
-          <div className="grid grid-cols- sm:grid-cols-2 md:grid-cols-2 gap-6">
-            {/* MMR */}
-            <div className="flex items-center">
-              <label className="mr-4">
-                {" "}
-                <input
-                  type="checkbox"
-                  name="MMR"
-                  value={true}
-                  checked={formData?.MMR === true}
-                  onChange={handleChange}
-                  className="mr-2"
-                />
-                MMR
-              </label>
-            </div>
-            {/* MMR Prior */}
-            <div></div>
-
-            {/* Heparitis */}
-            <div className="flex items-center">
-              <label className="mr-4">
-                <input
-                  type="checkbox"
-                  name="hepatitisB"
-                  value={true}
-                  checked={formData?.hepatitisB === true}
-                  onChange={handleChange}
-                  className="mr-2"
-                />
-                hepatitisB
-              </label>
-            </div>
-            {/* hepatitisBPrior */}
-            <div></div>
-
-            {/* Varicella */}
-            <div className="flex items-center">
-              <label className="mr-4">
-                {" "}
-                <input
-                  type="checkbox"
-                  name="Varicella"
-                  value={true}
-                  checked={formData?.Varicella === true}
-                  onChange={handleChange}
-                  className="mr-2"
-                />
-                Varicella
-              </label>
-            </div>
-            {/* Varicella Prior */}
-            <div></div>
-            <hr className="w-full" />
-
-            {/* PPD Done */}
-
-            <div></div>
-
-            {/* hxPPD Done */}
-            <div className=" items-center">
-              <div className="flex items-center">
-                <label className="mr-4">
-                  {" "}
-                  <input
-                    type="checkbox"
-                    name="ppdDone"
-                    value={true}
-                    checked={formData?.ppdDone === true}
-                    onChange={handleChange}
-                    className="mr-2"
-                  />
-                  PPD
-                </label>
-              </div>
-              <h2 className="mt-3"> OR PPD not done because </h2>
-              <label className="mr-4">
-                {" "}
-                <input
-                  type="checkbox"
-                  name="hxPPD"
-                  value={true}
-                  checked={formData?.hxPPD === true}
-                  onChange={handleChange}
-                  className="mr-2 mt-6"
-                />
-                Hx of positive PPD
-              </label>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2">
-            {/* negativePPD  */}
-            <div className="flex items-center mt-8">
-              <label className="mr-4">
-                {" "}
-                <input
-                  type="checkbox"
-                  name="negativePPD"
-                  value={true}
-                  checked={formData?.negativePPD === true}
-                  onChange={handleChange}
-                  className="mr-2"
-                />
-                Recent negative PPD Or QuantiFERON
-              </label>
-            </div>
-
-            {/* isNormalExam  */}
-            <div className="flex items-center mt-8"></div>
-
-            {/* clinicianSign  */}
-            <div className="flex items-center mt-8">
-              <label className="mr-4">
-                {" "}
-                <input
-                  type="checkbox"
-                  name="clinicianSign"
-                  value={true}
-                  checked={formData?.clinicianSign === true}
-                  onChange={handleChange}
-                  className="mr-2"
-                />
-                clinicianSign
-              </label>
-            </div>
-
-            {/* studentSign  */}
-          </div>
-          <hr className="mt-5 mb-5" />
-          <div className="flex gap-3">
-            <h2>
-              This student is healthy and fit enough to perform all activities
-              as required by the selected program and vocation{" "}
-              <input type="checkbox" /> Yes
-              <input type="checkbox" /> No
-            </h2>
-          </div>
-          <h2 className="text-[18px] font-[600] text-black mt-5 ">Clinician Signature</h2>
-          <select className="w-full border border-gray-300 h-[40px] rounded-[10px] mt-4 " name="" id="">
-            <option value="">Jhon</option>
-            <option value="">Benny</option>
-            <option value="">David</option>
-            <option value="">Stacy</option>
-          </select>
-          <div>
-            <label className="block text-sm font-medium mb-2 mt-8">
-              Date
+              Yes
             </label>
+            <label className="flex items-center">
+              <input
+                type="radio"
+                name="isStudentHealthy"
+                value="false"
+                checked={formData.isStudentHealthy === false}
+                onChange={handleChange}
+                className="mr-2"
+              />
+              No
+            </label>
+          </div>
+
+          <h2 className="text-[18px] font-[600] text-black mt-5">
+            Clinician Signature
+          </h2>
+          <select
+            className="w-full border border-gray-300 h-[40px] rounded-[10px] mt-4"
+            name="clinicianSign"
+            value={formData.clinicianSign}
+            onChange={handleChange}
+          >
+            <option value="">Select</option>
+            <option value="Jhon">Jhon</option>
+            <option value="Benny">Benny</option>
+            <option value="David">David</option>
+            <option value="Stacy">Stacy</option>
+          </select>
+
+          <div>
+            <label className="block text-sm font-medium mb-2 mt-8">Date</label>
             <input
-              name="studentSignDate"
+              name="clinicianSignDate"
               value={
-                formData?.studentSignDate
-                  ? formData?.studentSignDate.split("T")[0]
+                formData?.clinicianSignDate
+                  ? formData?.clinicianSignDate.split("T")[0]
                   : ""
               }
               onChange={handleChange}
@@ -580,17 +418,13 @@ const PhysicalExam = () => {
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
           </div>
-
-          <div>
-          
-          </div>
         </section>
 
         <div className="flex justify-end">
           <button
             type="submit"
             className="bg-black text-white py-3 px-6 rounded-md font-semibold"
-            // disabled={submitLoading}
+            disabled={submitLoading}
           >
             {submitLoading ? "Submitting..." : "Submit"}
           </button>
