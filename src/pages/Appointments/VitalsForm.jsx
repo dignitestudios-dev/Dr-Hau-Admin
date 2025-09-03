@@ -41,7 +41,7 @@ const VitalsForm = () => {
         setSystolic("");
         setDiastolic("");
         setPulse("");
-        // navigate("/userappointmentdetails");
+      navigate("/appointments");
       }
     } catch (error) {
       ErrorToast(error?.response?.data?.message || "Something went wrong ❌");

@@ -37,59 +37,96 @@ const BloodWork = () => {
   };
 
   // ✅ Submit Handler
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+ // ✅ Submit Handler
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    let dataPayload = {};
+  // --- Validation Start ---
+  if (!formData.noBloodWork) {
+    // MMRV required validation
+    // if (formData.mmrv) {
+    //   const mmrvTests = ["Mumps", "Rubella", "Rubeola", "Varicella"];
+    //   for (let test of mmrvTests) {
+    //     if (!formData[`mmrv_${test}`]) {
+    //       ErrorToast(`${test} result is required if MMRV is checked ❌`);
+    //       return;
+    //     }
+    //   }
+    // }
 
-    if (formData.noBloodWork) {
-      // If "No blood work done"
-      dataPayload = { noBloodWork: true };
-    } else {
-      // Collect filled values
-      dataPayload = {
-        noBloodWork: false,
-        mmrv: formData.mmrv || false,
-        ...(formData.mmrv && {
-          Mumps: formData.mmrv_Mumps,
-          Rubella: formData.mmrv_Rubella,
-          Rubeola: formData.mmrv_Rubeola,
-          Varicella: formData.mmrv_Varicella,
-        }),
-        hepb: formData.hepb || false,
-        ...(formData.hepb && { hepb_result: formData.hepb_result }),
-        tb: formData.tb || false,
-        ...(formData.tb && { tb_result: formData.tb_result }),
-        other_1: formData.other_1 || false,
-        ...(formData.other_1 && { other_1_text: formData.other_1_text }),
-        other_2: formData.other_2 || false,
-        ...(formData.other_2 && { other_2_text: formData.other_2_text }),
-        other_3: formData.other_3 || false,
-        ...(formData.other_3 && { other_3_text: formData.other_3_text }),
-      };
+    // Hepatitis B required validation
+    if (formData.hepb && !formData.hepb_result) {
+      ErrorToast("Hepatitis B Surface AB result is required ❌");
+      return;
     }
 
-    const payload = {
-      type: "Blood Work",
-      appointment: location.state,
-      data: dataPayload,
-    };
+    // TB required validation
+    if (formData.tb && !formData.tb_result) {
+      ErrorToast("Tuberculosis IGRA (T-spot) result is required ❌");
+      return;
+    }
 
-    try {
-      setLoading(true);
-      const response = await axios.post("/admin/medical-form", payload);
-
-      if (response.status === 200) {
-        SuccessToast("Blood Work Saved ✅");
-        navigate("/events");
-        setFormData({});
+    // Other tests validation
+    for (let i = 1; i <= 3; i++) {
+      if (formData[`other_${i}`] && !formData[`other_${i}_text`]) {
+        ErrorToast(`Other ${i} field is required ❌`);
+        return;
       }
-    } catch (error) {
-      ErrorToast(error?.response?.data?.message || "Something went wrong ❌");
-    } finally {
-      setLoading(false);
     }
+  }
+  // --- Validation End ---
+
+  let dataPayload = {};
+
+  if (formData.noBloodWork) {
+    // If "No blood work done"
+    dataPayload = { noBloodWork: true };
+  } else {
+    // Collect filled values
+    dataPayload = {
+      noBloodWork: false,
+      mmrv: formData.mmrv || false,
+      ...(formData.mmrv && {
+        Mumps: formData.mmrv_Mumps,
+        Rubella: formData.mmrv_Rubella,
+        Rubeola: formData.mmrv_Rubeola,
+        Varicella: formData.mmrv_Varicella,
+      }),
+      hepb: formData.hepb || false,
+      ...(formData.hepb && { hepb_result: formData.hepb_result }),
+      tb: formData.tb || false,
+      ...(formData.tb && { tb_result: formData.tb_result }),
+      other_1: formData.other_1 || false,
+      ...(formData.other_1 && { other_1_text: formData.other_1_text }),
+      other_2: formData.other_2 || false,
+      ...(formData.other_2 && { other_2_text: formData.other_2_text }),
+      other_3: formData.other_3 || false,
+      ...(formData.other_3 && { other_3_text: formData.other_3_text }),
+    };
+  }
+
+  const payload = {
+    type: "Blood Work",
+    appointment: location.state,
+    data: dataPayload,
   };
+
+  try {
+    setLoading(true);
+    const response = await axios.post("/admin/medical-form", payload);
+
+    if (response.status === 200) {
+      SuccessToast("Blood Work Saved ✅");
+      navigate("/events");
+      setFormData({});
+    }
+  } catch (error) {
+    ErrorToast(error?.response?.data?.message || "Something went wrong ❌");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <form

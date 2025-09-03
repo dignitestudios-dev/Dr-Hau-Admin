@@ -299,18 +299,19 @@ const UserAppointmentDetails = () => {
             <h4 className="text-xl font-semibold text-gray-800">
               Vaccinations
             </h4>
-            <ul className="list-disc pl-5">
-              {vaccinations?.length > 0 ? (
-                vaccinations?.map((vaccination, index) => (
-                  <li key={index} className="text-sm text-gray-700">
-                    {vaccination}
+            <ul className="list-disc pl-5 space-y-1 text-black">
+              {event?.lotNumber &&
+                typeof event.lotNumber === "object" &&
+                Object.entries(event.lotNumber).map(([vaccine, lotNum]) => (
+                  <li key={vaccine} className="flex justify-between">
+                    <span className="font-medium">{vaccine}:</span>
+                    <span>
+                      {typeof lotNum === "object"
+                        ? JSON.stringify(lotNum)
+                        : lotNum}
+                    </span>
                   </li>
-                ))
-              ) : (
-                <p className="text-sm text-gray-500">
-                  No vaccinations recorded.
-                </p>
-              )}
+                ))}
             </ul>
           </div>
           <div className="bg-white rounded-lg  mt-8 space-y-4">
@@ -318,7 +319,7 @@ const UserAppointmentDetails = () => {
               Medical History
             </h4>
             <div className="bg-white rounded-lg mt-8 space-y-4">
-              <ul className="list-disc pl-5">
+              <ul className="list-disc text-black pl-5">
                 {isAuthorizedToViewMedical ? (
                   <li
                     className="text-blue-600 text-sm cursor-pointer underline"
@@ -385,11 +386,14 @@ const UserAppointmentDetails = () => {
 
                     {/* Vaccinations */}
                     <button
-                      onClick={() =>
-                        navigate("/vaccinationform", {
-                          state: appointmentData?._id,
-                        })
-                      }
+                     onClick={() =>
+  navigate("/vaccinationform", {
+    state: {
+      appointmentId: appointmentData?._id,
+      event: event,
+    }
+  })
+}
                       disabled={appointmentData?.isVaccinationFormFilled}
                       className={`px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform 
         ${

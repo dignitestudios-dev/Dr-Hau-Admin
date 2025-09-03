@@ -71,14 +71,12 @@ const DrugScreeningForm = () => {
       payload.data = drugResults;
     }
 
-
-
     setLoading(true);
     try {
       const response = await axios.post("/admin/medical-form", payload);
       if (response.status === 200) {
         SuccessToast("Vitals added successfully ✅");
-        // navigate("/userappointmentdetails");
+        navigate("/appointments");
       }
     } catch (err) {
       ErrorToast(err?.response?.data?.message || "Something went wrong ❌");

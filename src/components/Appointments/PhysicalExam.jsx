@@ -4,12 +4,12 @@ import { ErrorToast, SuccessToast } from "../Global/Toaster";
 import axios from "../../axios";
 
 const PhysicalExam = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
   const currentDate = new Date().toISOString();
   const [submitLoading, setSubmitLoading] = useState(false);
   const [reportData, setReportData] = useState("");
   const location = useLocation();
-const navigate = useNavigate();
   const [formData, setFormData] = useState({
     heent: "",
     neck: "",
@@ -144,7 +144,7 @@ const navigate = useNavigate();
       if (response.status === 200 || response.status === 201) {
         setSubmitLoading(false);
         SuccessToast("Report Submitted");
-        // navigate("/userappointmentdetails");
+        navigate("/appointments");
       }
     } catch (err) {
       console.log(err);
@@ -194,7 +194,6 @@ const navigate = useNavigate();
                   onChange={handleChange}
                   className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 >
-                  <option value="">Select</option>
                   <option value="Normal">Normal</option>
                   <option value="Abnormal">Abnormal</option>
                 </select>

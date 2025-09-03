@@ -39,6 +39,18 @@ const VaccinationsForm = ({ isEditing }) => {
     }));
   };
 
+  // Special handler for induration - only allow numbers
+  const handleIndurationChange = (e) => {
+    const value = e.target.value;
+    // Only allow numbers and decimal point
+    if (/^\d*\.?\d*$/.test(value)) {
+      setFormData((prev) => ({
+        ...prev,
+        ppdInduration: value,
+      }));
+    }
+  };
+
   const handleAddOther = () => {
     if (formData.otherInput.trim() !== "") {
       setFormData((prev) => ({
@@ -56,14 +68,16 @@ const VaccinationsForm = ({ isEditing }) => {
       return { ...prev, otherVaccines: updated };
     });
   };
-  console.log(location.state, "location.state==");
+
+
+
   // ✅ Form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     let payload = {
       type: "Vaccinations",
-      appointment: location.state,
+      appointment: location?.state?.appointmentId,
       data: {},
     };
 
@@ -97,7 +111,9 @@ const VaccinationsForm = ({ isEditing }) => {
         payload.data = {
           ...payload.data,
           ppdReadOn: formData.ppdReadOn,
-          ppdInduration: formData.ppdInduration,
+          ppdInduration: formData.ppdInduration
+            ? `${formData.ppdInduration} cm`
+            : "", // Add cm suffix when saving
           ppdInterpretation: formData.ppdInterpretation,
         };
       }
@@ -108,7 +124,7 @@ const VaccinationsForm = ({ isEditing }) => {
       const res = await axios.post("/admin/medical-form", payload);
       if (res.status === 200) {
         SuccessToast("Vaccination data saved ✅");
-        // navigate("/userappointmentdetails");
+        navigate("/appointments");
         // reset form if needed
         setFormData({
           noVaccinations: false,
@@ -138,7 +154,7 @@ const VaccinationsForm = ({ isEditing }) => {
 
   return (
     <div className="flex w-full mt-4 pb-12 justify-center items-center p-8 bg-gray-100 overflow-auto">
-      <div className="w-full mt-60 p-6 bg-white shadow-md rounded-lg mx-auto overflow-auto">
+      <div className="w-full p-6 bg-white shadow-md rounded-lg mx-auto overflow-auto">
         <h3 className="text-lg font-semibold mb-4 text-black">
           Vaccinations / PPD
         </h3>
@@ -164,22 +180,42 @@ const VaccinationsForm = ({ isEditing }) => {
             disabled={sectionDisabled}
             className={`${sectionDisabled ? "opacity-50" : ""}`}
           >
-            {vaccines.map((vaccine) => (
-              <div key={vaccine} className="mb-2 flex items-center gap-2">
-                <label className="inline-flex items-center text-black">
-                  <input
-                    type="checkbox"
-                    name={`givenToday_${vaccine}`}
-                    checked={formData[`givenToday_${vaccine}`]}
-                    onChange={handleCheckboxChange}
-                    disabled={sectionDisabled}
-                    className="mr-2"
-                  />
-                  {vaccine}
-                </label>
+            <div className="flex gap-3 ">
+              <div>
+                {vaccines.map((vaccine) => (
+                  <div key={vaccine} className="mb-2 flex items-center gap-2">
+                    <label className="inline-flex items-center text-black">
+                      <input
+                        type="checkbox"
+                        name={`givenToday_${vaccine}`}
+                        checked={formData[`givenToday_${vaccine}`]}
+                        onChange={handleCheckboxChange}
+                        disabled={sectionDisabled}
+                        className="mr-2"
+                      />
+                      {vaccine}
+                    </label>
+                  </div>
+                ))}
               </div>
-            ))}
-
+              <div>
+                <ul className="space-y-1 text-black">
+                  {location?.state?.event?.lotNumber &&
+                    typeof location?.state?.event?.lotNumber === "object" &&
+                    Object.entries(location?.state?.event?.lotNumber).map(
+                      ([vaccine, lotNum]) => (
+                        <li key={vaccine} className="flex justify-between">
+                          <span>
+                            {typeof lotNum === "object"
+                              ? Object.values(lotNum)[0] // Get first value from object
+                              : lotNum}
+                          </span>
+                        </li>
+                      )
+                    )}
+                </ul>
+              </div>
+            </div>
             {/* Other vaccines input + tags */}
             <div className="mt-4">
               <label className="block font-semibold mb-2 text-black">
@@ -211,16 +247,16 @@ const VaccinationsForm = ({ isEditing }) => {
                   onChange={handleInputChange}
                   disabled={sectionDisabled}
                   placeholder="Enter vaccine name"
-                  className="flex-1 p-3 border border-gray-300 rounded-md"
+                  className="flex-1 p-3 text-black border border-gray-300 rounded-md"
                 />
-                <button
+                {/* <button
                   type="button"
                   onClick={handleAddOther}
                   disabled={sectionDisabled}
                   className="px-4 py-2 bg-black text-white rounded-md"
                 >
                   Add
-                </button>
+                </button> */}
               </div>
             </div>
 
@@ -239,7 +275,8 @@ const VaccinationsForm = ({ isEditing }) => {
               </label>
             </div>
 
-           
+            {/* PPD Details - Show when PPD is performed */}
+            {formData.ppdPerformed && (
               <>
                 <div className="mb-4">
                   <label className="block text-black font-semibold mb-1">
@@ -259,33 +296,40 @@ const VaccinationsForm = ({ isEditing }) => {
                   <label className="block text-black font-semibold mb-1">
                     Induration
                   </label>
-                  <input
-                    type="text"
-                    name="ppdInduration"
-                    value={formData.ppdInduration}
-                    onChange={handleInputChange}
-                    disabled={sectionDisabled}
-                    placeholder="Enter induration measurement"
-                    className="w-full p-3 border text-black border-gray-300 rounded-md"
-                  />
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      name="ppdInduration"
+                      value={formData.ppdInduration}
+                      onChange={handleIndurationChange}
+                      disabled={sectionDisabled}
+                      placeholder="Enter number"
+                      className="flex-1 p-3 border text-black border-gray-300 rounded-md"
+                    />
+                    <span className="text-black font-semibold px-2">cm</span>
+                  </div>
                 </div>
 
                 <div className="mb-4">
                   <label className="block text-black font-semibold mb-1">
                     Interpretation
                   </label>
-                  <input
-                    type="text"
+                  <select
                     name="ppdInterpretation"
                     value={formData.ppdInterpretation}
                     onChange={handleInputChange}
                     disabled={sectionDisabled}
-                    placeholder="Enter interpretation"
-                    className="w-full p-3 border text-black border-gray-300 rounded-md"
-                  />
+                    className="w-full p-3 border text-black border-gray-300 rounded-md bg-white"
+                  >
+                    <option value="">Select interpretation</option>
+                    <option value="Positive (reactive)">
+                      Positive (reactive)
+                    </option>
+                    <option value="Negative">Negative</option>
+                  </select>
                 </div>
               </>
-        
+            )}
           </fieldset>
 
           <button
