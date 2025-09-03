@@ -74,7 +74,7 @@ const AppointmentCompleted = () => {
 
           {appointment?.appointment?.adminStatus === "completed" && (
             <div className="flex space-x-4">
-              <button
+              {/* <button
                 onClick={() =>
                   navigate(
                     `/medicalreportform/${appointment?.appointment?.id}`,
@@ -85,7 +85,7 @@ const AppointmentCompleted = () => {
               >
                 <FaFileAlt className="mr-2" />
                 Medical Report
-              </button>
+              </button> */}
 
               <button
                 onClick={openModal}
