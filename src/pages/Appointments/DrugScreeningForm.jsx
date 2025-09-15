@@ -1,7 +1,6 @@
-import React, { useState } from "react";
-import axios from "../../axios"; // uncomment jab api hit karni ho
+import React, { useState, useEffect } from "react";
+import axios from "../../axios";
 import { ErrorToast, SuccessToast } from "../../components/Global/Toaster";
-import { use } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const DrugScreeningForm = () => {
@@ -10,6 +9,7 @@ const DrugScreeningForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [loading, setLoading] = useState(false);
+
   const drugs = [
     "Benzodiazepine",
     "Barbituates",
@@ -24,6 +24,26 @@ const DrugScreeningForm = () => {
     "Oxycodone",
     "Other",
   ];
+
+  const drugScreenData = location?.state?.reportData;
+
+  // ✅ Prefill when reportData exists
+  useEffect(() => {
+    if (drugScreenData) {
+      const prefilled = { noDrugScreen: drugScreenData.noDrugScreen };
+
+      drugs.forEach((drug) => {
+        if (drug === "Other") {
+          prefilled[`drug_${drug}`] = drugScreenData.Other?.status || "Not Performed";
+          prefilled["drug_other_text"] = drugScreenData.Other?.drugName || "";
+        } else {
+          prefilled[`drug_${drug}`] = drugScreenData[drug] || "Negative";
+        }
+      });
+
+      setFormData(prefilled);
+    }
+  }, [drugScreenData]); // run jab drugScreenData mile
 
   const handleSelectChange = (e) => {
     const { name, value } = e.target;
@@ -47,7 +67,7 @@ const DrugScreeningForm = () => {
 
     let payload = {
       type: "Drug Screen",
-      appointment: location?.state || "APPOINTMENT_ID",
+      appointment: location?.state?.appointmentId || "APPOINTMENT_ID",
       data: {},
     };
 
@@ -75,7 +95,7 @@ const DrugScreeningForm = () => {
     try {
       const response = await axios.post("/admin/medical-form", payload);
       if (response.status === 200) {
-        SuccessToast("Vitals added successfully ✅");
+        SuccessToast("Drug Screen data saved ✅");
         navigate("/appointments");
       }
     } catch (err) {
@@ -90,14 +110,11 @@ const DrugScreeningForm = () => {
       <div className="mb-6 bg-white w-full shadow-md rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-bold text-gray-700">Drug Screening</h3>
-          <button
-            type="button"
-            onClick={() => setIsEditing((prev) => !prev)}
-            className="px-3 py-1 bg-blue-600 text-white text-sm rounded-lg shadow hover:bg-blue-700"
-          >
-            {isEditing ? "Lock Form" : "Edit Form"}
-          </button>
         </div>
+        <h2 className="text-1xl font-bold mb-6 text-black">
+          Name: {location?.state?.appointmentData?.user?.firstName}{" "}
+          {location?.state?.appointmentData?.user?.lastName}
+        </h2>
 
         <form onSubmit={handleSubmit}>
           {/* No drug screen checkbox */}
@@ -131,10 +148,7 @@ const DrugScreeningForm = () => {
                 <label className="font-medium text-gray-700">{drug}</label>
                 <select
                   name={`drug_${drug}`}
-                  value={
-                    formData[`drug_${drug}`] ||
-                    (drug === "Other" ? "Not Performed" : "Negative")
-                  }
+                  value={formData[`drug_${drug}`] || ""}
                   onChange={handleSelectChange}
                   disabled={!isEditing || formData.noDrugScreen}
                   className="w-full rounded-lg border-gray-300 p-2 text-gray-700 focus:ring-2 focus:ring-blue-500"
@@ -167,7 +181,7 @@ const DrugScreeningForm = () => {
               disabled={!isEditing}
               className="w-[200px] h-[45px] bg-black text-white rounded-lg shadow hover:bg-gray-800"
             >
-              {loading ? "Saving..." : "Add"}
+              {loading ? "Saving..." : "Save"}
             </button>
           </div>
         </form>

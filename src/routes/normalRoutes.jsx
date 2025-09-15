@@ -35,6 +35,7 @@ import VaccinationsForm from "../pages/Appointments/VaccinationsForm";
 import DrugScreeningForm from "../pages/Appointments/DrugScreeningForm";
 import BloodWork from "../pages/Appointments/BloodWork";
 import ViewForm from "../pages/Appointments/ViewForm";
+import StudentForm from "../pages/Appointments/StudentForm";
 
 export const normalRoutes = [
     {
@@ -243,6 +244,12 @@ export const normalRoutes = [
       title: "DrugScreeningForm",
       url: "/blood-work",
       page: <GlobalLayout page={<BloodWork />} />,
+
+    },
+    {
+      title: "DrugScreeningForm",
+      url: "/student/forms/:id",
+      page: <GlobalLayout page={<StudentForm />} />,
 
     },
     

@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "../../axios";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
-const ViewForm = () => {
-  const location = useLocation();
+const StudentForm = () => {
+  const location = useParams();
   const [reportData, setReportData] = useState(null);
-
+console.log(location,"location")
   const getReportData = async () => {
     try {
       const response = await axios.get(
-        `/admin/medical-form/${location?.state}`
+        `/appointment/medical-form/${location?.id}`
       );
       if (response.status === 200) {
         setReportData(response?.data?.data);
@@ -156,4 +156,4 @@ const ViewForm = () => {
   );
 };
 
-export default ViewForm;
+export default StudentForm;

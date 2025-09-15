@@ -44,8 +44,62 @@ const PhysicalExam = () => {
     clinicianSignDate: "",
   });
 
+  const PhysicalData = location?.state?.reportData;
+useEffect(() => {
+  if (PhysicalData) {
+    // Prefill agar data available hai (edit mode)
+    setFormData((prev) => ({
+      ...prev,
+      ...PhysicalData,
+      clinicianSignDate: PhysicalData?.clinicianSignDate
+        ? PhysicalData.clinicianSignDate.split("T")[0]
+        : "",
+    }));
+
+    // agar vitals chahiye toh reportData me daldo
+    setReportData(PhysicalData);
+  } else {
+    // agar PhysicalData nahi hai toh create mode
+    setReportData("");
+    setFormData((prev) => ({
+      ...prev,
+      heent: "",
+      neck: "",
+      lungs: "",
+      heart: "",
+      abdomen: "",
+      orthopedic: "",
+      neurologic: "",
+      skin: "",
+      comments: "",
+      p4: false,
+      p3: false,
+      hepB: false,
+      other: "",
+      tspot: false,
+      uds: false,
+      noPhysicalExam: false,
+      noBloodWork: false,
+      bloodPressureDown: "",
+      bloodPressureUp: "",
+      pulse: "",
+      hepatitisB: false,
+      TD: false,
+      influenza: false,
+      MMR: false,
+      Varicella: false,
+      ppdDone: false,
+      hxPPD: false,
+      negativePPD: false,
+      isStudentHealthy: null,
+      clinicianSign: "",
+      clinicianSignDate: "",
+    }));
+  }
+}, [PhysicalData]);
+
   const fields = [
-    "heent",
+    "HEENT",
     "neck",
     "lungs",
     "heart",
@@ -74,7 +128,7 @@ const PhysicalExam = () => {
   const getReportData = async () => {
     try {
       const response = await axios.get(
-        `/admin/medical-form/${location?.state}`
+        `/admin/medical-form/${location?.state?.appointmentId}`
       );
       if (response.status === 200) {
         setReportData(response?.data?.data);
@@ -93,64 +147,79 @@ const PhysicalExam = () => {
   useEffect(() => {
     getReportData();
   }, []);
+console.log(location,"location")
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    setSubmitLoading(true);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      setSubmitLoading(true);
+    let payload = {
+      type: "Physical Exam",
+      appointment: location?.state?.appointmentId || "APPOINTMENT_ID",
+      data: {},
+      iscleared: formData.isStudentHealthy || false,
+    };
 
-      let payload = {
-        type: "Physical Exam",
-        appointment: location?.state || "APPOINTMENT_ID",
-        data: {},
-        iscleared: formData.isStudentHealthy || false,
-      };
+    // sab fields copy karo except Part B (agar noPhysicalExam true ho to skip)
+    let dataToSend = {};
 
-      // sab fields copy karo except Part B (agar noPhysicalExam true ho to skip)
-      let dataToSend = {};
-
-      for (const field in formData) {
+    for (const field in formData) {
+      if (
+        formData[field] !== undefined &&
+        formData[field] !== "" &&
+        field !== "isStudentHealthy" // isko alag bhejna hai
+      ) {
+        // Part B skip condition
         if (
-          formData[field] !== undefined &&
-          formData[field] !== "" &&
-          field !== "isStudentHealthy" // isko alag bhejna hai
+          formData.noPhysicalExam &&
+          [
+            "HEENT",
+            "neck",
+            "lungs",
+            "heart",
+            "abdomen",
+            "orthopedic",
+            "neurologic",
+            "skin",
+            "comments",
+          ].includes(field)
         ) {
-          // Part B skip condition
-          if (
-            formData.noPhysicalExam &&
-            [
-              "heent",
-              "neck",
-              "lungs",
-              "heart",
-              "abdomen",
-              "orthopedic",
-              "neurologic",
-              "skin",
-              "comments",
-            ].includes(field)
-          ) {
-            continue; // skip Part B fields
-          }
-
-          dataToSend[field] = formData[field];
+          continue; // skip Part B fields
         }
+
+// +       // ✅ PPD fields allow karo (agar ppdDone checked hai to bhejna hi hai)
+// +       if (formData.ppdDone) {
+// +         [
+// +           "ppdPerformedDate",
+// +           "ppdReadDate",
+// +           "ppdInduration",
+// +           "ppdInterpretation",
+// +         ].forEach((ppdField) => {
+// +           if (formData[ppdField] !== undefined && formData[ppdField] !== "") {
+// +             dataToSend[ppdField] = formData[ppdField];
+// +           }
+// +         });
+// +       }
+
+        dataToSend[field] = formData[field];
       }
-
-      payload.data = dataToSend;
-
-      const response = await axios.post("/admin/medical-form", payload);
-
-      if (response.status === 200 || response.status === 201) {
-        setSubmitLoading(false);
-        SuccessToast("Report Submitted");
-        navigate("/appointments");
-      }
-    } catch (err) {
-      console.log(err);
-      ErrorToast("Error");
     }
-  };
+
+    payload.data = dataToSend;
+
+    const response = await axios.post("/admin/medical-form", payload);
+
+    if (response.status === 200 || response.status === 201) {
+      setSubmitLoading(false);
+      SuccessToast("Report Submitted");
+      navigate("/appointments");
+    }
+  } catch (err) {
+    console.log(err);
+    ErrorToast("Error");
+  }
+};
+
 
   return (
     <div className="container mx-auto px-6 py-10 bg-gray-50 shadow-lg rounded-lg overflow-auto">
@@ -257,28 +326,58 @@ const PhysicalExam = () => {
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-            {[
-              { label: "T-spot/QuantiFERON", name: "tspot" },
-              { label: "UDS", name: "uds" },
-              { label: "No Physical Exam", name: "noPhysicalExam" },
-              { label: "No Blood Work", name: "noBloodWork" },
-            ].map(({ label, name }) => (
-              <div key={name} className="flex items-center">
-                <input
-                  type="checkbox"
-                  id={name}
-                  name={name}
-                  checked={formData[name]}
-                  onChange={handleChange}
-                  className="mr-2"
-                />
-                <label htmlFor={name} className="text-sm font-medium">
-                  {label}
-                </label>
-              </div>
-            ))}
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+  {[
+    { label: "T-spot/QuantiFERON", name: "tspot" },
+    { label: "No Physical Exam", name: "noPhysicalExam" },
+    { label: "No Blood Work", name: "noBloodWork" },
+  ].map(({ label, name }) => (
+    <div key={name} className="flex flex-col mt-2">
+      {name === "tspot" ? (
+        <>
+          <label className="text-sm font-medium mb-1">{label}</label>
+          <select
+            name="tspot"
+            value={formData.tspot || "Not Performed"}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            <option value="Not Performed">Not Performed</option>
+            <option value="Performed">Performed</option>
+          </select>
+
+          {/* Show Normal/Abnormal only if Performed */}
+          {formData.tspot === "Performed" && (
+            <select
+              name="tspotResult"
+              value={formData.tspotResult || "Normal"}
+              onChange={handleChange}
+              className="mt-2 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
+              <option value="Normal">Normal</option>
+              <option value="Abnormal">Abnormal</option>
+            </select>
+          )}
+        </>
+      ) : (
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id={name}
+            name={name}
+            checked={formData[name]}
+            onChange={handleChange}
+            className="mr-2"
+          />
+          <label htmlFor={name} className="text-sm font-medium">
+            {label}
+          </label>
+        </div>
+      )}
+    </div>
+  ))}
+</div>
+
 
           <div>
             <label className="block text-sm font-medium mb-2 mt-8">
@@ -325,35 +424,93 @@ const PhysicalExam = () => {
             Vaccine given today
           </h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-            {[
-              { label: "Hepatitis B", name: "hepatitisB" },
-              { label: "TD", name: "TD" },
-              { label: "Influenza", name: "influenza" },
-              { label: "MMR", name: "MMR" },
-              { label: "Varicella", name: "Varicella" },
-              { label: "PPD", name: "ppdDone" },
-              { label: "Hx of positive PPD", name: "hxPPD" },
-              {
-                label: "Recent negative PPD Or QuantiFERON",
-                name: "negativePPD",
-              },
-            ].map(({ label, name }) => (
-              <div key={name} className="flex items-center">
-                <input
-                  type="checkbox"
-                  id={name}
-                  name={name}
-                  checked={formData[name]}
-                  onChange={handleChange}
-                  className="mr-2"
-                />
-                <label htmlFor={name} className="text-sm font-medium">
-                  {label}
-                </label>
-              </div>
-            ))}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+  {[
+    { label: "PPD", name: "ppdDone" },
+    {
+      label: "Recent negative PPD Or QuantiFERON",
+      name: "negativePPD",
+    },
+  ].map(({ label, name }) => (
+    <div key={name} className="flex flex-col mt-2">
+      <div className="flex items-center">
+        <input
+          type="checkbox"
+          id={name}
+          name={name}
+          checked={formData[name]}
+          onChange={handleChange}
+          className="mr-2"
+        />
+        <label htmlFor={name} className="text-sm font-medium">
+          {label}
+        </label>
+      </div>
+
+      {/* Extra fields for PPD */}
+      {name === "ppdDone" && formData.ppdDone && (
+        <div className="mt-3 space-y-3">
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              PPD Performed (Date)
+            </label>
+            <input
+              type="date"
+              name="ppdPerformedDate"
+              value={formData.ppdPerformedDate || ""}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
           </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              PPD Read (Date)
+            </label>
+            <input
+              type="date"
+              name="ppdReadDate"
+              value={formData.ppdReadDate || ""}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Induration (mm)
+            </label>
+            <input
+              type="number"
+              name="ppdInduration"
+              value={formData.ppdInduration || ""}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="Enter mm"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Interpretation
+            </label>
+            <select
+              name="ppdInterpretation"
+              value={formData.ppdInterpretation || ""}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
+              <option value="">Select</option>
+              <option value="Negative">Negative</option>
+              <option value="Positive">Positive</option>
+            </select>
+          </div>
+        </div>
+      )}
+    </div>
+  ))}
+</div>
+
         </section>
 
         {/* Healthy Student */}
@@ -404,7 +561,7 @@ const PhysicalExam = () => {
           </select>
 
           <div>
-            <label className="block text-sm font-medium mb-2 mt-8">Date</label>
+            <label className="block text-black text-[18px] font-[600] mb-2 mt-8">Clinician Signature Date</label>
             <input
               name="clinicianSignDate"
               value={

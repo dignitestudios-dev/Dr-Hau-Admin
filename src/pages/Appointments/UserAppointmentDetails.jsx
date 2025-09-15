@@ -79,7 +79,23 @@ const UserAppointmentDetails = () => {
       ErrorToast(err.response.data.message);
     }
   };
+  const [reportData, setReportData] = useState(null);
 
+  const getReportData = async () => {
+    try {
+      const response = await axios.get(`/admin/medical-form/${appointmentId}`);
+      if (response.status === 200) {
+        setReportData(response?.data?.data);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    getReportData();
+  }, []);
+  console.log(reportData, "reportData");
   const handleComplete = async (approval) => {
     const currentDate = new Date().toISOString();
 
@@ -367,78 +383,106 @@ const UserAppointmentDetails = () => {
                     {/* Vitals */}
                     <button
                       onClick={() => {
-                        if (!appointmentData?.isVitalFormFilled) {
-                          navigate("/vitalsform", {
-                            state: appointmentData?._id,
-                          });
-                        }
+                        navigate("/vitalsform", {
+                          state: {
+                            appointmentId: appointmentData?._id,
+                            reportData: reportData?.Vitals,
+                            appointmentData: appointmentData,
+                          },
+                        });
                       }}
-                      disabled={appointmentData?.isVitalFormFilled}
                       className={`px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform 
         ${
           appointmentData?.isVitalFormFilled
-            ? "bg-black text-white opacity-50 cursor-not-allowed"
+            ? "bg-green-500 text-white hover:scale-105"
             : "bg-black text-white hover:scale-105"
         }`}
                     >
-                      Vitals
+                      Vitals{" "}
+                      {appointmentData?.isVitalFormFilled ? (
+                        <span>✔️</span>
+                      ) : (
+                        ""
+                      )}
                     </button>
 
                     {/* Vaccinations */}
                     <button
-                     onClick={() =>
-  navigate("/vaccinationform", {
-    state: {
-      appointmentId: appointmentData?._id,
-      event: event,
-    }
-  })
-}
-                      disabled={appointmentData?.isVaccinationFormFilled}
+                      onClick={() =>
+                        navigate("/vaccinationform", {
+                          state: {
+                            appointmentId: appointmentData?._id,
+                            reportData: reportData?.Vaccinations,
+                            appointmentData: appointmentData,
+                            event: event,
+                          },
+                        })
+                      }
                       className={`px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform 
         ${
           appointmentData?.isVaccinationFormFilled
-            ? "bg-black text-white opacity-50 cursor-not-allowed"
+            ? "bg-green-500 text-white hover:scale-105 cursor-pointer"
             : "bg-black text-white hover:scale-105"
         }`}
                     >
-                      Vaccinations
+                      Vaccinations{" "}
+                      {appointmentData?.isVaccinationFormFilled ? (
+                        <span>✔️</span>
+                      ) : (
+                        ""
+                      )}
                     </button>
 
                     {/* Drug Screening */}
                     <button
                       onClick={() =>
                         navigate("/drugscreeningform", {
-                          state: appointmentData?._id,
+                          state: {
+                            appointmentId: appointmentData?._id,
+                            reportData: reportData?.["Drug Screen"], // <-- bracket notation
+                            appointmentData: appointmentData,
+                          },
                         })
                       }
-                      disabled={appointmentData?.isDrugScreenFormFilled}
                       className={`px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform 
         ${
           appointmentData?.isDrugScreenFormFilled
-            ? "bg-black text-white opacity-50 cursor-not-allowed"
+            ? "bg-green-500 text-white hover:scale-105"
             : "bg-black text-white hover:scale-105"
         }`}
                     >
-                      Drug Screening
+                      Drug Screening{" "}
+                      {appointmentData?.isDrugScreenFormFilled ? (
+                        <span>✔️</span>
+                      ) : (
+                        ""
+                      )}
                     </button>
 
                     {/* Physical Exam */}
                     <button
                       onClick={() =>
                         navigate(`/physical-exam`, {
-                          state: appointmentData?._id,
+                        state: {
+                            appointmentId: appointmentData?._id,
+                            reportData: reportData?.["Physical Exam"], // <-- bracket notation
+                            appointmentData: appointmentData,
+                          },
                         })
                       }
-                      disabled={appointmentData?.isPhysicalExamFormFilled}
                       className={`px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform 
         ${
           appointmentData?.isPhysicalExamFormFilled
-            ? "bg-black text-white opacity-50 cursor-not-allowed"
+            ? "bg-green-500 text-white hover:scale-105"
             : "bg-black text-white hover:scale-105"
         }`}
                     >
-                      Physical Exam
+                      Physical Exam{" "}
+                      {appointmentData?.isPhysicalExamFormFilled ? (
+                        <span>✔️</span>
+                      ) : (
+                        ""
+                      )}
                     </button>
 
                     {/* View Form */}

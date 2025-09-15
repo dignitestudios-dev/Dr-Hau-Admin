@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "../../axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ErrorToast, SuccessToast } from "../../components/Global/Toaster";
 
 const VaccinationsForm = ({ isEditing }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [loading, setLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     noVaccinations: false,
     givenToday_Tdap: false,
@@ -20,9 +23,39 @@ const VaccinationsForm = ({ isEditing }) => {
     ppdInduration: "",
     ppdInterpretation: "",
   });
-  const location = useLocation();
-  const [loading, setLoading] = useState(false);
 
+  const vaccines = ["Tdap", "Flu", "HepatitisB", "MMR", "Varicella", "Rabies"];
+  const sectionDisabled = formData.noVaccinations || isEditing;
+
+  // ✅ Prefill data if reportData exists
+  useEffect(() => {
+    if (location?.state?.reportData) {
+      const data = location.state.reportData;
+
+      let prefilled = {
+        noVaccinations: data.noVaccinations || false,
+        givenToday_Tdap: data.givenToday?.includes("Tdap") || false,
+        givenToday_Flu: data.givenToday?.includes("Flu") || false,
+        givenToday_HepatitisB: data.givenToday?.includes("HepatitisB") || false,
+        givenToday_MMR: data.givenToday?.includes("MMR") || false,
+        givenToday_Varicella: data.givenToday?.includes("Varicella") || false,
+        givenToday_Rabies: data.givenToday?.includes("Rabies") || false,
+        otherVaccines:
+          data.givenToday?.filter(
+            (v) => !vaccines.includes(v) // extra vaccines ko otherVaccines me daal do
+          ) || [],
+        otherInput: "",
+        ppdPerformed: data.ppdPerformed || false,
+        ppdReadOn: data.ppdReadOn || "",
+        ppdInduration: data.ppdInduration || "",
+        ppdInterpretation: data.ppdInterpretation || "",
+      };
+
+      setFormData(prefilled);
+    }
+  }, [location?.state?.reportData]);
+
+  // ✅ Checkbox change
   const handleCheckboxChange = (e) => {
     const { name, checked } = e.target;
     setFormData((prev) => ({
@@ -31,6 +64,7 @@ const VaccinationsForm = ({ isEditing }) => {
     }));
   };
 
+  // ✅ Input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -39,10 +73,9 @@ const VaccinationsForm = ({ isEditing }) => {
     }));
   };
 
-  // Special handler for induration - only allow numbers
+  // ✅ Only allow numbers in induration
   const handleIndurationChange = (e) => {
     const value = e.target.value;
-    // Only allow numbers and decimal point
     if (/^\d*\.?\d*$/.test(value)) {
       setFormData((prev) => ({
         ...prev,
@@ -51,6 +84,7 @@ const VaccinationsForm = ({ isEditing }) => {
     }
   };
 
+  // ✅ Add/remove other vaccines
   const handleAddOther = () => {
     if (formData.otherInput.trim() !== "") {
       setFormData((prev) => ({
@@ -60,7 +94,6 @@ const VaccinationsForm = ({ isEditing }) => {
       }));
     }
   };
-
   const handleRemoveOther = (index) => {
     setFormData((prev) => {
       const updated = [...prev.otherVaccines];
@@ -69,9 +102,7 @@ const VaccinationsForm = ({ isEditing }) => {
     });
   };
 
-
-
-  // ✅ Form submit
+  // ✅ Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -84,16 +115,7 @@ const VaccinationsForm = ({ isEditing }) => {
     if (formData.noVaccinations) {
       payload.data = { noVaccinations: true };
     } else {
-      // given today array
       const givenToday = [];
-      const vaccines = [
-        "Tdap",
-        "Flu",
-        "HepatitisB",
-        "MMR",
-        "Varicella",
-        "Rabies",
-      ];
       vaccines.forEach((v) => {
         if (formData[`givenToday_${v}`]) givenToday.push(v);
       });
@@ -105,18 +127,10 @@ const VaccinationsForm = ({ isEditing }) => {
         noVaccinations: false,
         givenToday,
         ppdPerformed: formData.ppdPerformed,
+        ppdReadOn: formData.ppdReadOn,
+        ppdInduration: formData.ppdInduration,
+        ppdInterpretation: formData.ppdInterpretation,
       };
-
-      if (formData.ppdPerformed) {
-        payload.data = {
-          ...payload.data,
-          ppdReadOn: formData.ppdReadOn,
-          ppdInduration: formData.ppdInduration
-            ? `${formData.ppdInduration} cm`
-            : "", // Add cm suffix when saving
-          ppdInterpretation: formData.ppdInterpretation,
-        };
-      }
     }
 
     try {
@@ -125,22 +139,6 @@ const VaccinationsForm = ({ isEditing }) => {
       if (res.status === 200) {
         SuccessToast("Vaccination data saved ✅");
         navigate("/appointments");
-        // reset form if needed
-        setFormData({
-          noVaccinations: false,
-          givenToday_Tdap: false,
-          givenToday_Flu: false,
-          givenToday_HepatitisB: false,
-          givenToday_MMR: false,
-          givenToday_Varicella: false,
-          givenToday_Rabies: false,
-          otherVaccines: [],
-          otherInput: "",
-          ppdPerformed: false,
-          ppdReadOn: "",
-          ppdInduration: "",
-          ppdInterpretation: "",
-        });
       }
     } catch (err) {
       ErrorToast(err?.response?.data?.message || "Error saving vaccination ❌");
@@ -149,16 +147,16 @@ const VaccinationsForm = ({ isEditing }) => {
     }
   };
 
-  const vaccines = ["Tdap", "Flu", "HepatitisB", "MMR", "Varicella", "Rabies"];
-  const sectionDisabled = formData.noVaccinations || isEditing;
-
   return (
     <div className="flex w-full mt-4 pb-12 justify-center items-center p-8 bg-gray-100 overflow-auto">
       <div className="w-full p-6 bg-white shadow-md rounded-lg mx-auto overflow-auto">
         <h3 className="text-lg font-semibold mb-4 text-black">
           Vaccinations / PPD
         </h3>
-
+  <h2 className="text-1xl font-bold mb-6 text-black">
+          Name: {location?.state?.appointmentData?.user?.firstName}{" "}
+          {location?.state?.appointmentData?.user?.lastName}
+        </h2>
         <form onSubmit={handleSubmit}>
           {/* ✅ No vaccinations checkbox */}
           <div className="mb-4">
@@ -198,7 +196,7 @@ const VaccinationsForm = ({ isEditing }) => {
                   </div>
                 ))}
               </div>
-              <div>
+                 <div>
                 <ul className="space-y-1 text-black">
                   {location?.state?.event?.lotNumber &&
                     typeof location?.state?.event?.lotNumber === "object" &&
@@ -216,8 +214,9 @@ const VaccinationsForm = ({ isEditing }) => {
                 </ul>
               </div>
             </div>
+
             {/* Other vaccines input + tags */}
-            <div className="mt-4">
+            {/* <div className="mt-4">
               <label className="block font-semibold mb-2 text-black">
                 Other Vaccines:
               </label>
@@ -249,87 +248,8 @@ const VaccinationsForm = ({ isEditing }) => {
                   placeholder="Enter vaccine name"
                   className="flex-1 p-3 text-black border border-gray-300 rounded-md"
                 />
-                {/* <button
-                  type="button"
-                  onClick={handleAddOther}
-                  disabled={sectionDisabled}
-                  className="px-4 py-2 bg-black text-white rounded-md"
-                >
-                  Add
-                </button> */}
               </div>
-            </div>
-
-            {/* ✅ PPD Section */}
-            <div className="mb-4 mt-6">
-              <label className="inline-flex items-center text-black">
-                <input
-                  type="checkbox"
-                  name="ppdPerformed"
-                  checked={formData.ppdPerformed}
-                  onChange={handleCheckboxChange}
-                  disabled={sectionDisabled}
-                  className="mr-2"
-                />
-                PPD performed
-              </label>
-            </div>
-
-            {/* PPD Details - Show when PPD is performed */}
-            {formData.ppdPerformed && (
-              <>
-                <div className="mb-4">
-                  <label className="block text-black font-semibold mb-1">
-                    Read on
-                  </label>
-                  <input
-                    type="date"
-                    name="ppdReadOn"
-                    value={formData.ppdReadOn}
-                    onChange={handleInputChange}
-                    disabled={sectionDisabled}
-                    className="w-full p-3 border text-black border-gray-300 rounded-md"
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-black font-semibold mb-1">
-                    Induration
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      name="ppdInduration"
-                      value={formData.ppdInduration}
-                      onChange={handleIndurationChange}
-                      disabled={sectionDisabled}
-                      placeholder="Enter number"
-                      className="flex-1 p-3 border text-black border-gray-300 rounded-md"
-                    />
-                    <span className="text-black font-semibold px-2">cm</span>
-                  </div>
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-black font-semibold mb-1">
-                    Interpretation
-                  </label>
-                  <select
-                    name="ppdInterpretation"
-                    value={formData.ppdInterpretation}
-                    onChange={handleInputChange}
-                    disabled={sectionDisabled}
-                    className="w-full p-3 border text-black border-gray-300 rounded-md bg-white"
-                  >
-                    <option value="">Select interpretation</option>
-                    <option value="Positive (reactive)">
-                      Positive (reactive)
-                    </option>
-                    <option value="Negative">Negative</option>
-                  </select>
-                </div>
-              </>
-            )}
+            </div> */}
           </fieldset>
 
           <button

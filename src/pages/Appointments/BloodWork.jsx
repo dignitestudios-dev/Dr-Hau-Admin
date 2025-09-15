@@ -10,6 +10,7 @@ const BloodWork = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const immuneOptions = ["Immune", "Not Immune", "Equivocal"];
+const sectionDisabled = !isEditing || formData.noBloodWork;
 
   // Handle inputs
   const handleCheckboxChange = (e) => {
@@ -35,7 +36,16 @@ const BloodWork = () => {
       [name]: value,
     }));
   };
-
+ const handleIndurationChange = (e) => {
+    const value = e.target.value;
+    // Only allow numbers and decimal point
+    if (/^\d*\.?\d*$/.test(value)) {
+      setFormData((prev) => ({
+        ...prev,
+        ppdInduration: value,
+      }));
+    }
+  };
   // ✅ Submit Handler
  // ✅ Submit Handler
 const handleSubmit = async (e) => {
@@ -43,33 +53,35 @@ const handleSubmit = async (e) => {
 
   // --- Validation Start ---
   if (!formData.noBloodWork) {
-    // MMRV required validation
-    // if (formData.mmrv) {
-    //   const mmrvTests = ["Mumps", "Rubella", "Rubeola", "Varicella"];
-    //   for (let test of mmrvTests) {
-    //     if (!formData[`mmrv_${test}`]) {
-    //       ErrorToast(`${test} result is required if MMRV is checked ❌`);
-    //       return;
-    //     }
-    //   }
-    // }
-
-    // Hepatitis B required validation
     if (formData.hepb && !formData.hepb_result) {
       ErrorToast("Hepatitis B Surface AB result is required ❌");
       return;
     }
 
-    // TB required validation
     if (formData.tb && !formData.tb_result) {
       ErrorToast("Tuberculosis IGRA (T-spot) result is required ❌");
       return;
     }
 
-    // Other tests validation
     for (let i = 1; i <= 3; i++) {
       if (formData[`other_${i}`] && !formData[`other_${i}_text`]) {
         ErrorToast(`Other ${i} field is required ❌`);
+        return;
+      }
+    }
+
+    // ✅ PPD Validation
+    if (formData.ppdPerformed) {
+      if (!formData.ppdReadOn) {
+        ErrorToast("PPD Read On date is required ❌");
+        return;
+      }
+      if (!formData.ppdInduration) {
+        ErrorToast("PPD Induration is required ❌");
+        return;
+      }
+      if (!formData.ppdInterpretation) {
+        ErrorToast("PPD Interpretation is required ❌");
         return;
       }
     }
@@ -79,10 +91,8 @@ const handleSubmit = async (e) => {
   let dataPayload = {};
 
   if (formData.noBloodWork) {
-    // If "No blood work done"
     dataPayload = { noBloodWork: true };
   } else {
-    // Collect filled values
     dataPayload = {
       noBloodWork: false,
       mmrv: formData.mmrv || false,
@@ -102,6 +112,14 @@ const handleSubmit = async (e) => {
       ...(formData.other_2 && { other_2_text: formData.other_2_text }),
       other_3: formData.other_3 || false,
       ...(formData.other_3 && { other_3_text: formData.other_3_text }),
+
+      // ✅ PPD fields
+      ppdPerformed: formData.ppdPerformed || false,
+      ...(formData.ppdPerformed && {
+        ppdReadOn: formData.ppdReadOn,
+        ppdInduration: formData.ppdInduration,
+        ppdInterpretation: formData.ppdInterpretation,
+      }),
     };
   }
 
@@ -289,8 +307,76 @@ const handleSubmit = async (e) => {
             )}
           </div>
         ))}
-      </div>
+ <div className="mb-4 mt-6">
+              <label className="inline-flex items-center text-black">
+                <input
+                  type="checkbox"
+                  name="ppdPerformed"
+                  checked={formData.ppdPerformed}
+                  onChange={handleCheckboxChange}
+                  disabled={sectionDisabled}
+                  className="mr-2"
+                />
+                PPD performed
+              </label>
+            </div>
 
+            {/* PPD Details - Show when PPD is performed */}
+            {formData.ppdPerformed && (
+              <>
+                <div className="mb-4">
+                  <label className="block text-black font-semibold mb-1">
+                    Read on
+                  </label>
+                  <input
+                    type="date"
+                    name="ppdReadOn"
+                    value={formData.ppdReadOn}
+                    onChange={handleInputChange}
+                    disabled={sectionDisabled}
+                    className="w-full p-3 border text-black border-gray-300 rounded-md"
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-black font-semibold mb-1">
+                    Induration
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      name="ppdInduration"
+                      value={formData.ppdInduration}
+                      onChange={handleIndurationChange}
+                      disabled={sectionDisabled}
+                      placeholder="Enter number"
+                      className="flex-1 p-3 border text-black border-gray-300 rounded-md"
+                    />
+                    <span className="text-black font-semibold px-2">cm</span>
+                  </div>
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-black font-semibold mb-1">
+                    Interpretation
+                  </label>
+                  <select
+                    name="ppdInterpretation"
+                    value={formData.ppdInterpretation}
+                    onChange={handleInputChange}
+                    disabled={sectionDisabled}
+                    className="w-full p-3 border text-black border-gray-300 rounded-md bg-white"
+                  >
+                    <option value="">Select interpretation</option>
+                    <option value="Positive (reactive)">
+                      Positive (reactive)
+                    </option>
+                    <option value="Negative">Negative</option>
+                  </select>
+                </div>
+              </>
+            )}
+      </div>
       {/* Submit Button */}
       <div className="mt-6">
         <button
