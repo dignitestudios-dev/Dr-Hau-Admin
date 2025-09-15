@@ -249,7 +249,7 @@ export const normalRoutes = [
     {
       title: "DrugScreeningForm",
       url: "/student/forms/:id",
-      page: <GlobalLayout page={<StudentForm />} />,
+      page: <StudentForm />
 
     },
     
