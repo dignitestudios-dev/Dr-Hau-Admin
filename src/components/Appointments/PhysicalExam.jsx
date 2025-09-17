@@ -72,8 +72,7 @@ useEffect(() => {
       neurologic: "",
       skin: "",
       comments: "",
-      p4: false,
-      p3: false,
+
       hepB: false,
       other: "",
       tspot: false,
@@ -292,27 +291,33 @@ console.log(location,"location")
           <h2 className="text-2xl font-semibold text-gray-800 mb-6">
             Blood Work
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-            {[
-              { label: "P4", name: "p4" },
-              { label: "P3", name: "p3" },
-              { label: "Hep B surface Ab", name: "hepB" },
-            ].map(({ label, name }) => (
-              <div key={name} className="flex items-center">
-                <input
-                  type="checkbox"
-                  id={name}
-                  name={name}
-                  checked={formData[name]}
-                  onChange={handleChange}
-                  className="mr-2"
-                />
-                <label htmlFor={name} className="text-sm font-medium">
-                  {label}
-                </label>
-              </div>
-            ))}
-          </div>
+          {/* Blood Work / Immunity Titers */}
+
+  
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+    {[
+      { label: "Mumps", name: "mumps" },
+      { label: "Rubella", name: "rubella" },
+      { label: "Rubeola", name: "rubeola" },
+      { label: "Varicella", name: "varicella" },
+      { label: "Hepatitis B", name: "hepatitisB" },
+    ].map(({ label, name }) => (
+      <div key={name} className="flex flex-col space-y-2">
+        <label className="block text-sm font-medium">{label}</label>
+        <select
+          name={name}
+          value={formData[name] || "Not Immune"}
+          onChange={handleChange}
+          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        >
+          <option value="Immune">Immune</option>
+          <option value="Not Immune">Not Immune</option>
+        </select>
+      </div>
+    ))}
+  </div>
+
+
 
           <div className="mb-6">
             <label className="block text-sm font-medium mb-2 mt-4">Other</label>

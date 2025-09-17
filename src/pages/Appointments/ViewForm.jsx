@@ -125,6 +125,8 @@ const ViewForm = () => {
                   "influenza",
                   "MMR",
                   "Varicella",
+                  "p3",
+                  "p4",
                 ].includes(key)
             )
             // move HEENT to top
