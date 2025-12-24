@@ -95,7 +95,7 @@ const UserAppointmentDetails = () => {
   useEffect(() => {
     getReportData();
   }, []);
-  console.log(reportData, "reportData");
+ 
   const handleComplete = async (approval) => {
     const currentDate = new Date().toISOString();
 
@@ -463,7 +463,7 @@ const UserAppointmentDetails = () => {
                     <button
                       onClick={() =>
                         navigate(`/physical-exam`, {
-                        state: {
+                          state: {
                             appointmentId: appointmentData?._id,
                             reportData: reportData?.["Physical Exam"], // <-- bracket notation
                             appointmentData: appointmentData,

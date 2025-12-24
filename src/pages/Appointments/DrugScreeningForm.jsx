@@ -153,9 +153,9 @@ const DrugScreeningForm = () => {
                   disabled={!isEditing || formData.noDrugScreen}
                   className="w-full rounded-lg border-gray-300 p-2 text-gray-700 focus:ring-2 focus:ring-blue-500"
                 >
+                  <option value="Not Performed">Not Performed</option>
                   <option value="Positive">Positive</option>
                   <option value="Negative">Negative</option>
-                  <option value="Not Performed">Not Performed</option>
                 </select>
 
                 {/* Extra text input for Other */}
