@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react"; 
+import React, { useState, useEffect } from "react";
 import { IoMdArrowBack, IoMdEye, IoMdTrash } from "react-icons/io";
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import axios from "../../axios"; 
+import axios from "../../axios";
 
 const UsersTable = () => {
-  const [users, setUsers] = useState([]); 
-  const [selectedSchool, setSelectedSchool] = useState(""); 
-  const [selectedCampus, setSelectedCampus] = useState(""); 
-  const [searchQuery, setSearchQuery] = useState(""); 
+  const [users, setUsers] = useState([]);
+  const [selectedSchool, setSelectedSchool] = useState("");
+  const [selectedCampus, setSelectedCampus] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true); // Track loading state
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -27,9 +27,9 @@ const UsersTable = () => {
         campus: selectedCampus || null,
         gender: null, // Example: could be added based on searchQuery if needed
         search: searchQuery // Include the search query for filtering results
-      }); 
+      });
       if (response?.data?.success) {
-        setUsers(response?.data?.data); 
+        setUsers(response?.data?.data);
         setTotalPages(response?.data?.totalPages); // Assuming API returns totalPages
       } else {
         console.error("Failed to fetch users:", response?.data?.message);
@@ -63,12 +63,12 @@ const UsersTable = () => {
   };
 
   const handleDelete = (id) => {
-    const updatedUsers = users.filter((user) => user._id !== id); 
-    setUsers(updatedUsers); 
+    const updatedUsers = users.filter((user) => user._id !== id);
+    setUsers(updatedUsers);
   };
 
   const handleViewProfile = (user) => {
-    navigate(`/student-profile/${user._id}`); 
+    navigate(`/student-profile/${user._id}`);
   };
 
   // Pagination handlers
@@ -126,7 +126,7 @@ const UsersTable = () => {
                 <tr key={user._id} className="text-[14px] text-gray-900 border-b border-gray-200">
                   <td className="py-3 px-4 flex items-center gap-3">
                     <img
-                      src={user?.profilePicture || "https://i.pravatar.cc/40"} 
+                      src={user?.profilePicture || "https://i.pravatar.cc/40"}
                       alt={`${user?.firstName} ${user?.lastName}`}
                       className="w-8 h-8 rounded-full"
                     />
@@ -134,13 +134,16 @@ const UsersTable = () => {
                   </td>
                   {/* <td className="py-3 px-4">{new Date(user?.dob).toLocaleDateString()}</td> */}
                   <td className="py-3 px-4">
-  {new Date(user?.dob).toLocaleDateString('en-GB', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    timeZone: 'UTC'
-  })}
-</td>
+                    {user?.dob
+                      ? new Date(user.dob).toLocaleDateString("en-US", {
+                        month: "2-digit",
+                        day: "2-digit",
+                        year: "numeric",
+                        timeZone: "UTC",
+                      })
+                      : "N/A"}
+                  </td>
+
 
                   <td className="py-3 px-4">{user?.schoolName || "N/A"}</td>
                   <td className="py-3 px-4">{user?.campus || "N/A"}</td>
@@ -163,9 +166,9 @@ const UsersTable = () => {
 
       {/* Pagination controls */}
       <div className="flex justify-between items-center mt-4">
-        <button 
-          onClick={handlePreviousPage} 
-          disabled={currentPage === 1} 
+        <button
+          onClick={handlePreviousPage}
+          disabled={currentPage === 1}
           className={`flex items-center px-4 py-2 rounded-full transition-all duration-300 bg-blue-500 text-white ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'}`}
         >
           <MdChevronLeft className="mr-2" /> Previous
@@ -173,9 +176,9 @@ const UsersTable = () => {
 
         <span className="text-gray-500">Page {currentPage} of {totalPages}</span>
 
-        <button 
-          onClick={handleNextPage} 
-          disabled={currentPage === totalPages} 
+        <button
+          onClick={handleNextPage}
+          disabled={currentPage === totalPages}
           className={`flex items-center px-4 py-2 rounded-full transition-all duration-300 bg-blue-500 text-white ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'}`}
         >
           Next <MdChevronRight className="ml-2" />

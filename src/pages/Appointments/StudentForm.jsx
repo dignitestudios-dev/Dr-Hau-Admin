@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from "react";
 import axios from "../../axios";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import Spinner from "../../components/Global/Loader";
 
 const StudentForm = () => {
-  const location = useParams();
+  const location = useLocation();
   const [reportData, setReportData] = useState(null);
-console.log(location,"location")
+
   const getReportData = async () => {
     try {
-      const response = await axios.get(
-        `/appointment/medical-form/${location?.id}`
+      const response = await axios.post(
+        `/admin/singleForm/${location?.state?.appointmentId}`
       );
-      if (response.status === 200) {
-        setReportData(response?.data?.data);
-      }
-    } catch (err) {
-      console.log(err);
+      setReportData(response?.data?.data);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -24,7 +23,7 @@ console.log(location,"location")
   }, []);
 
   if (!reportData) {
-    return <div className="p-6 text-center text-gray-600">Loading...</div>;
+    return <Spinner text="Loading student form..." />;
   }
 
   const {

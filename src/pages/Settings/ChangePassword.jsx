@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../../axios";
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import eye icons from react-icons
+import { SuccessToast } from "../../components/Global/Toaster";
 
 const ChangePassword = () => {
   const navigate = useNavigate();
@@ -40,13 +41,17 @@ const ChangePassword = () => {
       });
 
       if (response?.data?.success) {
-        setSuccessMessage("Password updated successfully.");
+        // setSuccessMessage("Password updated successfully.");
+        SuccessToast("Password updated successfully.")
         setError(""); // Clear any previous error message
+        setCurrentPassword("");
+        setPassword("");
+        setConfirmPassword("");
       } else {
-        setError(response?.data?.message || "Failed to update password.");
+        setError(response?.data?.message || "Incorrect current password");
       }
     } catch (error) {
-      setError("An error occurred while updating the password.");
+      setError(error?.response?.data?.message || "Incorrect current password");
     } finally {
       setLoading(false);
     }
@@ -118,7 +123,7 @@ const ChangePassword = () => {
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer text-black mt-3"
             >
-              {showConfirmPassword ? <FaEye /> : <FaEyeSlash /> }
+              {showConfirmPassword ? <FaEye /> : <FaEyeSlash />}
             </span>
           </div>
 

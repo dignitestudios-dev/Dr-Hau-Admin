@@ -1,18 +1,19 @@
-import React, { useState, useEffect } from 'react'; 
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import axios from '../../axios'; 
+import axios from '../../axios';
 import { IoMdArrowBack } from 'react-icons/io';
 import EventAppointmentsTable from '../../components/Events/EventAppointmentsTable';  // Assuming this table component is available
 import EditEventModal from '../../components/Events/EditEventModal';  // Import the modal
 import CancelEventModal from '../../components/Events/CancelEventModal';
 import { FaSchool } from "react-icons/fa";
 import { formatTimeUTC } from '../../constants/utility';
+import Spinner from '../../components/Global/Loader';
 
 
 const EventDetail = () => {
-  const location = useLocation(); 
+  const location = useLocation();
   const { status } = location.state || {};
-  const { eventId } = useParams();  
+  const { eventId } = useParams();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,7 +25,7 @@ const EventDetail = () => {
   // Fetch event details by ID
   const fetchEventDetails = async () => {
     try {
-      const response = await axios?.post(`/admin/event/get/${eventId}`);  
+      const response = await axios?.post(`/admin/event/get/${eventId}`);
       if (response?.data?.success) {
         setEvent(response?.data?.data);
       } else {
@@ -68,7 +69,7 @@ const EventDetail = () => {
   };
 
   if (loading) {
-    return <p className='text-black p-4'>Loading event details...</p>;
+    return <Spinner text="Loading event details..." />;
   }
 
   if (error) {
@@ -90,17 +91,17 @@ const EventDetail = () => {
   };
 
   const capitalizeFirstLetter = (text) => {
-  if (!text) return "";
-  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-};
+    if (!text) return "";
+    return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+  };
 
   return (
     <div className="w-full h-auto p-6 bg-gray-100 overflow-auto">
 
-        <div className="flex items-center mb-6">
-        <IoMdArrowBack 
-          onClick={() => navigate("/events")} 
-          className="text-[24px] text-gray-700 mr-3" 
+      <div className="flex items-center mb-6">
+        <IoMdArrowBack
+          onClick={() => navigate("/events")}
+          className="text-[24px] text-gray-700 mr-3"
         />
         <h3 className="text-[24px] font-bold text-black">Event Detail</h3>
       </div>
@@ -124,103 +125,119 @@ const EventDetail = () => {
         {activeTab === 'details' ? (
           <div>
             <div className=" mx-auto bg-white rounded-lg ">
-  <h4 className="text-[24px] font-bold text-black mb-6 flex items-center justify-between">
-    {event?.title}
-    {/* Status Badge */}
-    <span className={`px-3 py-2 ml-3 text-[12px]  rounded-full ${getStatusColor(event?.status)}`}>
-      {capitalizeFirstLetter(event?.status)}
-    </span>
-  </h4>
+              <h4 className="text-[24px] font-bold text-black mb-6 flex items-center justify-between">
+                {event?.title}
+                {/* Status Badge */}
+                <span className={`px-3 py-2 ml-3 text-[12px]  rounded-full ${getStatusColor(event?.status)}`}>
+                  {capitalizeFirstLetter(event?.status)}
+                </span>
+              </h4>
 
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div className="border p-4 rounded-md">
-      <div className="text-[18px] mb-2">
-        <strong className='text-black'>Description:</strong>
-        <p className="text-gray-600">{event?.description}</p>
-      </div>
-    </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="border p-4 rounded-md">
+                  <div className="text-[18px] mb-2">
+                    <strong className='text-black'>Description:</strong>
+                    <p className="text-gray-600">{event?.description}</p>
+                  </div>
+                </div>
 
-    <div className="border p-4 rounded-md">
-        <strong className='text-black'>Campus:</strong>
+                <div className="border p-4 rounded-md">
+                  <strong className='text-black'>Campus:</strong>
 
-      <div className="text-[14px] text-gray-500 mt-2">
-        
-        <span className="mr-2">🎓</span>{event?.school.schoolName}
-      </div>
-      <div className="text-[14px] text-gray-500">
-        <span className="mr-2">🏛️</span>{event?.school.campus}
-      </div>
-    </div>
+                  <div className="text-[14px] text-gray-500 mt-2">
+                    <span className="mr-2">🎓</span>{event?.school?.schoolName || 'N/A'}
+                  </div>
+                  <div className="text-[14px] text-gray-500">
+                    <span className="mr-2">🏛️</span>
+                    {!event?.school?.campus || event?.school?.campus === 'None' ? (
+                      <span className="text-gray-400 italic font-normal">— (None)</span>
+                    ) : (
+                      event?.school?.campus
+                    )}
+                  </div>
+                </div>
 
-    <div className="border p-4 rounded-md col-span-1 md:col-span-2">
-      <strong className="block text-black mb-2">🏛️ Lot Numbers:</strong>
-      <div className="rounded-md col-span-1 md:col-span-2">
-  <ul className="flex flex-wrap text-[14px] text-gray-600 gap-6">
-    {Object.entries(event?.lotNumber || {}).map(([vaccine, lotNumber]) => (
-      <li className="flex items-center" key={vaccine}>
-        <span className="font-semibold">{vaccine}:</span> {lotNumber}
-      </li>
-    ))}
-  </ul>
-</div>
+                <div className="border p-4 rounded-md col-span-1 md:col-span-2">
+                  <strong className="block text-black mb-2 flex items-center gap-2">
+                    <span>🏷️</span> Lot Numbers:
+                  </strong>
+                  <div className="rounded-md col-span-1 md:col-span-2">
+                    <ul className="flex flex-wrap text-[14px] text-gray-700 gap-y-2 gap-x-4">
+                      {Object.entries(event?.lotNumber || {}).length > 0 ? (
+                        Object.entries(event?.lotNumber || {}).map(([vaccine, lotNumber], index, arr) => (
+                          <li className="flex items-center bg-gray-50 px-2.5 py-1 rounded border border-gray-200" key={vaccine}>
+                            <span className="font-semibold text-gray-800">{vaccine}:</span>
+                            <span className="ml-1.5 text-gray-700">{lotNumber}</span>
+                          </li>
+                        ))
+                      ) : (
+                        <span className="text-gray-400 italic">— No lot numbers specified</span>
+                      )}
+                    </ul>
+                  </div>
+                </div>
 
-    </div>
+                <div className="border p-4 rounded-md">
+                  <div className="flex items-center text-[14px] text-gray-700">
+                    <span className="mr-3">🕒</span>
+                    <p>
+                      {event?.timeFrom ? formatTimeUTC(event.timeFrom) : ''} - {event?.timeTo ? formatTimeUTC(event.timeTo) : ''}
+                    </p>
+                  </div>
+                </div>
 
-    <div className="border p-4 rounded-md">
-      <div className="flex items-center text-[14px] text-gray-700">
-        <span className="mr-3">🕒</span>
-        <p>{new Date(event?.timeFrom)?.toLocaleTimeString()} - {new Date(event?.timeTo)?.toLocaleTimeString()}</p>
-      </div>
-    </div>
+                <div className="border p-4 rounded-md">
+                  <div className="flex items-center text-[14px] text-gray-700">
+                    <span className="mr-3">📅</span>
+                    <p>{event?.date ? new Date(event.date).toLocaleDateString() : ''}</p>
+                  </div>
+                </div>
 
-    <div className="border p-4 rounded-md">
-      <div className="flex items-center text-[14px] text-gray-700">
-        <span className="mr-3">📅</span>
-        <p>{new Date(event?.date).toLocaleDateString()}</p>
-      </div>
-    </div>
+                <div className="border p-4 rounded-md col-span-1 md:col-span-2">
+                  <strong className="text-black mb-2 block">Vaccinations & Lot Pairing:</strong>
+                  <ul className="flex flex-wrap gap-3 text-[14px] text-gray-700">
+                    {event?.vaccinations?.map((vaccination, index) => {
+                      const lot = event?.lotNumber?.[vaccination];
+                      return (
+                        <li key={index} className="flex items-center bg-blue-50 text-blue-900 px-3 py-1.5 rounded-md border border-blue-100 font-medium">
+                          <span>{vaccination}</span>
+                          {lot && <span className="ml-2 text-xs bg-blue-200 text-blue-800 px-2 py-0.5 rounded font-mono">Lot: {lot}</span>}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
 
-   <div className="border p-4 rounded-md col-span-1 md:col-span-2">
-  <strong className="text-black mb-2">Vaccinations:</strong>
-  <ul className="flex flex-wrap gap-4 text-[14px] text-[#858585]">
-    {event?.vaccinations.map((vaccination, index) => (
-      <li key={index} className="flex items-center">
-        {vaccination}
-      </li>
-    ))}
-  </ul>
-</div>
+              </div>
 
-  </div>
+              {event?.status === "upcoming" && (
+                <div className="mt-6 flex gap-4">
+                  {/* Edit Event Button */}
+                  <button
+                    onClick={openEditModal}
+                    className="bg-black text-white px-4 py-3 rounded-md text-sm font-semibold hover:bg-gray-800 transition-colors"
+                  >
+                    Edit Event
+                  </button>
 
-  {event?.status === "upcoming" && (
-    <div className="mt-6 flex gap-4">
-      {/* Edit Event Button */}
-      <button
-        onClick={openEditModal}
-        className="bg-black text-white px-4 py-3 rounded-md text-sm font-semibold hover:bg-gray-800 transition-colors"
-      >
-        Edit Event
-      </button>
-
-      {/* Cancel Event Button */}
-      <button
-        onClick={openCancelModal}
-        className="bg-red-500 text-white px-4 py-3 rounded-md text-sm text-lg font-semibold hover:bg-red-600 transition-colors"
-        disabled={event?.status === 'Cancelled'}
-      >
-        {event?.status === 'Cancelled' ? 'Event Cancelled' : 'Cancel Event'}
-      </button>
-    </div>
-  )}
-</div>
+                  {/* Cancel Event Button */}
+                  <button
+                    onClick={openCancelModal}
+                    className="bg-red-500 text-white px-4 py-3 rounded-md text-sm text-lg font-semibold hover:bg-red-600 transition-colors"
+                    disabled={event?.status === 'Cancelled'}
+                  >
+                    {event?.status === 'Cancelled' ? 'Event Cancelled' : 'Cancel Event'}
+                  </button>
+                </div>
+              )}
+            </div>
 
           </div>
         ) : (
           <EventAppointmentsTable eventId={eventId} />
         )}
       </div>
-      
+
       {/* Edit Event Modal */}
       <EditEventModal
         isOpen={isEditModalOpen}

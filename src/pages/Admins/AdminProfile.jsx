@@ -3,6 +3,7 @@ import { IoMdArrowBack } from "react-icons/io";
 import { AiFillEdit } from "react-icons/ai";
 import { useNavigate, useParams } from "react-router-dom";  // useParams to access the adminId from the URL
 import axios from "../../axios";  // Make sure the axios instance is imported
+import Spinner from "../../components/Global/Loader";
 
 const AdminProfile = () => {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ const AdminProfile = () => {
     const fetchAdminDetails = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`/admin/school/${adminId}`);
+        const response = await axios.post(`/admin/getSingleAdmin/${adminId}`);
         if (response.data.success) {
           setAdminData(response.data.data);  // Set the fetched admin data
         } else {
@@ -37,7 +38,7 @@ const AdminProfile = () => {
 
   // Show loading or error state
   if (loading) {
-    return <div className="text-black p-4">Loading...</div>;
+    return <Spinner text="Loading admin profile..." />;
   }
 
   if (error) {

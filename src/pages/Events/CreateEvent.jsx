@@ -61,6 +61,12 @@ const CreateEvent = () => {
     return;
   }
 
+  const todayStr = new Date().toISOString().split('T')[0];
+  if (eventDate < todayStr) {
+    setError("Event date cannot be in the past. Please select a present or future date.");
+    return;
+  }
+
   // Combine the date with start and end time to create a full date-time string
   const eventStartDateTime = `${eventDate}T${eventStartTime}:00`; // Format: YYYY-MM-DDTHH:MM:SS
   const eventEndDateTime = `${eventDate}T${eventEndTime}:00`; // Format: YYYY-MM-DDTHH:MM:SS
@@ -165,8 +171,8 @@ const CreateEvent = () => {
               id="eventName"
               type="text"
               value={eventName}
-                onChange={(e) => setEventName(capitalizeFirstLetter(e.target.value))}
-
+              maxLength={100}
+              onChange={(e) => setEventName(capitalizeFirstLetter(e.target.value))}
               required
               className="w-full p-4 mt-2 border text-black border-black rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter event name"
@@ -179,6 +185,7 @@ const CreateEvent = () => {
             <input
               id="eventDate"
               type="date"
+              min={new Date().toISOString().split('T')[0]}
               value={eventDate}
               onChange={(e) => setEventDate(e.target.value)}
               required
@@ -218,7 +225,8 @@ const CreateEvent = () => {
             <textarea
               id="eventDescription"
               value={eventDescription}
-  onChange={(e) => setEventDescription(capitalizeFirstLetter(e.target.value))}
+              maxLength={500}
+              onChange={(e) => setEventDescription(capitalizeFirstLetter(e.target.value))}
               required
               className="w-full p-4 mt-2 border text-black border-black rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter event description"

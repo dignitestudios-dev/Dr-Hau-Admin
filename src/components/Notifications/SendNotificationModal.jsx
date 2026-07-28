@@ -57,19 +57,32 @@ const SendNotificationModal = ({ isOpen, onRequestClose }) => {
 
         <h2 className="text-xl font-medium text-gray-800 mb-4">Notification</h2>
 
-        <input
-          type="text"
-          value={title}
-          onChange={handleTitleChange}
-          placeholder="Title"
-          className="w-full p-2 mb-4 bg-[#F9FAFB] border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400"
-        />
-        <textarea
-          value={message}
-          onChange={handleMessageChange}
-          placeholder="Description"
-          className="w-full p-2 mb-4 bg-[#F9FAFB] border border-gray-200 rounded-md h-32 focus:outline-none focus:ring-2 focus:ring-gray-400"
-        ></textarea>
+        <div className="relative mb-4">
+          <input
+            type="text"
+            value={title}
+            onChange={handleTitleChange}
+            maxLength={100}
+            placeholder="Title"
+            className="w-full p-2 bg-[#F9FAFB] border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm"
+          />
+          <span className="text-[10px] text-gray-400 absolute right-2 bottom-1">
+            {title.length}/100
+          </span>
+        </div>
+
+        <div className="relative mb-4">
+          <textarea
+            value={message}
+            onChange={handleMessageChange}
+            maxLength={500}
+            placeholder="Description"
+            className="w-full p-2 bg-[#F9FAFB] border border-gray-200 rounded-md h-28 focus:outline-none focus:ring-2 focus:ring-gray-400 text-sm"
+          ></textarea>
+          <span className="text-[10px] text-gray-400 absolute right-2 bottom-2">
+            {message.length}/500
+          </span>
+        </div>
 
         {/* Dropdown for Target */}
         <div className="mb-4">

@@ -6,6 +6,7 @@ import SSNModal from "../../components/Students/SSNModal";
 import ReportModal from "../../components/Students/ReportModal";
 import axios from "../../axios";
 import PasswordModal from "../../components/Students/PasswordModal";
+import Spinner from "../../components/Global/Loader";
 
 const StudentProfile = () => {
   const navigate = useNavigate();

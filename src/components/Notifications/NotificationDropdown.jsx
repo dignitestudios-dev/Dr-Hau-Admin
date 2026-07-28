@@ -70,7 +70,15 @@ const NotificationDropdown = () => {
           </div>
           <div className="flex flex-col items-end">
             <p className="text-xs text-gray-400">
-              <span>{notification?.time}</span>
+              <span>
+                {notification?.createdAt || notification?.date
+                  ? new Date(notification.createdAt || notification.date).toLocaleTimeString("en-US", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: true,
+                    })
+                  : notification?.time || "Just now"}
+              </span>
             </p>
             {notification?.isUnread && (
               <span className="text-xs text-white bg-red-500 rounded-full px-2 py-1">

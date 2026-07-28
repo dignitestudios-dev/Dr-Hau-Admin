@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "../../axios";
+import Spinner from "../Global/Loader";
 
 const PhysicalExamDetails = () => {
   const { id } = useParams(); // Get the ID from the URL (Physical Exam ID)
@@ -11,17 +12,14 @@ const PhysicalExamDetails = () => {
   useEffect(() => {
     const fetchPhysicalExamDetails = async () => {
       try {
-        const response = await axios.get(`/admin/physicalReports/${id}`); // Use the ID directly in the URL
-        const data = response?.data;
-
-        if (data?.success && data.data) {
-          setPhysicalExam(data.data);
+        const response = await axios.post(`/admin/singleForm/${id}`);
+        if (response.data.success) {
+          setPhysicalExam(response.data.data);
         } else {
-          setPhysicalExam(null); // No physical exam data
+          console.error("Failed to fetch physical exam details");
         }
       } catch (error) {
-        console.error("Error fetching physical exam details:", error);
-        setPhysicalExam(null);
+        console.error("Error fetching physical exam details", error);
       } finally {
         setLoading(false);
       }
@@ -31,7 +29,7 @@ const PhysicalExamDetails = () => {
   }, [id]); // Re-run the effect if the ID changes
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Spinner text="Loading physical exam details..." />;
   }
 
   if (!physicalExam) {

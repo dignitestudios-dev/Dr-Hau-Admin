@@ -128,19 +128,33 @@ const Notifications = () => {
         ) : (
           <div>
             {/* Display Sent Notifications */}
-            {(activeTab === "send" ? sentNotifications : receivedNotifications).map((notification) => (
-              <div key={notification._id} className="mb-4 pb-4 flex justify-between items-start">
-                <div className="flex-grow border-b border-[#E4E4E4] max-w-[90%]">
-                  <div className="flex justify-between">
-                    <strong className="text-black">{notification?.title}</strong>
-                    <span className="text-gray-500 text-sm">
-                      {new Date(notification?.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
+            {(activeTab === "send" ? sentNotifications : receivedNotifications).map((notification) => {
+              const rawDate = notification?.createdAt || notification?.date || notification?.updatedAt;
+              const formattedDate = rawDate && !isNaN(new Date(rawDate).getTime())
+                ? new Date(rawDate).toLocaleString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                  })
+                : "N/A";
+
+              return (
+                <div key={notification._id || notification.id} className="mb-4 pb-4 flex justify-between items-start">
+                  <div className="flex-grow border-b border-[#E4E4E4] max-w-[90%]">
+                    <div className="flex justify-between items-center mb-1">
+                      <strong className="text-black">{notification?.title}</strong>
+                      <span className="text-gray-500 text-xs font-medium bg-gray-100 px-2 py-1 rounded">
+                        {formattedDate}
+                      </span>
+                    </div>
+                    <p className="text-[14px] text-[#555555] mb-2">{notification?.message || notification?.description}</p>
                   </div>
-                  <p className="list-disc text-[14px] text-[#858585] mb-2">{notification?.message}</p>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

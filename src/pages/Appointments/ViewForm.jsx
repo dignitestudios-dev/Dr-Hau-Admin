@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "../../axios";
 import { useLocation } from "react-router-dom";
+import Spinner from "../../components/Global/Loader";
 
 const ViewForm = () => {
   const location = useLocation();
@@ -8,12 +9,10 @@ const ViewForm = () => {
 
   const getReportData = async () => {
     try {
-      const response = await axios.get(
-        `/admin/medical-form/${location?.state}`
+      const response = await axios.post(
+        `/admin/singleForm/${location?.state?.appointmentId}`
       );
-      if (response.status === 200) {
-        setReportData(response?.data?.data);
-      }
+      setReportData(response?.data?.data);
     } catch (err) {
       console.log(err);
     }
@@ -24,7 +23,7 @@ const ViewForm = () => {
   }, []);
 
   if (!reportData) {
-    return <div className="p-6 text-center text-gray-600">Loading...</div>;
+    return <Spinner text="Loading medical report..." />;
   }
 
   const {

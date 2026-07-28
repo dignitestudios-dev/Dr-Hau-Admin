@@ -45,6 +45,11 @@ const CreateProfile = () => {
 
       setIsLoading(false); // Reset loading state
       if (response.data.success) {
+        setFormData({
+          email: "",
+          password: "",
+          confirmPassword: "",
+        });
         setIsModalOpen(true); // Open the modal on successful profile creation
       } else {
         setError(response.data.message || "Failed to create profile. Please try again.");
