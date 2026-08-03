@@ -14,7 +14,7 @@ const UserListModal = ({ isVisible, onClose }) => {
   // Predefined vaccinations list (could be extended or fetched from an API)
   const vaccinationsList = [
     { id: "FLU", name: "FLU" },
-    { id: "TDAP", name: "TDAP" },
+    { id: "Tdap", name: "Tdap" },
     { id: "TD Vaccine", name: "TD Vaccine" },
     { id: "MMR", name: "MMR" },
     { id: "Rabies", name: "Rabies" },

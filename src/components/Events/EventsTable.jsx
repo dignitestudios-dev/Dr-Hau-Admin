@@ -135,8 +135,8 @@ const EventsTable = () => {
               <button
                 key={tab}
                 className={`pb-2 ${selectedTab === tab
-                    ? "text-black border-b-2 border-black font-bold"
-                    : "text-gray-500"
+                  ? "text-black border-b-2 border-black font-bold"
+                  : "text-gray-500"
                   }`}
                 onClick={() => handleTabChange(tab)}
               >
@@ -244,8 +244,8 @@ const EventsTable = () => {
             onClick={handlePreviousPage}
             disabled={currentPage <= 1}
             className={`flex items-center px-4 py-2 rounded-full transition-all duration-300 bg-blue-500 text-white ${currentPage <= 1
-                ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-blue-600"
+              ? "opacity-50 cursor-not-allowed"
+              : "hover:bg-blue-600"
               }`}
           >
             <MdChevronLeft className="mr-1" /> Previous
@@ -259,8 +259,8 @@ const EventsTable = () => {
             onClick={handleNextPage}
             disabled={currentPage >= totalPages}
             className={`flex items-center px-4 py-2 rounded-full transition-all duration-300 bg-blue-500 text-white ${currentPage >= totalPages
-                ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-blue-600"
+              ? "opacity-50 cursor-not-allowed"
+              : "hover:bg-blue-600"
               }`}
           >
             Next <MdChevronRight className="ml-1" />
