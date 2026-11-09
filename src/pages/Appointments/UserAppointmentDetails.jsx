@@ -56,6 +56,17 @@ const UserAppointmentDetails = () => {
   }, [appointmentId]);
 
   const handleApproval = async (approval) => {
+    // BUG-016: Expired event acknowledgement validation
+    const isEventExpired =
+      event?.status?.toLowerCase() === "completed" ||
+      event?.status?.toLowerCase() === "cancelled" ||
+      (event?.timeTo && new Date(event.timeTo).getTime() < Date.now());
+
+    if (isEventExpired) {
+      ErrorToast("Event has expired. Cannot acknowledge or approve appointments for an expired event.");
+      return;
+    }
+
     const currentDate = new Date().toISOString();
 
     const requestBody = {
@@ -71,12 +82,12 @@ const UserAppointmentDetails = () => {
       );
       if (response.data.success) {
         setApprovalStatus(approval);
-        SuccessToast(response.data.message);
+        SuccessToast(response.data.message || "Status updated successfully.");
         navigate("/appointments");
       }
     } catch (err) {
       console.error(err);
-      ErrorToast(err.response.data.message);
+      ErrorToast(err?.response?.data?.message || "Failed to update status.");
     }
   };
   const [reportData, setReportData] = useState(null);
@@ -122,18 +133,23 @@ const UserAppointmentDetails = () => {
   };
 
   const handlePasswordSubmit = async () => {
+    if (!password || !password.trim()) {
+      setPasswordError("Password is required. Please enter your password.");
+      return;
+    }
+
     try {
-      const response = await axios.post("/admin/password", { password });
-      if (response.data.success) {
+      const response = await axios.post("/admin/password", { password: password.trim() });
+      if (response?.data?.success) {
         setPassword(""); // Reset password input
         setPasswordError(""); // Clear any previous error
         setIsPasswordModalOpen(false); // Close modal
         setIsAuthorizedToViewMedical(true); // Allow access to medical history
       } else {
-        setPasswordError("Incorrect password. Please try again.");
+        setPasswordError(response?.data?.message || "Incorrect password. Please try again.");
       }
     } catch (error) {
-      setPasswordError("An error occurred. Please try again.");
+      setPasswordError(error?.response?.data?.message || "Incorrect password. Please try again.");
     }
   };
 
@@ -316,18 +332,30 @@ const UserAppointmentDetails = () => {
               Vaccinations
             </h4>
             <ul className="list-disc pl-5 space-y-1 text-black">
-              {event?.lotNumber &&
-                typeof event.lotNumber === "object" &&
-                Object.entries(event.lotNumber).map(([vaccine, lotNum]) => (
-                  <li key={vaccine} className="flex justify-between">
-                    <span className="font-medium">{vaccine}:</span>
-                    <span>
-                      {typeof lotNum === "object"
-                        ? JSON.stringify(lotNum)
-                        : lotNum}
-                    </span>
-                  </li>
-                ))}
+              {vaccinations && vaccinations.length > 0 ? (
+                vaccinations.map((vaccine, index) => {
+                  const lotNum =
+                    event?.lotNumber?.[vaccine] ||
+                    Object.entries(event?.lotNumber || {}).find(
+                      ([k]) => k.toLowerCase() === vaccine.toLowerCase()
+                    )?.[1];
+
+                  return (
+                    <li key={index} className="flex justify-between">
+                      <span className="font-medium">{vaccine}</span>
+                      {lotNum && (
+                        <span>
+                          {typeof lotNum === "object"
+                            ? JSON.stringify(lotNum)
+                            : `(Lot: ${lotNum})`}
+                        </span>
+                      )}
+                    </li>
+                  );
+                })
+              ) : (
+                <li className="text-gray-500 italic list-none">No vaccinations selected for this appointment.</li>
+              )}
             </ul>
           </div>
           <div className="bg-white rounded-lg  mt-8 space-y-4">
@@ -488,7 +516,9 @@ const UserAppointmentDetails = () => {
                     {/* View Form */}
                     <button
                       onClick={() =>
-                        navigate(`/view-form`, { state: appointmentData?._id })
+                        navigate(`/view-form`, {
+                          state: { appointmentId: appointmentData?._id },
+                        })
                       }
                       className={`px-6 py-3 rounded-lg text-sm font-semibold shadow-xl transition-transform transform 
       bg-black text-white hover:scale-105 `}

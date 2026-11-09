@@ -3,6 +3,7 @@ import { IoMdArrowBack, IoMdEye, IoMdTrash } from "react-icons/io";
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import axios from "../../axios";
+import { formatDOB } from "../../constants/utility";
 
 const UsersTable = () => {
   const [users, setUsers] = useState([]);
@@ -132,18 +133,9 @@ const UsersTable = () => {
                     />
                     <span>{`${user?.firstName} ${user?.lastName}`}</span>
                   </td>
-                  {/* <td className="py-3 px-4">{new Date(user?.dob).toLocaleDateString()}</td> */}
                   <td className="py-3 px-4">
-                    {user?.dob
-                      ? new Date(user.dob).toLocaleDateString("en-US", {
-                        month: "2-digit",
-                        day: "2-digit",
-                        year: "numeric",
-                        timeZone: "UTC",
-                      })
-                      : "N/A"}
+                    {formatDOB(user?.dob)}
                   </td>
-
 
                   <td className="py-3 px-4">{user?.schoolName || "N/A"}</td>
                   <td className="py-3 px-4">{user?.campus || "N/A"}</td>

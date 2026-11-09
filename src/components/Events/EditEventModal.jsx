@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../../axios';
+import { validateLotNumber } from '../../constants/utility';
 
 const EditEventModal = ({ isOpen, onRequestClose, eventData, onUpdateEvent }) => {
   const [description, setDescription] = useState('');
@@ -7,6 +8,7 @@ const EditEventModal = ({ isOpen, onRequestClose, eventData, onUpdateEvent }) =>
   const [timeTo, setTimeTo] = useState('');
   const [vaccinations, setVaccinations] = useState([]); // This is no longer needed for the backend
   const [vaccinationLotNumbers, setVaccinationLotNumbers] = useState({}); // This will hold the lot numbers
+  const [lotErrors, setLotErrors] = useState({});
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -58,11 +60,31 @@ useEffect(() => {
       ...prevLotNumbers,
       [vaccination]: lotNumber,
     }));
+    if (lotErrors[vaccination]) {
+      setLotErrors((prev) => ({ ...prev, [vaccination]: null }));
+    }
   };
 
   const handleSubmit = async () => {
-    setLoading(true);
     setError(null);
+
+    // Validate lot numbers for each selected vaccination
+    const errors = {};
+    for (const v of vaccinations) {
+      const lotVal = vaccinationLotNumbers[v];
+      const err = validateLotNumber(lotVal);
+      if (err) {
+        errors[v] = err;
+      }
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setLotErrors(errors);
+      setError("Please fix the lot number errors before saving.");
+      return;
+    }
+
+    setLoading(true);
 
     // Now send the lot numbers as an object
     const updatedEvent = {
@@ -100,13 +122,19 @@ useEffect(() => {
         {error && <p className="text-red-500 mb-4">{error}</p>}
 
         <div className="mb-4">
-          <label className="block text-black font-medium mb-2" htmlFor="description">
-            Description
-          </label>
+          <div className="flex justify-between items-center mb-1">
+            <label className="block text-black font-medium" htmlFor="description">
+              Description
+            </label>
+            <span className={`text-xs ${(description?.length || 0) >= 2000 ? "text-red-500 font-semibold" : "text-gray-500"}`}>
+              {description?.length || 0}/2000
+            </span>
+          </div>
           <input
             type="text"
             id="description"
             value={description}
+            maxLength={2000}
             onChange={(e) => setDescription(e.target.value)}
             className="w-full p-2 border text-black rounded-md"
           />
@@ -157,13 +185,20 @@ useEffect(() => {
 
                 {/* Lot Number Input */}
                 {vaccinations.includes(vaccination) && (
-                  <input
-                    type="text"
-                    placeholder="Lot number"
-                    value={vaccinationLotNumbers[vaccination] || ''}
-                    onChange={(e) => handleLotNumberChange(vaccination, e.target.value)}
-                    className="ml-4 p-2 border text-black border-black rounded-lg shadow-sm"
-                  />
+                  <div className="ml-4 flex flex-col">
+                    <input
+                      type="text"
+                      placeholder="Lot number (3-20 chars)"
+                      value={vaccinationLotNumbers[vaccination] || ''}
+                      onChange={(e) => handleLotNumberChange(vaccination, e.target.value)}
+                      className={`p-2 border ${
+                        lotErrors[vaccination] ? "border-red-500 ring-1 ring-red-500" : "border-black"
+                      } text-black rounded-lg shadow-sm`}
+                    />
+                    {lotErrors[vaccination] && (
+                      <p className="text-red-500 text-xs mt-1">{lotErrors[vaccination]}</p>
+                    )}
+                  </div>
                 )}
               </div>
             ))}

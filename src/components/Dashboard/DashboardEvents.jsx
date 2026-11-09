@@ -37,38 +37,79 @@ const DashboardEvents = () => {
       setError(null);
 
       try {
+        const payload = {
+          currentDate: selectedDate ? selectedDate.toISOString() : null,
+        };
+        if (selectedTab && selectedTab !== "All") {
+          payload.status = selectedTab.toLowerCase();
+        }
+
+        const queryParams = new URLSearchParams({
+          page: currentPage.toString(),
+          limit: "10",
+        });
+        if (selectedTab && selectedTab !== "All") {
+          queryParams.append("status", selectedTab.toLowerCase());
+        }
+
         const response = await axios?.post(
-          `/admin/events?page=${currentPage}&limit=10`,
-          {
-            currentDate: selectedDate ? selectedDate.toISOString() : null,
-          }
+          `/admin/events?${queryParams.toString()}`,
+          payload
         );
 
         if (response?.data?.success) {
-          setEvents(response?.data?.data || []);
-          setTotalPages(response?.data?.totalPages || 1);
+          const fetchedEvents = response?.data?.data || [];
+          setEvents(fetchedEvents);
+
+          const backendTotalPages = response?.data?.totalPages;
+          const totalCount =
+            response?.data?.totalCount ??
+            response?.data?.totalEvents ??
+            response?.data?.total;
+
+          if (typeof totalCount === "number" && totalCount > 0) {
+            setTotalPages(Math.ceil(totalCount / 10));
+          } else if (typeof backendTotalPages === "number" && backendTotalPages > 0) {
+            setTotalPages(backendTotalPages);
+          } else {
+            setTotalPages(Math.max(1, Math.ceil(fetchedEvents.length / 10)));
+          }
         } else {
           setEvents([]);
+          setTotalPages(1);
           setError("No events found for the selected criteria.");
         }
       } catch (err) {
         setError("Error fetching events. Please try again later.");
         setEvents([]);
+        setTotalPages(1);
       } finally {
         setLoading(false);
       }
     };
 
     fetchEvents();
-  }, [selectedDate, currentPage]);
+  }, [selectedDate, currentPage, selectedTab]);
 
-  const formatDateKey = (d) => {
-    if (!d) return null;
-    const dateObj = new Date(d);
+  const formatDateKey = (date, useUTC = false) => {
+    if (!date) return null;
+
+    const dateObj = new Date(date);
+
     if (isNaN(dateObj.getTime())) return null;
-    const year = dateObj.getFullYear();
-    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-    const day = String(dateObj.getDate()).padStart(2, '0');
+
+    const year = useUTC
+      ? dateObj.getUTCFullYear()
+      : dateObj.getFullYear();
+
+    const month = String(
+      (useUTC ? dateObj.getUTCMonth() : dateObj.getMonth()) + 1
+    ).padStart(2, "0");
+
+    const day = String(
+      useUTC ? dateObj.getUTCDate() : dateObj.getDate()
+    ).padStart(2, "0");
+
     return `${year}-${month}-${day}`;
   };
 
@@ -77,12 +118,14 @@ const DashboardEvents = () => {
       selectedTab === "All" ||
       event?.status?.toLowerCase() === selectedTab?.toLowerCase();
 
-    const matchesDate =
-      !selectedDate ||
-      formatDateKey(event?.date) === formatDateKey(selectedDate);
-
-    return matchesTab && matchesDate;
+    return matchesTab;
   });
+
+  // Calculate effective total pages considering filtered events count
+  const effectiveTotalPages =
+    selectedTab === "All"
+      ? totalPages
+      : Math.max(1, Math.min(totalPages, Math.ceil(filteredEvents.length / 10)));
 
   const handleViewDetails = (eventId, status) => {
     navigate(`/event-details/${eventId}`, { state: { status } });
@@ -102,7 +145,7 @@ const DashboardEvents = () => {
   };
 
   const handleNextPage = () => {
-    if (currentPage < totalPages) {
+    if (currentPage < effectiveTotalPages) {
       setCurrentPage((prev) => prev + 1);
     }
   };
@@ -135,8 +178,8 @@ const DashboardEvents = () => {
               <button
                 key={tab}
                 className={`pb-2 ${selectedTab === tab
-                    ? "text-black border-b-2 border-black font-bold"
-                    : "text-gray-500"
+                  ? "text-black border-b-2 border-black font-bold"
+                  : "text-gray-500"
                   }`}
                 onClick={() => handleTabChange(tab)}
               >
@@ -244,23 +287,23 @@ const DashboardEvents = () => {
             onClick={handlePreviousPage}
             disabled={currentPage <= 1}
             className={`flex items-center px-4 py-2 rounded-full transition-all duration-300 bg-blue-500 text-white ${currentPage <= 1
-                ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-blue-600"
+              ? "opacity-50 cursor-not-allowed"
+              : "hover:bg-blue-600"
               }`}
           >
             <MdChevronLeft className="mr-1" /> Previous
           </button>
 
           <span className="text-gray-600 font-medium text-sm">
-            Page {currentPage} of {totalPages}
+            Page {currentPage} of {effectiveTotalPages}
           </span>
 
           <button
             onClick={handleNextPage}
-            disabled={currentPage >= totalPages}
-            className={`flex items-center px-4 py-2 rounded-full transition-all duration-300 bg-blue-500 text-white ${currentPage >= totalPages
-                ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-blue-600"
+            disabled={currentPage >= effectiveTotalPages}
+            className={`flex items-center px-4 py-2 rounded-full transition-all duration-300 bg-blue-500 text-white ${currentPage >= effectiveTotalPages
+              ? "opacity-50 cursor-not-allowed"
+              : "hover:bg-blue-600"
               }`}
           >
             Next <MdChevronRight className="ml-1" />

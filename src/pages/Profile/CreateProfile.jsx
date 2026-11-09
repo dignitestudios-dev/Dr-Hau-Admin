@@ -17,6 +17,17 @@ const CreateProfile = () => {
   const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
   const [showConfirmPassword, setShowConfirmPassword] = useState(false); // State for confirm password
 
+  const resetForm = () => {
+    setFormData({
+      email: "",
+      password: "",
+      confirmPassword: "",
+    });
+    setError("");
+    setShowPassword(false);
+    setShowConfirmPassword(false);
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -24,9 +35,6 @@ const CreateProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Log formData to verify
-    console.log('Form Data:', formData);
 
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
@@ -44,15 +52,11 @@ const CreateProfile = () => {
       });
 
       setIsLoading(false); // Reset loading state
-      if (response.data.success) {
-        setFormData({
-          email: "",
-          password: "",
-          confirmPassword: "",
-        });
+      if (response?.data?.success || response?.status === 200 || response?.status === 201) {
+        resetForm(); // BUG-012: Automatically clear/reset form inputs back to blank default state
         setIsModalOpen(true); // Open the modal on successful profile creation
       } else {
-        setError(response.data.message || "Failed to create profile. Please try again.");
+        setError(response?.data?.message || "Failed to create profile. Please try again.");
       }
     } catch (error) {
       setIsLoading(false); // Reset loading state
@@ -68,10 +72,9 @@ const CreateProfile = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
+    resetForm();
   };
 
-
-  
   return (
     <div className="w-full h-auto p-6 bg-gray-100 overflow-auto">
       <div className="flex items-center mb-4">

@@ -37,30 +37,59 @@ const EventsTable = () => {
       setError(null);
 
       try {
+        const payload = {
+          currentDate: selectedDate ? selectedDate.toISOString() : null,
+        };
+        if (selectedTab && selectedTab !== "All") {
+          payload.status = selectedTab.toLowerCase();
+        }
+
+        const queryParams = new URLSearchParams({
+          page: currentPage.toString(),
+          limit: "10",
+        });
+        if (selectedTab && selectedTab !== "All") {
+          queryParams.append("status", selectedTab.toLowerCase());
+        }
+
         const response = await axios?.post(
-          `/admin/events?page=${currentPage}&limit=10`,
-          {
-            currentDate: selectedDate ? selectedDate.toISOString() : null,
-          }
+          `/admin/events?${queryParams.toString()}`,
+          payload
         );
 
         if (response?.data?.success) {
-          setEvents(response?.data?.data || []);
-          setTotalPages(response?.data?.totalPages || 1);
+          const fetchedEvents = response?.data?.data || [];
+          setEvents(fetchedEvents);
+
+          const backendTotalPages = response?.data?.totalPages;
+          const totalCount =
+            response?.data?.totalCount ??
+            response?.data?.totalEvents ??
+            response?.data?.total;
+
+          if (typeof totalCount === "number" && totalCount > 0) {
+            setTotalPages(Math.ceil(totalCount / 10));
+          } else if (typeof backendTotalPages === "number" && backendTotalPages > 0) {
+            setTotalPages(backendTotalPages);
+          } else {
+            setTotalPages(Math.max(1, Math.ceil(fetchedEvents.length / 10)));
+          }
         } else {
           setEvents([]);
+          setTotalPages(1);
           setError("No events found for the selected criteria.");
         }
       } catch (err) {
         setError("Error fetching events. Please try again later.");
         setEvents([]);
+        setTotalPages(1);
       } finally {
         setLoading(false);
       }
     };
 
     fetchEvents();
-  }, [selectedDate, currentPage]);
+  }, [selectedDate, currentPage, selectedTab]);
 
   const formatDateKey = (d) => {
     if (!d) return null;
@@ -77,12 +106,13 @@ const EventsTable = () => {
       selectedTab === "All" ||
       event?.status?.toLowerCase() === selectedTab?.toLowerCase();
 
-    const matchesDate =
-      !selectedDate ||
-      formatDateKey(event?.date) === formatDateKey(selectedDate);
-
-    return matchesTab && matchesDate;
+    return matchesTab;
   });
+
+  const effectiveTotalPages =
+    selectedTab === "All"
+      ? totalPages
+      : Math.max(1, Math.min(totalPages, Math.ceil(filteredEvents.length / 10)));
 
   const handleViewDetails = (eventId, status) => {
     navigate(`/event-details/${eventId}`, { state: { status } });
@@ -102,7 +132,7 @@ const EventsTable = () => {
   };
 
   const handleNextPage = () => {
-    if (currentPage < totalPages) {
+    if (currentPage < effectiveTotalPages) {
       setCurrentPage((prev) => prev + 1);
     }
   };
@@ -116,6 +146,20 @@ const EventsTable = () => {
   const capitalizeFirstLetter = (text) => {
     if (!text) return "";
     return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+  };
+  const formatEventDate = (date) => {
+    if (!date) return "N/A";
+
+    const dateObj = new Date(date);
+
+    if (isNaN(dateObj.getTime())) return "N/A";
+
+    return dateObj.toLocaleDateString("en-US", {
+      timeZone: "UTC",
+      year: "2-digit",
+      month: "2-digit",
+      day: "2-digit",
+    });
   };
 
   return (
@@ -199,13 +243,8 @@ const EventsTable = () => {
                     className="text-[14px] text-gray-900 border-b border-[#E5E7EB]"
                   >
                     <td className="py-3 px-4">
-                      {event?.date
-                        ? new Date(event.date).toLocaleDateString("en-US", {
-                          year: "2-digit",
-                          month: "2-digit",
-                          day: "2-digit",
-                        })
-                        : "N/A"}
+                      {formatEventDate(event?.date)}
+
                     </td>
                     <td className="py-3 px-4">{event?.title}</td>
                     <td className="py-3 px-4">{event?.school?.campus || "N/A"}</td>
@@ -252,13 +291,13 @@ const EventsTable = () => {
           </button>
 
           <span className="text-gray-600 font-medium text-sm">
-            Page {currentPage} of {totalPages}
+            Page {currentPage} of {effectiveTotalPages}
           </span>
 
           <button
             onClick={handleNextPage}
-            disabled={currentPage >= totalPages}
-            className={`flex items-center px-4 py-2 rounded-full transition-all duration-300 bg-blue-500 text-white ${currentPage >= totalPages
+            disabled={currentPage >= effectiveTotalPages}
+            className={`flex items-center px-4 py-2 rounded-full transition-all duration-300 bg-blue-500 text-white ${currentPage >= effectiveTotalPages
               ? "opacity-50 cursor-not-allowed"
               : "hover:bg-blue-600"
               }`}

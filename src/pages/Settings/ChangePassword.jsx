@@ -74,57 +74,69 @@ const ChangePassword = () => {
         )}
         <form onSubmit={handlePasswordUpdate}>
           {/* Current Password */}
-          <div className="mb-4 relative">
+          <div className="mb-4">
             <label className="block text-sm font-semibold text-black">Current Password</label>
-            <input
-              type={showCurrentPassword ? "text" : "password"}
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              className="w-full mt-2 p-2 border border-gray-300 rounded-md text-black"
-              required
-            />
-            <span
-              onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
-            >
-              {showCurrentPassword ? <FaEyeSlash /> : <FaEye />}
-            </span>
+            <div className="relative mt-2">
+              <input
+                type={showCurrentPassword ? "text" : "password"}
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                className="w-full p-2 pr-10 border border-gray-300 rounded-md text-black"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-black cursor-pointer"
+                aria-label="Toggle current password visibility"
+              >
+                {showCurrentPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
           </div>
 
           {/* New Password */}
-          <div className="mb-4 relative">
+          <div className="mb-4">
             <label className="block text-sm font-semibold text-black">New Password</label>
-            <input
-              type={showNewPassword ? "text" : "password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full mt-2 p-2 border border-gray-300 rounded-md text-black"
-              required
-            />
-            <span
-              onClick={() => setShowNewPassword(!showNewPassword)}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer text-black mt-3"
-            >
-              {showNewPassword ? <FaEye /> : <FaEyeSlash />}
-            </span>
+            <div className="relative mt-2">
+              <input
+                type={showNewPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full p-2 pr-10 border border-gray-300 rounded-md text-black"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowNewPassword(!showNewPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-black cursor-pointer"
+                aria-label="Toggle new password visibility"
+              >
+                {showNewPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
           </div>
 
           {/* Confirm Password */}
-          <div className="mb-4 relative">
+          <div className="mb-4">
             <label className="block text-sm font-semibold text-black">Confirm New Password</label>
-            <input
-              type={showConfirmPassword ? "text" : "password"}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full mt-2 p-2 border border-gray-300 rounded-md text-black "
-              required
-            />
-            <span
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer text-black mt-3"
-            >
-              {showConfirmPassword ? <FaEye /> : <FaEyeSlash />}
-            </span>
+            <div className="relative mt-2">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full p-2 pr-10 border border-gray-300 rounded-md text-black"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-black cursor-pointer"
+                aria-label="Toggle confirm password visibility"
+              >
+                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
           </div>
 
           <button

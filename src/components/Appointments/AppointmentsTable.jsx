@@ -226,6 +226,7 @@ const capitalizeFirstLetter = (text) => {
         isVisible={showModal}
         onClose={toggleModal}
         onDelete={handleDelete}
+        appointments={appointments}
       />
     </div>
   );

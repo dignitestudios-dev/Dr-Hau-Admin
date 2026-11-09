@@ -211,11 +211,12 @@ console.log(location,"location")
     if (response.status === 200 || response.status === 201) {
       setSubmitLoading(false);
       SuccessToast("Report Submitted");
-      navigate("/appointments");
+      navigate(-1);
     }
   } catch (err) {
     console.log(err);
-    ErrorToast("Error");
+    setSubmitLoading(false);
+    ErrorToast(err?.response?.data?.message || "Error submitting physical exam");
   }
 };
 

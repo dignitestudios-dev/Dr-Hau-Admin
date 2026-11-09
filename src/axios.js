@@ -23,12 +23,23 @@ instance.interceptors.response.use(
     }
   },
   function (error) {
-    if (error.response.status === 401) {
-      localStorage.clear();
+    const url = error.config?.url || "";
+    const isPasswordOrAuthCheck =
+      url.includes("/auth/updatePassAdmin") ||
+      url.includes("/admin/password") ||
+      url.includes("/auth/adminSignIn") ||
+      url.includes("/auth/validatePassOTP") ||
+      url.includes("/auth/forgotPassword");
+
+    if (error?.response?.status === 401 && !isPasswordOrAuthCheck) {
+      localStorage.removeItem("token");
       // window.location.href = "/login";
     }
     return Promise.reject(error);
   }
 );
+
+instance.CancelToken = axios.CancelToken;
+instance.isCancel = axios.isCancel;
 
 export default instance;

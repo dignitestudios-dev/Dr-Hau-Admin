@@ -18,7 +18,7 @@ const AdminProfile = () => {
     const fetchAdminDetails = async () => {
       setLoading(true);
       try {
-        const response = await axios.post(`/admin/getSingleAdmin/${adminId}`);
+        const response = await axios.get(`/admin/school/${adminId}`);
         if (response.data.success) {
           setAdminData(response.data.data);  // Set the fetched admin data
         } else {

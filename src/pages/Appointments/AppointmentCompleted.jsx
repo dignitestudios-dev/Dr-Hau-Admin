@@ -13,6 +13,9 @@ const AppointmentCompleted = () => {
   const { appointment } = location.state || {};
   console.log(appointment);
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state for PDF upload
+  const [hasReport, setHasReport] = useState(
+    Boolean(appointment?.appointment?.report || appointment?.appointment?.isReportUploaded)
+  );
 
   // Open the modal
   const openModal = () => setIsModalOpen(true);
@@ -23,6 +26,7 @@ const AppointmentCompleted = () => {
   // Handle the PDF upload
   const handleUpload = (file) => {
     console.log("Uploaded file:", file);
+    setHasReport(true);
   };
 
   const hasPhysicalExamDetails = appointment?.appointment?.physicalExam;
@@ -87,13 +91,23 @@ const AppointmentCompleted = () => {
                 Medical Report
               </button> */}
 
-              <button
-                onClick={openModal}
-                className="flex items-center text-white bg-black px-6 py-2 rounded-md border border-black"
-              >
-                <FaUpload className="mr-2" />
-                Upload PDF
-              </button>
+              {hasReport ? (
+                <button
+                  disabled
+                  className="flex items-center text-white bg-gray-500 px-6 py-2 rounded-md border border-gray-500 cursor-not-allowed"
+                >
+                  <FaFileAlt className="mr-2" />
+                  Report Submitted
+                </button>
+              ) : (
+                <button
+                  onClick={openModal}
+                  className="flex items-center text-white bg-black px-6 py-2 rounded-md border border-black hover:bg-gray-800"
+                >
+                  <FaUpload className="mr-2" />
+                  Upload PDF
+                </button>
+              )}
 
               {/* Conditionally render the Physical Exam button */}
               <button

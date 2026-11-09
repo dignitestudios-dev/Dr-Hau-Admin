@@ -43,17 +43,24 @@ const StudentProfile = () => {
   const handleReportModalToggle = () => setIsReportModalOpen(!isReportModalOpen);
 
   const handlePasswordSubmit = async () => {
+    if (!password || !password.trim()) {
+      setPasswordError("Password is required. Please enter your password.");
+      return;
+    }
+
     try {
-      const response = await axios.post("/admin/password", { password });
-      if (response.data.success) {
+      const response = await axios.post("/admin/password", { password: password.trim() });
+      if (response?.data?.success) {
         setShowSSN(true); // Show SSN if password is correct
         setIsPasswordModalOpen(false); // Close password modal
         setIsAuthorizedToViewMedical(true); // Allow access to medical history
+        setPassword("");
+        setPasswordError("");
       } else {
-        setPasswordError("Incorrect password. Please try again.");
+        setPasswordError(response?.data?.message || "Incorrect password. Please try again.");
       }
     } catch (error) {
-      setPasswordError("An error occurred. Please try again.");
+      setPasswordError(error?.response?.data?.message || "Incorrect password. Please try again.");
     }
   };
 

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Modal from "react-modal";
 import { IoMdClose } from "react-icons/io";
 import axios from "../../axios";
+import { ErrorToast, SuccessToast } from "../Global/Toaster";
 
 const SendNotificationModal = ({ isOpen, onRequestClose }) => {
   const [title, setTitle] = useState("");
@@ -15,7 +16,7 @@ const SendNotificationModal = ({ isOpen, onRequestClose }) => {
 
   const handleSubmit = async () => {
     if (!title || !message) {
-      alert("Please fill in both title and message.");
+      ErrorToast("Please fill in both title and message.");
       return;
     }
 
@@ -29,12 +30,12 @@ const SendNotificationModal = ({ isOpen, onRequestClose }) => {
       });
 
       if (response.data.success) {
-        alert(response.data.message);  
-        onRequestClose();  
+        SuccessToast(response.data.message);
+        onRequestClose();
       }
     } catch (error) {
       console.error("Error creating notification:", error);
-      alert("Failed to create notification. Please try again later.");
+      ErrorToast("Failed to create notification. Please try again later.");
     } finally {
       setIsSubmitting(false);
     }

@@ -1,42 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { IoMdArrowBack } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
-import axios from "../../axios";  // Assuming axios is set up
+import axios from "../../axios";
+import { validateLotNumber } from "../../constants/utility";
+import { SuccessToast, ErrorToast } from "../../components/Global/Toaster";
 
 const CreateEvent = () => {
-  const schoolsData = {
-    "ACC": ["Los Angeles", "Ontario", "Orange County"],
-    "Annenberg": ["None"],
-    "Azusa Adult School": ["None"],
-    "CCC": ["Garden Grove", "North Hollywood", "San Bernardino", "San Diego"],
-    "CDI": ["None"],
-    "Claremont Adult School": ["None"],
-    "CNI OC": ["None"],
-    "College of the Desert": ["None"],
-    "Crafton Hills": ["None"],
-    "Fontana School District": ["None"],
-    "Glendale Career College": ["None"],
-    "Healthcare Career College": ["None"],
-    "Monrovia Adult School": ["None"],
-    "National Career College": ["None"],
-    "NDCI": ["None"],
-    "Northwest": ["Anaheim", "Long Beach", "Pomona", "Riverside", "San Diego", "Van Nuys", "West Covina"],
-    "Pacific College": ["None"],
-    "Platt": ["Alhambra", "Anaheim", "Ontario", "Riverside"],
-    "Smith Chason": ["None"],
-    "Unitek": ["Bakersfield", "Concord", "Fremont", "Hayward", "Reno", "Sacramento", "San Jose", "South San Francisco"]
-  };
+  const [schoolsData, setSchoolsData] = useState({});
+  const [loadingSchools, setLoadingSchools] = useState(true);
 
-  const [eventName, setEventName] = useState("");  // Event name state
-  const [eventDate, setEventDate] = useState("");  // Event date state
-  const [eventStartTime, setEventStartTime] = useState("");  // Event start time state
-  const [eventEndTime, setEventEndTime] = useState("");  // Event end time state
-  const [eventDescription, setEventDescription] = useState("");  // Event description state
-  const [selectedSchool, setSelectedSchool] = useState("");  // School dropdown selection
-  const [selectedCampus, setSelectedCampus] = useState("");  // Campus dropdown selection
-  const [selectedVaccinations, setSelectedVaccinations] = useState([]);  // Store selected vaccinations
-  const [vaccinationLotNumbers, setVaccinationLotNumbers] = useState({}); // Track lot numbers for vaccines
-  const [error, setError] = useState("");  // For handling form errors
+  const [eventName, setEventName] = useState("");
+  const [eventDate, setEventDate] = useState("");
+  const [eventStartTime, setEventStartTime] = useState("");
+  const [eventEndTime, setEventEndTime] = useState("");
+  const [eventDescription, setEventDescription] = useState("");
+  const [selectedSchool, setSelectedSchool] = useState("");
+  const [selectedCampus, setSelectedCampus] = useState("");
+  const [selectedVaccinations, setSelectedVaccinations] = useState([]);
+  const [vaccinationLotNumbers, setVaccinationLotNumbers] = useState({});
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [generalError, setGeneralError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const vaccinationsList = [
     { id: "Tdap", name: "Tdap" },
@@ -50,108 +34,212 @@ const CreateEvent = () => {
 
   const navigate = useNavigate();
 
-  // Handle form submission
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError(""); // Reset error
+  // BUG-004: Fetch only registered and eligible schools from backend API
+  useEffect(() => {
+    const fetchRegisteredSchools = async () => {
+      try {
+        setLoadingSchools(true);
+        const response = await axios.post("/admin/schools?page=1&limit=500", {});
+        if (response?.data?.success && Array.isArray(response?.data?.data)) {
+          const registeredSchools = response.data.data.filter(
+            (s) => s && !s.isDeleted && (s.schoolName || s.name)
+          );
 
-  // Check if all required fields are filled
-  if (!eventName || !eventDate || !eventStartTime || !eventEndTime || !eventDescription || selectedVaccinations.length === 0 || !selectedSchool || !selectedCampus) {
-    setError("All fields are required, including selecting at least one vaccination!");
-    return;
-  }
+          const mapped = {};
+          registeredSchools.forEach((s) => {
+            const name = s.schoolName || s.name;
+            if (!mapped[name]) {
+              mapped[name] = [];
+            }
+            const campusVal = s.campus || s.schoolCampus || "None";
+            if (!mapped[name].includes(campusVal)) {
+              mapped[name].push(campusVal);
+            }
+          });
 
-  const todayStr = new Date().toISOString().split('T')[0];
-  if (eventDate < todayStr) {
-    setError("Event date cannot be in the past. Please select a present or future date.");
-    return;
-  }
+          setSchoolsData(mapped);
+        }
+      } catch (err) {
+        console.error("Error fetching registered schools:", err);
+      } finally {
+        setLoadingSchools(false);
+      }
+    };
 
-  // Combine the date with start and end time to create a full date-time string
-  const eventStartDateTime = `${eventDate}T${eventStartTime}:00`; // Format: YYYY-MM-DDTHH:MM:SS
-  const eventEndDateTime = `${eventDate}T${eventEndTime}:00`; // Format: YYYY-MM-DDTHH:MM:SS
+    fetchRegisteredSchools();
+  }, []);
 
-  // Convert local time to UTC by creating a new Date object, which will automatically adjust to UTC
-  const timeFrom = new Date(eventStartDateTime).toISOString(); // This will automatically convert to UTC
-  const timeTo = new Date(eventEndDateTime).toISOString(); // This will automatically convert to UTC
+  // Validation function for BUG-003, BUG-018, BUG-020, BUG-021
+  const validateForm = () => {
+    const errors = {};
+    const lotErrors = {};
 
-  if (new Date(timeTo) <= new Date(timeFrom)) {
-    setError("End time must be later than start time.");
-    return;
-  }
-
-  // Create the lotNumber object only for the selected vaccines with their lot numbers
-  const lotNumber = selectedVaccinations.reduce((acc, vaccinationId) => {
-    const lotNumberValue = vaccinationLotNumbers[vaccinationId];
-    if (lotNumberValue) {
-      const vaccineName = vaccinationsList.find(vaccine => vaccine.id === vaccinationId).name;
-      acc[vaccineName] = lotNumberValue; // Store the lot number with the correct vaccine name
+    if (!eventName.trim()) {
+      errors.eventName = "Event name is required.";
+    } else if (eventName.trim().length > 100) {
+      errors.eventName = "Event name cannot exceed 100 characters.";
     }
-    return acc;
-  }, {});
 
-  // If no lot numbers are provided for selected vaccines, show an error
-  if (Object.keys(lotNumber).length === 0) {
-    setError("Please provide lot numbers for the selected vaccinations.");
-    return;
-  }
+    if (!eventDate) {
+      errors.eventDate = "Event date is required.";
+    } else {
+      const todayStr = new Date().toISOString().split("T")[0];
+      if (eventDate < todayStr) {
+        errors.eventDate = "Event date cannot be in the past.";
+      }
+    }
 
-  // Create the event data with school and campus
-  const eventData = {
-    title: eventName,
-    schoolName: selectedSchool,
-    schoolCampus: selectedCampus,
-    description: eventDescription,
-    date: new Date(eventDate).toISOString(), // This keeps the date in UTC
-    timeFrom, // Time in UTC
-    timeTo, // Time in UTC
-    lotNumber, // Include the lot numbers for selected vaccines
+    if (!eventStartTime) {
+      errors.eventStartTime = "Start time is required.";
+    }
+
+    if (!eventEndTime) {
+      errors.eventEndTime = "End time is required.";
+    }
+
+    if (eventDate && eventStartTime && eventEndTime) {
+      const startDateTime = new Date(`${eventDate}T${eventStartTime}:00`);
+      const endDateTime = new Date(`${eventDate}T${eventEndTime}:00`);
+      if (endDateTime <= startDateTime) {
+        errors.eventEndTime = "End time must be later than start time.";
+      }
+    }
+
+    if (!eventDescription.trim()) {
+      errors.eventDescription = "Event description is required.";
+    } else if (eventDescription.trim().length > 2000) {
+      errors.eventDescription = "Event description cannot exceed 2000 characters.";
+    }
+
+    if (!selectedSchool) {
+      errors.selectedSchool = "Please select a registered school.";
+    }
+
+    if (!selectedCampus) {
+      errors.selectedCampus = "Please select a campus.";
+    }
+
+    if (selectedVaccinations.length === 0) {
+      errors.selectedVaccinations = "Please select at least one vaccination.";
+    } else {
+      // BUG-021: Strict lot number validation for each selected vaccine
+      selectedVaccinations.forEach((vId) => {
+        const val = vaccinationLotNumbers[vId];
+        const err = validateLotNumber(val);
+        if (err) {
+          lotErrors[vId] = err;
+        }
+      });
+    }
+
+    if (Object.keys(lotErrors).length > 0) {
+      errors.lotNumbers = lotErrors;
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
-  try {
-    const response = await axios.post("/admin/event", eventData);
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setGeneralError("");
 
-    if (response.data.success) {
-      console.log("Event Created:", response.data);
-      navigate("/events");  // Navigate to events page
-    } else {
-      setError("Failed to create event. Please try again.");
+    if (!validateForm()) {
+      ErrorToast("Please fix the validation errors below.");
+      return;
     }
-  } catch (error) {
-    console.error("Error creating event:", error);
-    setError("An error occurred while creating the event. Please try again.");
-  }
-};
 
+    // BUG-018 & BUG-020: Timezone-safe date and time serialization
+    // Extract year, month, day to construct UTC midday to prevent shifting to next/previous day
+    const [year, month, day] = eventDate.split("-").map(Number);
+    const safeDate = new Date(Date.UTC(year, month - 1, day, 12, 0, 0)).toISOString();
+
+    const eventStartDateTime = `${eventDate}T${eventStartTime}:00`;
+    const eventEndDateTime = `${eventDate}T${eventEndTime}:00`;
+    const timeFrom = new Date(eventStartDateTime).toISOString();
+    const timeTo = new Date(eventEndDateTime).toISOString();
+
+    // Map lot numbers to vaccine names
+    const lotNumber = selectedVaccinations.reduce((acc, vaccinationId) => {
+      const lotNumberValue = vaccinationLotNumbers[vaccinationId]?.trim();
+      const vaccineItem = vaccinationsList.find((v) => v.id === vaccinationId);
+      const vaccineName = vaccineItem ? vaccineItem.name : vaccinationId;
+      acc[vaccineName] = lotNumberValue;
+      return acc;
+    }, {});
+
+    const eventData = {
+      title: eventName.trim(),
+      schoolName: selectedSchool,
+      schoolCampus: selectedCampus,
+      description: eventDescription.trim(),
+      date: safeDate,
+      timeFrom,
+      timeTo,
+      lotNumber,
+    };
+
+    try {
+      setSubmitting(true);
+      const response = await axios.post("/admin/event", eventData);
+
+      if (response?.data?.success) {
+        SuccessToast("Event created successfully!");
+        navigate("/events");
+      } else {
+        const msg = response?.data?.message || "Failed to create event. Please try again.";
+        setGeneralError(msg);
+        ErrorToast(msg);
+      }
+    } catch (error) {
+      console.error("Error creating event:", error);
+      const msg = error?.response?.data?.message || "An error occurred while creating the event.";
+      setGeneralError(msg);
+      ErrorToast(msg);
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   // Handle vaccination checkbox change
-  const handleVaccinationChange = (e) => {
-    const vaccinationId = e.target.value;
+  const handleVaccinationChange = (vaccinationId, checked) => {
     setSelectedVaccinations((prev) =>
-      prev.includes(vaccinationId)
-        ? prev.filter((vaccination) => vaccination !== vaccinationId) // Remove if already selected
-        : [...prev, vaccinationId] // Add if not selected
+      checked
+        ? [...prev, vaccinationId]
+        : prev.filter((id) => id !== vaccinationId)
     );
+
+    if (fieldErrors.selectedVaccinations) {
+      setFieldErrors((prev) => ({ ...prev, selectedVaccinations: null }));
+    }
   };
 
   // Handle lot number change for each vaccine
   const handleLotNumberChange = (vaccinationId, lotNumber) => {
     setVaccinationLotNumbers((prev) => ({
       ...prev,
-      [vaccinationId]: lotNumber, // Update the lot number for the vaccine
+      [vaccinationId]: lotNumber,
     }));
+
+    if (fieldErrors.lotNumbers?.[vaccinationId]) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        lotNumbers: { ...prev.lotNumbers, [vaccinationId]: null },
+      }));
+    }
   };
 
- const capitalizeFirstLetter = (text) => {
-  if (!text) return "";
-  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-};
-
+  const capitalizeFirstLetter = (text) => {
+    if (!text) return "";
+    return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+  };
 
   return (
     <div className="w-full p-6 rounded-md shadow-md overflow-auto">
       <div className="flex items-center mb-6">
         <button
+          type="button"
           onClick={() => navigate("/events")}
           className="text-black hover:text-gray-800 flex items-center gap-2 mr-2 text-xl"
         >
@@ -160,159 +248,269 @@ const CreateEvent = () => {
         <h3 className="text-2xl font-bold text-black">Create Event</h3>
       </div>
 
-      <div className="w-full mx-auto p-8 bg-white shadow-lg rounded-lg">
-        {error && <div className="mb-4 text-red-500 text-sm">{error}</div>}
+      <div className="w-full mx-auto p-8 bg-white shadow-lg rounded-lg max-w-4xl">
+        {generalError && (
+          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm">
+            {generalError}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Event Name */}
           <div>
-            <label htmlFor="eventName" className="block text-sm font-medium text-gray-700">Event Name</label>
+            <div className="flex justify-between items-center">
+              <label htmlFor="eventName" className="block text-sm font-medium text-gray-700">
+                Event Name *
+              </label>
+              <span className={`text-xs ${eventName.length >= 100 ? "text-red-500 font-semibold" : "text-gray-500"}`}>
+                {eventName.length}/100
+              </span>
+            </div>
             <input
               id="eventName"
               type="text"
               value={eventName}
               maxLength={100}
-              onChange={(e) => setEventName(capitalizeFirstLetter(e.target.value))}
-              required
-              className="w-full p-4 mt-2 border text-black border-black rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={(e) => {
+                setEventName(capitalizeFirstLetter(e.target.value));
+                if (fieldErrors.eventName) setFieldErrors((p) => ({ ...p, eventName: null }));
+              }}
+              className={`w-full p-3 mt-1 border text-black ${
+                fieldErrors.eventName ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
+              } rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
               placeholder="Enter event name"
             />
+            {fieldErrors.eventName && (
+              <p className="text-red-500 text-xs mt-1.5">{fieldErrors.eventName}</p>
+            )}
           </div>
 
           {/* Event Date */}
           <div>
-            <label htmlFor="eventDate" className="block text-sm font-medium text-gray-700">Event Date</label>
+            <label htmlFor="eventDate" className="block text-sm font-medium text-gray-700">
+              Event Date *
+            </label>
             <input
               id="eventDate"
               type="date"
-              min={new Date().toISOString().split('T')[0]}
+              min={new Date().toISOString().split("T")[0]}
               value={eventDate}
-              onChange={(e) => setEventDate(e.target.value)}
-              required
-              className="w-full p-4 mt-2 border text-black border-black rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={(e) => {
+                setEventDate(e.target.value);
+                if (fieldErrors.eventDate) setFieldErrors((p) => ({ ...p, eventDate: null }));
+              }}
+              className={`w-full p-3 mt-1 border text-black ${
+                fieldErrors.eventDate ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
+              } rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
             />
+            {fieldErrors.eventDate && (
+              <p className="text-red-500 text-xs mt-1.5">{fieldErrors.eventDate}</p>
+            )}
           </div>
 
-          {/* Start Time */}
-          <div>
-            <label htmlFor="eventStartTime" className="block text-sm font-medium text-gray-700">Start Time</label>
-            <input
-              id="eventStartTime"
-              type="time"
-              value={eventStartTime}
-              onChange={(e) => setEventStartTime(e.target.value)}
-              required
-              className="w-full p-4 mt-2 border text-black border-black rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+          {/* Start Time & End Time */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="eventStartTime" className="block text-sm font-medium text-gray-700">
+                Start Time *
+              </label>
+              <input
+                id="eventStartTime"
+                type="time"
+                value={eventStartTime}
+                onChange={(e) => {
+                  setEventStartTime(e.target.value);
+                  if (fieldErrors.eventStartTime) setFieldErrors((p) => ({ ...p, eventStartTime: null }));
+                }}
+                className={`w-full p-3 mt-1 border text-black ${
+                  fieldErrors.eventStartTime ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
+                } rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              />
+              {fieldErrors.eventStartTime && (
+                <p className="text-red-500 text-xs mt-1.5">{fieldErrors.eventStartTime}</p>
+              )}
+            </div>
 
-          {/* End Time */}
-          <div>
-            <label htmlFor="eventEndTime" className="block text-sm font-medium text-gray-700">End Time</label>
-            <input
-              id="eventEndTime"
-              type="time"
-              value={eventEndTime}
-              onChange={(e) => setEventEndTime(e.target.value)}
-              required
-              className="w-full p-4 mt-2 border text-black border-black rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <div>
+              <label htmlFor="eventEndTime" className="block text-sm font-medium text-gray-700">
+                End Time *
+              </label>
+              <input
+                id="eventEndTime"
+                type="time"
+                value={eventEndTime}
+                onChange={(e) => {
+                  setEventEndTime(e.target.value);
+                  if (fieldErrors.eventEndTime) setFieldErrors((p) => ({ ...p, eventEndTime: null }));
+                }}
+                className={`w-full p-3 mt-1 border text-black ${
+                  fieldErrors.eventEndTime ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
+                } rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              />
+              {fieldErrors.eventEndTime && (
+                <p className="text-red-500 text-xs mt-1.5">{fieldErrors.eventEndTime}</p>
+              )}
+            </div>
           </div>
 
           {/* Event Description */}
           <div>
-            <label htmlFor="eventDescription" className="block text-sm font-medium text-gray-700">Event Description</label>
+            <div className="flex justify-between items-center">
+              <label htmlFor="eventDescription" className="block text-sm font-medium text-gray-700">
+                Event Description *
+              </label>
+              <span className={`text-xs ${eventDescription.length >= 2000 ? "text-red-500 font-semibold" : "text-gray-500"}`}>
+                {eventDescription.length}/2000
+              </span>
+            </div>
             <textarea
               id="eventDescription"
               value={eventDescription}
-              maxLength={500}
-              onChange={(e) => setEventDescription(capitalizeFirstLetter(e.target.value))}
-              required
-              className="w-full p-4 mt-2 border text-black border-black rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              maxLength={2000}
+              rows={3}
+              onChange={(e) => {
+                setEventDescription(capitalizeFirstLetter(e.target.value));
+                if (fieldErrors.eventDescription) setFieldErrors((p) => ({ ...p, eventDescription: null }));
+              }}
+              className={`w-full p-3 mt-1 border text-black ${
+                fieldErrors.eventDescription ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
+              } rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
               placeholder="Enter event description"
             />
+            {fieldErrors.eventDescription && (
+              <p className="text-red-500 text-xs mt-1.5">{fieldErrors.eventDescription}</p>
+            )}
           </div>
 
-          {/* School Dropdown */}
+          {/* School Dropdown - BUG-004: Only registered schools */}
           <div>
-            <label htmlFor="selectedSchool" className="block text-sm font-medium text-gray-700">Select School</label>
+            <label htmlFor="selectedSchool" className="block text-sm font-medium text-gray-700">
+              Select School * {loadingSchools && <span className="text-xs text-gray-400">(Loading schools...)</span>}
+            </label>
             <select
               id="selectedSchool"
               value={selectedSchool}
               onChange={(e) => {
                 setSelectedSchool(e.target.value);
-                setSelectedCampus(""); // Reset campus selection when school changes
+                setSelectedCampus("");
+                if (fieldErrors.selectedSchool) setFieldErrors((p) => ({ ...p, selectedSchool: null }));
               }}
-              required
-              className="w-full p-4 mt-2 border text-black border-black rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full p-3 mt-1 border text-black ${
+                fieldErrors.selectedSchool ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
+              } rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white`}
             >
-              <option value="">Select a School</option>
+              <option value="">Select a Registered School</option>
               {Object.keys(schoolsData).map((school) => (
                 <option key={school} value={school}>
                   {school}
                 </option>
               ))}
             </select>
+            {fieldErrors.selectedSchool && (
+              <p className="text-red-500 text-xs mt-1.5">{fieldErrors.selectedSchool}</p>
+            )}
           </div>
 
           {/* Campus Dropdown */}
           {selectedSchool && (
             <div>
-              <label htmlFor="selectedCampus" className="block text-sm font-medium text-gray-700">Select Campus</label>
+              <label htmlFor="selectedCampus" className="block text-sm font-medium text-gray-700">
+                Select Campus *
+              </label>
               <select
                 id="selectedCampus"
                 value={selectedCampus}
-                onChange={(e) => setSelectedCampus(e.target.value)}
-                required
-                className="w-full p-4 mt-2 border text-black border-black rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onChange={(e) => {
+                  setSelectedCampus(e.target.value);
+                  if (fieldErrors.selectedCampus) setFieldErrors((p) => ({ ...p, selectedCampus: null }));
+                }}
+                className={`w-full p-3 mt-1 border text-black ${
+                  fieldErrors.selectedCampus ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
+                } rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white`}
               >
                 <option value="">Select a Campus</option>
-                {schoolsData[selectedSchool].map((campus, index) => (
+                {(schoolsData[selectedSchool] || ["None"]).map((campus, index) => (
                   <option key={index} value={campus}>
                     {campus}
                   </option>
                 ))}
               </select>
+              {fieldErrors.selectedCampus && (
+                <p className="text-red-500 text-xs mt-1.5">{fieldErrors.selectedCampus}</p>
+              )}
             </div>
           )}
 
-          {/* Vaccination Checkbox */}
+          {/* Vaccination Checkbox & Lot Numbers - BUG-003 & BUG-021 */}
           <div>
-            <h4 className="block text-sm font-medium text-gray-700">Select Vaccinations</h4>
-            <div className="grid grid-cols-2 gap-4 mt-2">
-              {vaccinationsList.map((vaccination) => (
-                <div key={vaccination.id} className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    value={vaccination.id}
-                    onChange={handleVaccinationChange}
-                    checked={selectedVaccinations.includes(vaccination.id)}
-                    className="h-4 w-4 text-blue-500 border-gray-300 rounded"
-                  />
-                  <span className="text-sm text-black">{vaccination.name}</span>
+            <h4 className="block text-sm font-medium text-gray-700 mb-2">
+              Select Vaccinations *
+            </h4>
 
-                  {/* Lot Number Input */}
-                  {selectedVaccinations.includes(vaccination.id) && (
-                    <input
-                      type="text"
-                      placeholder="Lot number"
-                      value={vaccinationLotNumbers[vaccination.id] || ""}
-                      onChange={(e) => handleLotNumberChange(vaccination.id, e.target.value)}
-                      className="p-2 border text-black border-black rounded-lg shadow-sm"
-                    />
-                  )}
-                </div>
-              ))}
+            {fieldErrors.selectedVaccinations && (
+              <p className="text-red-500 text-xs mb-3">{fieldErrors.selectedVaccinations}</p>
+            )}
+
+            <div className="space-y-3 border p-4 rounded-lg bg-gray-50">
+              {vaccinationsList.map((vaccination) => {
+                const isChecked = selectedVaccinations.includes(vaccination.id);
+                const lotErr = fieldErrors.lotNumbers?.[vaccination.id];
+
+                return (
+                  <div key={vaccination.id} className="p-2 bg-white rounded border border-gray-200">
+                    <div className="flex items-center justify-between">
+                      <label className="flex items-center space-x-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          value={vaccination.id}
+                          onChange={(e) => handleVaccinationChange(vaccination.id, e.target.checked)}
+                          checked={isChecked}
+                          className="h-4 w-4 text-blue-600 rounded"
+                        />
+                        <span className="text-sm font-medium text-black">{vaccination.name}</span>
+                      </label>
+                    </div>
+
+                    {/* Lot Number Input for selected vaccine */}
+                    {isChecked && (
+                      <div className="mt-2 pl-6">
+                        <label className="block text-xs font-medium text-gray-600 mb-1">
+                          Lot Number * (3-20 characters, no symbols like @, #, $, %, ^, &, *, (, ), !, or emojis)
+                        </label>
+                        <input
+                          type="text"
+                          placeholder={`Enter lot number for ${vaccination.name}`}
+                          value={vaccinationLotNumbers[vaccination.id] || ""}
+                          onChange={(e) => handleLotNumberChange(vaccination.id, e.target.value)}
+                          className={`w-full p-2 border text-black text-sm rounded-md ${
+                            lotErr ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
+                          } focus:outline-none focus:ring-1 focus:ring-blue-500`}
+                        />
+                        {lotErr && (
+                          <p className="text-red-500 text-xs mt-1">{lotErr}</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
-          {/* Submit Button */}
-          <div className="flex justify-end mt-6">
+          <div className="flex gap-4 pt-4">
+            <button
+              type="button"
+              onClick={() => navigate("/events")}
+              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 font-medium"
+            >
+              Cancel
+            </button>
             <button
               type="submit"
-              className="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={submitting}
+              className="bg-black text-white px-8 py-3 rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50 transition"
             >
-              Create Event
+              {submitting ? "Creating Event..." : "Create Event"}
             </button>
           </div>
         </form>

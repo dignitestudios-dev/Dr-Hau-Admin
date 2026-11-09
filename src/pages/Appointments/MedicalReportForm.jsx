@@ -155,30 +155,41 @@ const MedicalReportForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Check if any report data is actually provided
+    const hasData = Object.entries(formData).some(([_, val]) => {
+      if (typeof val === "boolean") return val === true;
+      if (typeof val === "string") return val.trim() !== "";
+      return val !== null && val !== undefined;
+    });
+
+    if (!hasData) {
+      ErrorToast("Report cannot be empty");
+      return;
+    }
+
     try {
       setSubmitLoading(true);
       const data = new FormData();
 
       data.append("appointment", id);
-      if (appointment?._id) {
-        data.append("reportId", appointment._id);
+      const reportId =
+        appointment?._id ||
+        appointment?.id ||
+        (typeof appointment === "string" ? appointment : null);
+
+      if (reportId) {
+        data.append("reportId", reportId);
       }
       data.append("currentDate", currentDate);
 
       for (const field in formData) {
-        console.log("==> ", field);
-
         // Check if the field has a non-empty value
         if (formData[field] !== "") {
           data.append(field, formData[field]);
         }
       }
-      let url = "";
-      if (appointment) {
-        url = "/admin/updateReport";
-      } else {
-        url = "/admin/report";
-      }
+      const url = reportId ? "/admin/updateReport" : "/admin/report";
       const response = await axios.post(url, data);
       console.log("Response:", response.data);
       if (response.status === 200 || response.status === 201) {
@@ -189,7 +200,7 @@ const MedicalReportForm = () => {
     } catch (error) {
       console.log("Error:", error);
       setSubmitLoading(false);
-      ErrorToast(error?.response?.data?.message);
+      ErrorToast(error?.response?.data?.message || "Failed to submit report");
     }
   };
 

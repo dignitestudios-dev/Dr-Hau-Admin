@@ -6,7 +6,7 @@ import EventAppointmentsTable from '../../components/Events/EventAppointmentsTab
 import EditEventModal from '../../components/Events/EditEventModal';  // Import the modal
 import CancelEventModal from '../../components/Events/CancelEventModal';
 import { FaSchool } from "react-icons/fa";
-import { formatTimeUTC } from '../../constants/utility';
+import { formatEventTime } from '../../constants/utility';
 import Spinner from '../../components/Global/Loader';
 
 
@@ -94,7 +94,20 @@ const EventDetail = () => {
     if (!text) return "";
     return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
   };
+  const formatEventDate = (date) => {
+    if (!date) return "N/A";
 
+    const dateObj = new Date(date);
+
+    if (isNaN(dateObj.getTime())) return "N/A";
+
+    return dateObj.toLocaleDateString("en-US", {
+      timeZone: "UTC",
+      year: "2-digit",
+      month: "2-digit",
+      day: "2-digit",
+    });
+  };
   return (
     <div className="w-full h-auto p-6 bg-gray-100 overflow-auto">
 
@@ -181,7 +194,7 @@ const EventDetail = () => {
                   <div className="flex items-center text-[14px] text-gray-700">
                     <span className="mr-3">🕒</span>
                     <p>
-                      {event?.timeFrom ? formatTimeUTC(event.timeFrom) : ''} - {event?.timeTo ? formatTimeUTC(event.timeTo) : ''}
+                      {event?.timeFrom ? formatEventTime(event.timeFrom) : ''} - {event?.timeTo ? formatEventTime(event.timeTo) : ''}
                     </p>
                   </div>
                 </div>
@@ -189,7 +202,8 @@ const EventDetail = () => {
                 <div className="border p-4 rounded-md">
                   <div className="flex items-center text-[14px] text-gray-700">
                     <span className="mr-3">📅</span>
-                    <p>{event?.date ? new Date(event.date).toLocaleDateString() : ''}</p>
+                    <p>  {formatEventDate(event?.date)}
+                    </p>
                   </div>
                 </div>
 
